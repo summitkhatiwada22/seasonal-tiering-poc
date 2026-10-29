@@ -234,7 +234,7 @@ def test_fetch_all_recovers_from_half_written_line(tmp_path: Path) -> None:
         client(fake), ["Cat", "Dog"], out, start, end, 1, progress=lambda m: None
     )
     assert summary.done == 1 and summary.skipped == 1
-    assert d1._read_done(out) == {"Cat", "Dog"}
+    assert d1.read_done(out) == {"Cat", "Dog"}
 
 
 def test_fetch_all_refuses_changed_settings(tmp_path: Path) -> None:

@@ -28,7 +28,7 @@ class FetchError(RuntimeError):
     """A request failed for good (not merely temporarily)."""
 
 
-def _default_opener(request: urllib.request.Request, timeout: float) -> Any:
+def default_opener(request: urllib.request.Request, timeout: float) -> Any:
     return urllib.request.urlopen(request, timeout=timeout)  # noqa: S310
 
 
@@ -59,7 +59,7 @@ class Http:
         self._min_interval = min_interval
         self._retries = retries
         self._timeout = timeout
-        self._opener = opener or _default_opener
+        self._opener = opener or default_opener
         self._sleep = sleep
         self._clock = clock
         self._lock = threading.Lock()

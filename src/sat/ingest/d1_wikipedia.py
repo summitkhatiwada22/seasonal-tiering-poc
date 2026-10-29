@@ -342,7 +342,7 @@ class FetchSummary:
     skipped: int
 
 
-def _read_done(path: Path) -> set[str]:
+def read_done(path: Path) -> set[str]:
     done: set[str] = set()
     if not path.exists():
         return done
@@ -364,6 +364,7 @@ def fetch_all(
     span_years: int,
     workers: int = 4,
     progress: Callable[[str], None] = print,
+    fetch_one: Callable[[Http, str, date, date, int], dict[date, int]] = fetch_article_views,
 ) -> FetchSummary:
     """Download every article not yet in ``out_path``; one JSON line per finished article."""
     meta_path = out_path.with_suffix(".meta.json")
@@ -374,7 +375,7 @@ def fetch_all(
     out_path.parent.mkdir(parents=True, exist_ok=True)
     meta_path.write_text(json.dumps(meta), encoding="utf-8")
 
-    done = _read_done(out_path)
+    done = read_done(out_path)
     todo = [a for a in articles if a not in done]
     failed: list[str] = []
     finished = 0
@@ -387,9 +388,7 @@ def fetch_all(
         out_path.open("a", encoding="utf-8") as sink,
         ThreadPoolExecutor(max_workers=workers) as pool,
     ):
-        futures = {
-            pool.submit(fetch_article_views, http, a, start, end, span_years): a for a in todo
-        }
+        futures = {pool.submit(fetch_one, http, a, start, end, span_years): a for a in todo}
         try:
             for future in as_completed(futures):
                 article = futures[future]
@@ -414,8 +413,10 @@ def fetch_all(
 # --- step 3: write Parquet --------------------------------------------------------------------
 
 
-def build_parquet(jsonl_path: Path, out_dir: Path, start: date, end: date) -> dict[str, Any]:
-    """One Parquet per year: columns article, date, views. Missing days become 0."""
+def build_parquet(
+    jsonl_path: Path, out_dir: Path, start: date, end: date, key: str = "article"
+) -> dict[str, Any]:
+    """One Parquet per year: columns <key>, date, views. Missing days become 0."""
     days = (end - start).days + 1
     latest: dict[str, dict[str, int]] = {}
     with jsonl_path.open(encoding="utf-8") as handle:
@@ -439,7 +440,7 @@ def build_parquet(jsonl_path: Path, out_dir: Path, start: date, end: date) -> di
         cols = np.array([i for i, d in enumerate(all_days) if int(str(d)[:4]) == year])
         frame = pl.DataFrame(
             {
-                "article": np.repeat(np.array(names), len(cols)),
+                key: np.repeat(np.array(names), len(cols)),
                 "date": np.tile(all_days[cols], len(names)),
                 "views": matrix[:, cols].ravel(),
             }
@@ -478,11 +479,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--min-interval", type=float, default=0.25)
     args = parser.parse_args(argv)
-    p = _paths(args.data_dir.expanduser())
+    base = args.data_dir.expanduser()
+    p = _paths(base)
 
     if args.command == "status":
         listed = len(read_article_list(p["articles"])) if p["articles"].exists() else 0
-        done = len(_read_done(p["views"]))
+        done = len(read_done(p["views"]))
         print(f"articles listed: {listed}; articles downloaded: {done}")
         return 0
     if args.command == "flags":
@@ -520,10 +522,10 @@ def main(argv: list[str] | None = None) -> int:
         if selection.missing_months:
             names = ", ".join(f"{y}-{m:02d}" for y, m in selection.missing_months)
             print(f"note: the server has no top-pages list for: {names} (skipped, recorded)")
-        record(p["manifest"], "D1", "derived:article-list", p["articles"])
+        record(p["manifest"], "D1", "derived:article-list", p["articles"], base=base)
         for cached in sorted(p["top_cache"].glob("*.json")):
             ym = cached.stem
-            record(p["manifest"], "D1", f"{top_url(int(ym[:4]), int(ym[5:]))}", cached)
+            record(p["manifest"], "D1", top_url(int(ym[:4]), int(ym[5:])), cached, base=base)
         cohort_b = sum(1 for r in rows if r.cohort == "B")
         print(f"selected {len(rows)} articles ({cohort_b} random) -> {p['articles']}")
         return 0
@@ -534,7 +536,7 @@ def main(argv: list[str] | None = None) -> int:
     summary = fetch_all(
         http, [r.article for r in rows], p["views"], FETCH_START, FETCH_END, span, args.workers
     )
-    record(p["manifest"], "D1", "api:per-article-daily-views", p["views"])
+    record(p["manifest"], "D1", "api:per-article-daily-views", p["views"], base=base)
     print(f"fetched {summary.done}, already had {summary.skipped}, failed {len(summary.failed)}")
     if summary.failed:
         print("re-run the same command to retry the failed ones")
