@@ -32,6 +32,11 @@ class Body:
         return None
 
 
+class RawBody(Body):
+    def __init__(self, raw: bytes) -> None:
+        self._raw = raw
+
+
 class FakeNpm:
     def __init__(self, first_day: dict[str, date], names: list[str] | None = None) -> None:
         self.first_day = first_day
@@ -41,11 +46,8 @@ class FakeNpm:
     def __call__(self, request: urllib.request.Request, timeout: float) -> Body:
         url = request.full_url
         self.urls.append(url)
-        if "registry.npmjs.org" in url:
-            query = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
-            offset, size = int(query["from"][0]), int(query["size"][0])
-            chunk = self.names[offset : offset + size]
-            return Body({"objects": [{"package": {"name": n}} for n in chunk]})
+        if "raw.githubusercontent.com" in url:
+            return RawBody(_top_js(self.names).encode())
         m = re.search(r"/range/(\d{4}-\d{2}-\d{2}):(\d{4}-\d{2}-\d{2})/(.+)$", url)
         assert m, url
         start, end = date.fromisoformat(m.group(1)), date.fromisoformat(m.group(2))
@@ -101,19 +103,38 @@ def test_fetch_package_merges_year_chunks_and_unknown_is_empty() -> None:
     )
 
 
-def test_search_returns_requested_count_and_fails_when_short() -> None:
-    names = [f"pkg{i}" for i in range(600)]
-    assert d3_npm.search_packages(client(FakeNpm({}, names)), 300) == names[:300]
-    with pytest.raises(FetchError, match="only"):
-        d3_npm.search_packages(client(FakeNpm({}, names[:10])), 50)
+def _top_js(names: list[str]) -> str:
+    return "export const top = [\n" + ",\n".join(f"  '{n}'" for n in names) + "\n]\n"
+
+
+def test_parse_high_impact_handles_scoped_names_and_rejects_nonsense() -> None:
+    names = [f"pkg{i}" for i in range(1500)]
+    names[3] = "@babel/core"
+    parsed = d3_npm.parse_high_impact(_top_js(names))
+    assert parsed[:4] == ["pkg0", "pkg1", "pkg2", "@babel/core"] and len(parsed) == 1500
+    with pytest.raises(FetchError, match="expected thousands"):
+        d3_npm.parse_high_impact("<html>nope</html>")
+
+
+def test_choose_packages_is_seeded_keeps_head_and_stays_in_rank_range() -> None:
+    ranked = [f"pkg{i}" for i in range(6000)]
+    one = d3_npm.choose_packages(ranked, 300)
+    assert one == d3_npm.choose_packages(ranked, 300)  # same seed, same list
+    assert one != d3_npm.choose_packages(ranked, 300, seed=1)
+    assert one[:100] == ranked[:100] and len(set(one)) == 300
+    assert all(ranked.index(n) < 5000 for n in one)
     with pytest.raises(ValueError):
-        d3_npm.search_packages(client(FakeNpm({}, names)), 10**6)
+        d3_npm.choose_packages(ranked, 10**6)
+    with pytest.raises(FetchError, match="available"):
+        d3_npm.choose_packages(ranked[:200], 300)
 
 
 def test_list_is_never_redrawn_then_fetch_flags_build(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    fake = FakeNpm({"a": date(2016, 1, 1), "b": date(2019, 1, 1)}, ["a", "b"])
+    fake = FakeNpm(
+        {"a": date(2016, 1, 1), "b": date(2019, 1, 1)}, ["a", "b", *[f"f{i}" for i in range(1200)]]
+    )
     original = Http.__init__
 
     def init(self: Http, user_agent: str, **kwargs: object) -> None:
@@ -122,9 +143,9 @@ def test_list_is_never_redrawn_then_fetch_flags_build(
 
     monkeypatch.setattr(Http, "__init__", init)
     args = ["--data-dir", str(tmp_path), "--contact", "a@b.c"]
-    assert d3_npm.main(["list", *args, "--packages", "2"]) == 0
+    assert d3_npm.main(["list", *args, "--packages", "2", "--head", "2"]) == 0
     first = (tmp_path / "interim" / "D3" / "packages.csv").read_text(encoding="utf-8")
-    assert d3_npm.main(["list", *args, "--packages", "1"]) == 0
+    assert d3_npm.main(["list", *args, "--packages", "1", "--head", "1"]) == 0
     assert (tmp_path / "interim" / "D3" / "packages.csv").read_text(encoding="utf-8") == first
     assert "not redrawn" in capsys.readouterr().out
     assert d3_npm.main(["fetch", *args]) == 0

@@ -4,9 +4,10 @@ npm's range endpoint silently keeps only the END of a long request (about 18 mon
 ask for one calendar year at a time and insist that every day comes back. npm asks crawlers
 to stay at or below one request per second; the default here is one request every 1.1 s.
 
-    list   -> choose the packages (npm search, ranked by popularity) and save the list
-              (or ``--from-file`` with one package name per line); the saved list is the
-              pre-registered cohort and is never redrawn
+    list   -> choose the packages and save the list (or ``--from-file`` with one name per
+              line); the saved list is the pre-registered cohort and is never redrawn.
+              Default: the 100 highest-ranked packages in the public npm-high-impact list
+              plus a seeded random sample from ranks 101-5000 (decision D-020, revised)
     fetch  -> download daily counts (resumable; same JSONL layout as D1)
     flags  -> mark bursty / thin packages using days up to December 2022 only
     build  -> one Parquet file per year
@@ -14,6 +15,8 @@ to stay at or below one request per second; the default here is one request ever
 
 Caveat (decision D-020): popularity today favours packages that survived, so the list is
 biased towards long-lived packages. Packages with little history are flagged, not removed.
+The npm search endpoint was tried first and does not rank by popularity for a blank query
+(it returned one package), so the list comes from a public ranking file instead.
 """
 
 from __future__ import annotations
@@ -21,6 +24,8 @@ from __future__ import annotations
 import argparse
 import csv
 import os
+import random
+import re
 import sys
 import urllib.parse
 from datetime import date
@@ -32,11 +37,13 @@ from sat.ingest.http import FetchError, Http, make_user_agent
 from sat.ingest.manifest import record
 
 API = "https://api.npmjs.org/downloads/range"
-SEARCH = "https://registry.npmjs.org/-/v1/search"
+HIGH_IMPACT_URL = "https://raw.githubusercontent.com/wooorm/npm-high-impact/main/lib/top.js"
+HEAD_PACKAGES = 100
+TAIL_POOL = 5000  # the sample is drawn from ranks HEAD_PACKAGES+1 .. TAIL_POOL
+SEED = 20261029
 FETCH_START = date(2016, 1, 1)
 FETCH_END = date(2025, 12, 31)
 DEFAULT_PACKAGES = 300
-SEARCH_PAGE = 250
 MAX_PACKAGES = 5000  # far below npm's "unreasonable volume" line; a hard stop on typos
 
 
@@ -88,33 +95,28 @@ def fetch_package_downloads(
     return merged
 
 
-def search_packages(http: Http, n: int) -> list[str]:
-    """The n most popular packages according to npm search (as of today)."""
+def parse_high_impact(text: str) -> list[str]:
+    """Package names, in rank order, from the quoted strings of ``export const top = [...]``."""
+    body = text.split("[", 1)[-1].rsplit("]", 1)[0]
+    names = re.findall(r"^\s*'([^']+)',?\s*$", body, flags=re.MULTILINE)
+    if len(names) < 1000:
+        raise FetchError(f"expected thousands of package names, found {len(names)}")
+    return list(dict.fromkeys(names))  # drop repeats, keep first rank
+
+
+def choose_packages(
+    ranked: list[str], n: int, head: int = HEAD_PACKAGES, seed: int = SEED
+) -> list[str]:
+    """The first ``head`` ranks, then a seeded random sample from the next ranks up to 5000."""
     if not 1 <= n <= MAX_PACKAGES:
         raise ValueError(f"n must be between 1 and {MAX_PACKAGES}")
-    names: dict[str, None] = {}
-    offset = 0
-    while len(names) < n and offset < 20 * SEARCH_PAGE:
-        query = urllib.parse.urlencode(
-            {
-                "text": "not:deprecated",
-                "popularity": "1.0",
-                "quality": "0.0",
-                "maintenance": "0.0",
-                "size": str(SEARCH_PAGE),
-                "from": str(offset),
-            }
-        )
-        body = http.get_json(f"{SEARCH}?{query}")
-        objects = body.get("objects", []) if isinstance(body, dict) else []
-        if not objects:
-            break
-        for obj in objects:
-            names[str(obj["package"]["name"])] = None
-        offset += SEARCH_PAGE
-    if len(names) < n:
-        raise FetchError(f"search returned only {len(names)} packages; wanted {n}")
-    return list(names)[:n]
+    if not 0 <= head <= n:
+        raise ValueError("head must be between 0 and n")
+    pool = ranked[head:TAIL_POOL]
+    if len(pool) < n - head:
+        raise FetchError(f"only {len(pool)} packages available beyond the first {head}")
+    sample = random.Random(seed).sample(pool, n - head)
+    return ranked[:head] + sorted(sample, key=ranked.index)
 
 
 def write_list(path: Path, names: list[str], source: str) -> None:
@@ -147,6 +149,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--data-dir", required=True, type=Path)
     parser.add_argument("--contact", default=os.environ.get("SAT_CONTACT", ""))
     parser.add_argument("--packages", type=int, default=DEFAULT_PACKAGES)
+    parser.add_argument("--head", type=int, default=HEAD_PACKAGES)
+    parser.add_argument("--seed", type=int, default=SEED)
     parser.add_argument("--from-file", type=Path, default=None)
     parser.add_argument("--min-interval", type=float, default=1.1)
     args = parser.parse_args(argv)
@@ -180,7 +184,16 @@ def main(argv: list[str] | None = None) -> int:
             names = [x.strip() for x in lines if x.strip()]
             write_list(p["list"], names, f"file:{args.from_file.name}")
         else:
-            write_list(p["list"], search_packages(http, args.packages), "npm-search-popularity")
+            raw = http.get_bytes(HIGH_IMPACT_URL)
+            if raw is None:
+                raise FetchError("the npm-high-impact ranking file was not found")
+            source = p["list"].with_name("high_impact_top.js")
+            source.parent.mkdir(parents=True, exist_ok=True)
+            source.write_bytes(raw)
+            record(p["manifest"], "D3", HIGH_IMPACT_URL, source, base=base)
+            ranked = parse_high_impact(raw.decode("utf-8"))
+            chosen = choose_packages(ranked, args.packages, args.head, args.seed)
+            write_list(p["list"], chosen, f"npm-high-impact head={args.head} seed={args.seed}")
         record(p["manifest"], "D3", "derived:package-list", p["list"], base=base)
         print(f"saved {len(read_list(p['list']))} packages -> {p['list']}")
         return 0
