@@ -15,6 +15,15 @@
 # Deep Archive 0.01. These agree with the sheet within rounding (0.023 / 0.004 / 0.0036 / 0.00099
 # per GB) but cannot confirm the third decimal. TO DO: re-read at 10,000 GB for exact figures.
 #
+# Cross-check 2026-10-29 (second attempt, still no official tables): two more secondary pages
+# (cloudforecast.io, nops.io) agree with the storage rates above ($0.023 / 0.0125 / 0.004 / 0.0036 /
+# 0.00099) and one lists lifecycle-transition fees of 0.01 / 0.02 / 0.03 / 0.05 per 1,000 for IA /
+# Glacier IR / Glacier FR / Deep Archive, matching the put_per_1000 values below. NOT confirmed:
+# per-GB retrieval and per-1,000 GET fees (the pages give none), and the separate per-1,000
+# Glacier retrieval-request fee (one page says 0.05 FR-standard, 0.10 Deep Archive; unverified and
+# not modelled). The official price tables are script-drawn and the pricing API is blocked here.
+# Resolve with the owner's calculator readings before Gate G2.
+#
 # as_of is the date this sheet was compiled. The sources are secondary articles
 # dated 2026-03 to 2026-05, NOT AWS's own price page.
 
