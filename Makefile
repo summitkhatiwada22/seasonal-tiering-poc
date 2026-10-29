@@ -30,8 +30,9 @@ synth: ## Generate small synthetic data (D7) into data/processed/synthetic_S
 status: ## Show which phase we are on and where we can stop
 	@sed -n '/<!-- STATUS-START -->/,/<!-- STATUS-END -->/p' docs/PROGRESS.md | grep -v '<!--'
 
-data: ## (Phase 2) Download and convert real datasets
-	@echo "Not built yet: arrives in Phase 2."; exit 1
+data: ## (Phase 2) How to download and convert the real datasets
+	@echo "Real datasets are large and live outside the repo."
+	@echo "Follow docs/RUNBOOK_PHASE2.md (commands for D1 to D5 and the quality report)."
 
 simulate: ## (Phases 3-6) Run cost simulator and policies
 	@echo "Not built yet: arrives in Phases 3-6."; exit 1
