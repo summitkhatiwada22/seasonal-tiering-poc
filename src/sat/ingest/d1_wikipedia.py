@@ -6,9 +6,11 @@ numbers for just the articles we care about (decision D-014).
 
 Three steps, each safe to re-run:
 
-    list   -> pick the articles (from the most-viewed pages of Jan 2016 to Dec 2022 ONLY)
+    list   -> pick cohort A (most-viewed pages of Jan 2016 to Dec 2022 ONLY) and cohort B
+              (random ordinary articles, drawn once and then kept)
     fetch  -> download daily views for each article; resumes where it stopped
     build  -> write one Parquet file per year with a row for every article and every day
+    flags  -> mark bursty / thin articles using days up to December 2022 only
 
 The selection rule uses no data after December 2022, so the validation year (2023) and the
 sealed test years (2024-2025) cannot influence which articles we study.
@@ -59,6 +61,17 @@ _NAMESPACES = (
 )
 NAMESPACE_RE = re.compile(rf"^({_NAMESPACES})(_talk)?:", re.IGNORECASE)
 EXCLUDED_TITLES = frozenset({"Main_Page", "-"})
+# Titles that look like files or web paths ("404.php") are crawler junk, not articles (D-019).
+FILE_LIKE_RE = re.compile(
+    r"\.(php|html?|aspx?|jsp|cgi|png|jpe?g|gif|svg|ico|txt|xml|css|js|json|pdf)$", re.IGNORECASE
+)
+RANDOM_URL = (
+    "https://en.wikipedia.org/w/api.php?action=query&list=random&rnnamespace=0"
+    "&rnfilterredir=nonredirects&rnlimit=500&format=json"
+)
+BURSTY_SHARE = 0.5  # flag: the 3 busiest months hold more than half of all 2016-2022 views
+THIN_NONZERO_DAYS = 365  # flag: fewer than a year's worth of days with any views
+SELECTION_CUTOFF = date(2022, 12, 31)
 
 
 @dataclass(frozen=True)
@@ -74,11 +87,16 @@ class ArticleRow:
     article: str
     total_top_views: int
     months_in_top: int
+    cohort: str = "A"  # A = most-viewed articles; B = random ordinary articles
 
 
 def is_article(title: str) -> bool:
-    """True for ordinary articles; False for the front page, search and other namespaces."""
-    return title not in EXCLUDED_TITLES and NAMESPACE_RE.match(title) is None
+    """True for ordinary articles; False for the front page, other namespaces and file-like junk."""
+    return (
+        title not in EXCLUDED_TITLES
+        and NAMESPACE_RE.match(title) is None
+        and FILE_LIKE_RE.search(title) is None
+    )
 
 
 def month_range(first: tuple[int, int], last: tuple[int, int]) -> Iterator[tuple[int, int]]:
@@ -155,17 +173,95 @@ def write_article_list(path: Path, rows: list[ArticleRow]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.writer(handle)
-        writer.writerow(["article", "total_top_views", "months_in_top"])
+        writer.writerow(["article", "total_top_views", "months_in_top", "cohort"])
         for r in rows:
-            writer.writerow([r.article, r.total_top_views, r.months_in_top])
+            writer.writerow([r.article, r.total_top_views, r.months_in_top, r.cohort])
 
 
 def read_article_list(path: Path) -> list[ArticleRow]:
     with path.open(newline="", encoding="utf-8") as handle:
         return [
-            ArticleRow(r["article"], int(r["total_top_views"]), int(r["months_in_top"]))
+            ArticleRow(
+                r["article"],
+                int(r["total_top_views"]),
+                int(r["months_in_top"]),
+                r.get("cohort", "A"),
+            )
             for r in csv.DictReader(handle)
         ]
+
+
+def draw_random_articles(http: Http, n: int, exclude: set[str]) -> list[ArticleRow]:
+    """Cohort B: ordinary articles drawn at random from the live encyclopedia.
+
+    The draw cannot be seeded, so it is made once, saved, and re-used on every later run
+    (the saved list is the pre-registered cohort). Redirects are excluded by the server.
+    """
+    if n < 0:
+        raise ValueError("n must not be negative")
+    picked: dict[str, None] = {}
+    for _ in range(max(10, 4 * (n // 500 + 1))):
+        if len(picked) >= n:
+            break
+        body = http.get_json(RANDOM_URL)
+        if body is None:
+            raise FetchError("random-article endpoint not found")
+        for item in body["query"]["random"]:
+            title = str(item["title"]).replace(" ", "_")
+            if is_article(title) and title not in exclude:
+                picked[title] = None
+    if len(picked) < n:
+        raise FetchError(f"could only draw {len(picked)} of {n} random articles")
+    return [ArticleRow(t, 0, 0, "B") for t in sorted(picked)[:n]]
+
+
+@dataclass(frozen=True)
+class FlagRow:
+    article: str
+    views_to_2022: int
+    nonzero_days: int
+    top3_month_share: float
+    flags: str  # "" or a "+"-joined list of: bursty, thin
+
+
+def compute_flags(jsonl_path: Path, cutoff: date = SELECTION_CUTOFF) -> list[FlagRow]:
+    """Describe each article using ONLY days up to ``cutoff`` (never 2023 or later).
+
+    Flags do not remove anything; they let the analysis report results with and without
+    suspicious articles (automated traffic, one-off bursts, almost-empty pages).
+    """
+    rows: list[FlagRow] = []
+    with jsonl_path.open(encoding="utf-8") as handle:
+        for line in handle:
+            record_ = json.loads(line)
+            by_month: dict[str, int] = {}
+            nonzero = 0
+            for iso, views in record_["views"].items():
+                if date.fromisoformat(iso) > cutoff or views <= 0:
+                    continue
+                by_month[iso[:7]] = by_month.get(iso[:7], 0) + int(views)
+                nonzero += 1
+            total = sum(by_month.values())
+            top3 = sum(sorted(by_month.values(), reverse=True)[:3])
+            share = top3 / total if total else 0.0
+            found = []
+            if total and share > BURSTY_SHARE:
+                found.append("bursty")
+            if nonzero < THIN_NONZERO_DAYS:
+                found.append("thin")
+            rows.append(FlagRow(str(record_["article"]), total, nonzero, share, "+".join(found)))
+    return sorted(rows, key=lambda r: r.article)
+
+
+def write_flags(path: Path, rows: list[FlagRow]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(["article", "views_to_2022", "nonzero_days", "top3_month_share", "flags"])
+        for r in rows:
+            writer.writerow(
+                [r.article, r.views_to_2022, r.nonzero_days, f"{r.top3_month_share:.4f}", r.flags]
+            )
 
 
 # --- step 2: download daily views -------------------------------------------------------------
@@ -366,6 +462,7 @@ def _paths(data_dir: Path) -> dict[str, Path]:
         "top_cache": data_dir / "raw" / "D1" / "top",
         "articles": data_dir / "interim" / "D1" / "articles.csv",
         "views": data_dir / "raw" / "D1" / "views.jsonl",
+        "flags": data_dir / "interim" / "D1" / "flags.csv",
         "out": data_dir / "processed" / "D1",
         "manifest": data_dir / "manifests" / "D1.csv",
     }
@@ -373,10 +470,11 @@ def _paths(data_dir: Path) -> dict[str, Path]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    parser.add_argument("command", choices=["list", "fetch", "build", "status"])
+    parser.add_argument("command", choices=["list", "fetch", "build", "flags", "status"])
     parser.add_argument("--data-dir", required=True, type=Path)
     parser.add_argument("--contact", default=os.environ.get("WIKIMEDIA_CONTACT", ""))
     parser.add_argument("--articles", type=int, default=DEFAULT_ARTICLES)
+    parser.add_argument("--random-articles", type=int, default=DEFAULT_ARTICLES)
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--min-interval", type=float, default=0.25)
     args = parser.parse_args(argv)
@@ -386,6 +484,12 @@ def main(argv: list[str] | None = None) -> int:
         listed = len(read_article_list(p["articles"])) if p["articles"].exists() else 0
         done = len(_read_done(p["views"]))
         print(f"articles listed: {listed}; articles downloaded: {done}")
+        return 0
+    if args.command == "flags":
+        flagged = compute_flags(p["views"])
+        write_flags(p["flags"], flagged)
+        by_flag = sum(1 for f in flagged if f.flags)
+        print(f"wrote {p['flags']}: {len(flagged)} articles, {by_flag} flagged")
         return 0
     if args.command == "build":
         built = build_parquet(p["views"], p["out"], FETCH_START, FETCH_END)
@@ -397,7 +501,17 @@ def main(argv: list[str] | None = None) -> int:
     http = Http(make_user_agent(args.contact), min_interval=args.min_interval)
     if args.command == "list":
         selection = build_article_list(http, p["top_cache"], args.articles)
-        rows = selection.rows
+        rows = list(selection.rows)
+        kept_b = (
+            [r for r in read_article_list(p["articles"]) if r.cohort == "B"]
+            if p["articles"].exists()
+            else []
+        )
+        if kept_b:
+            print(f"re-using the {len(kept_b)} random articles already drawn (cohort B)")
+            rows += kept_b
+        elif args.random_articles > 0:
+            rows += draw_random_articles(http, args.random_articles, {r.article for r in rows})
         write_article_list(p["articles"], rows)
         gaps = p["articles"].with_name("missing_months.txt")
         gaps.write_text(
@@ -410,7 +524,8 @@ def main(argv: list[str] | None = None) -> int:
         for cached in sorted(p["top_cache"].glob("*.json")):
             ym = cached.stem
             record(p["manifest"], "D1", f"{top_url(int(ym[:4]), int(ym[5:]))}", cached)
-        print(f"selected {len(rows)} articles -> {p['articles']}")
+        cohort_b = sum(1 for r in rows if r.cohort == "B")
+        print(f"selected {len(rows)} articles ({cohort_b} random) -> {p['articles']}")
         return 0
 
     rows = read_article_list(p["articles"])

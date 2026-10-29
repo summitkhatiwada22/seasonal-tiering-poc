@@ -25,7 +25,10 @@ class FakeWikimedia:
         top: dict[tuple[int, int], list[tuple[str, int]]],
         views: dict[str, dict[date, int]],
         max_span_days: int = 10_000,
+        random_pool: list[str] | None = None,
     ) -> None:
+        self.random_pool = random_pool or []
+        self.random_calls = 0
         self.top = top
         self.views = views
         self.max_span_days = max_span_days
@@ -38,6 +41,12 @@ class FakeWikimedia:
 
         url = request.full_url
         self.urls.append(url)
+        if "list=random" in url:
+            size = 3  # the fake serves small batches so the loop is exercised
+            at = self.random_calls * size % max(len(self.random_pool), 1)
+            self.random_calls += 1
+            batch = (self.random_pool + self.random_pool)[at : at + size]
+            return _Body({"query": {"random": [{"title": t} for t in batch]}})
         if "/top/" in url:
             m = re.search(r"/(\d{4})/(\d{2})/all-days", url)
             assert m
@@ -272,3 +281,73 @@ def test_cli_list_then_status(tmp_path: Path, capsys: pytest.CaptureFixture[str]
     assert "articles listed: 1; articles downloaded: 0" in capsys.readouterr().out
     with pytest.raises(SystemExit):
         d1.main(["list", "--data-dir", str(tmp_path)])  # no contact given
+
+
+def test_file_like_titles_are_not_articles() -> None:
+    assert not d1.is_article("404.php")
+    assert not d1.is_article("index.HTML")
+    assert not d1.is_article("favicon.ico")
+    assert d1.is_article("Node.js_(runtime)")  # only a trailing extension is junk
+    assert d1.is_article("Hello_World")
+
+
+def test_file_like_titles_are_dropped_before_ranking(tmp_path: Path) -> None:
+    top = {(2020, 1): [("404.php", 999), ("Cat", 5), ("Dog", 4)]}
+    http = client(FakeWikimedia(top, {}))
+    got = d1.build_article_list(http, tmp_path, n=2, months=[(2020, 1)])
+    assert [r.article for r in got.rows] == ["Cat", "Dog"]  # junk removed, list backfilled
+
+
+def test_random_cohort_is_unique_excludes_cohort_a_and_is_tagged() -> None:
+    pool = ["Alpha beta", "Gamma", "Delta", "Cat", "Epsilon", "Zeta", "Eta"]
+    http = client(FakeWikimedia({}, {}, random_pool=pool))
+    rows = d1.draw_random_articles(http, 5, exclude={"Cat"})
+    names = [r.article for r in rows]
+    assert len(names) == 5 and len(set(names)) == 5 and "Cat" not in names
+    assert "Alpha_beta" in names  # spaces become underscores
+    assert all(r.cohort == "B" for r in rows)
+
+
+def test_random_cohort_fails_loudly_when_it_cannot_fill() -> None:
+    http = client(FakeWikimedia({}, {}, random_pool=["One", "Two"]))
+    with pytest.raises(FetchError, match="could only draw"):
+        d1.draw_random_articles(http, 10, exclude=set())
+
+
+def test_article_list_roundtrip_keeps_cohort_and_old_files_default_to_a(tmp_path: Path) -> None:
+    path = tmp_path / "a.csv"
+    d1.write_article_list(path, [d1.ArticleRow("Cat", 5, 1), d1.ArticleRow("Emu", 0, 0, "B")])
+    assert [r.cohort for r in d1.read_article_list(path)] == ["A", "B"]
+    path.write_text("article,total_top_views,months_in_top\nCat,5,1\n", encoding="utf-8")
+    assert d1.read_article_list(path)[0].cohort == "A"  # pilot files had no cohort column
+
+
+def test_flags_use_only_days_up_to_2022(tmp_path: Path) -> None:
+    jsonl = tmp_path / "v.jsonl"
+    steady = {date(2016, 1, 1).toordinal() + i: 10 for i in range(0, 2500, 2)}
+    lines = [
+        {
+            "article": "Steady",
+            "views": {date.fromordinal(o).isoformat(): v for o, v in steady.items()},
+        },
+        {"article": "Burst", "views": {f"2018-05-{d:02d}": 1000 for d in range(1, 11)}},
+        # huge 2024 traffic must not change anything about Late
+        {"article": "Late", "views": {"2024-01-01": 10**9}},
+    ]
+    jsonl.write_text("".join(json.dumps(x) + "\n" for x in lines), encoding="utf-8")
+    flags = {f.article: f for f in d1.compute_flags(jsonl)}
+    assert flags["Steady"].flags == ""
+    assert flags["Burst"].flags == "bursty+thin"
+    assert flags["Late"].views_to_2022 == 0 and flags["Late"].flags == "thin"
+    out = tmp_path / "f.csv"
+    d1.write_flags(out, list(flags.values()))
+    assert out.read_text(encoding="utf-8").startswith("article,views_to_2022")
+
+
+def test_cli_flags_command(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    views = tmp_path / "raw" / "D1" / "views.jsonl"
+    views.parent.mkdir(parents=True)
+    views.write_text(json.dumps({"article": "Cat", "views": {"2020-01-02": 5}}) + "\n")
+    assert d1.main(["flags", "--data-dir", str(tmp_path)]) == 0
+    assert "1 articles, 1 flagged" in capsys.readouterr().out
+    assert (tmp_path / "interim" / "D1" / "flags.csv").exists()

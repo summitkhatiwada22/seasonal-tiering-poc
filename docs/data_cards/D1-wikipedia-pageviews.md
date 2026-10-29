@@ -44,4 +44,6 @@ Seasonality test, large scale. Train through 2022, validate 2023, sealed test 20
 
 ## Verification
 
-Not done yet. Plan for Phase 2: choose 20 articles, compare our daily totals with Wikimedia's public per-article statistics.
+Pilot (50 articles, 2016-2023, 2026-10-29): 146,100 rows, no duplicates, no date gaps. The monthly sums of our daily numbers equal Wikimedia's own monthly top-pages values in 740 of 740 article-months.
+
+Known weakness: the server counts some automated traffic as human (for example `404.php`, an adult site). Decision D-019 drops file-like titles, adds a random cohort B beside the most-viewed cohort A, and flags `bursty` and `thin` articles (days up to December 2022 only) so results can be shown with and without them.
