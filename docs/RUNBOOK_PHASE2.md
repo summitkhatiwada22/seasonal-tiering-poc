@@ -14,7 +14,7 @@ Every download command can be stopped with Ctrl-C and run again; it continues wh
     uv run python -m sat.ingest.d4_seattle inspect --data-dir $D --years 2016
     uv run python -m sat.ingest.d4_seattle fetch --data-dir $D --years 2016 --max-pages 1
     uv run python -m sat.ingest.d3_npm list --data-dir $D --packages 5
-    # if the next line works, delete the trial list first: rm $D/interim/D3/packages.csv
+    rm $D/interim/D3/packages.csv   # the 5-package trial list must not become the real list
 
 Send me the printed output of each command.
 
