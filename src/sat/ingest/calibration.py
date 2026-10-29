@@ -209,7 +209,7 @@ def main(argv: list[str] | None = None) -> int:
         summary = summarise_ibm_trace(_open_text(args.file))
         summary["source_file"] = args.file.name
         dest = args.file
-        out = base / "processed" / "D5" / "trace_summary.json"
+        out = base / "processed" / "D5" / f"trace_summary_{args.file.name}.json"
         if dest.is_relative_to(base):
             record(base / "manifests" / "D5.csv", "D5", f"manual:{dest.name}", dest, base=base)
         else:

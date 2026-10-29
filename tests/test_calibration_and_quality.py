@@ -208,3 +208,18 @@ def test_quality_cli_writes_reports(tmp_path: Path) -> None:
     assert code == 1  # nothing downloaded: a failing report, not a crash
     assert "FAIL" in (out / "quality_report.md").read_text(encoding="utf-8")
     assert json.loads((out / "quality_report.json").read_text())["D2"][0]["ok"] is False
+
+
+def test_d5_summaries_are_kept_per_trace_and_found_by_quality(tmp_path: Path) -> None:
+    for name in ("TraceA", "TraceB"):
+        trace = tmp_path / "raw" / "D5" / name
+        trace.parent.mkdir(parents=True, exist_ok=True)
+        trace.write_text("1 REST.PUT.OBJECT o1 4096\n2 REST.GET.OBJECT o1 4096\n")
+        assert calibration.main(["d5", "--data-dir", str(tmp_path), "--file", str(trace)]) == 0
+    folder = tmp_path / "processed" / "D5"
+    assert sorted(p.name for p in folder.glob("*.json")) == [
+        "trace_summary_TraceA.json",
+        "trace_summary_TraceB.json",
+    ]
+    checks = quality.check_summary(tmp_path, "D5", "trace_summary*.json")
+    assert all(c.ok for c in checks), checks

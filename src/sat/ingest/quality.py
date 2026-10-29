@@ -143,10 +143,13 @@ def check_d4(base: Path) -> list[Check]:
     return out
 
 
-def check_summary(base: Path, dataset: str, relative: str) -> list[Check]:
-    path = base / "processed" / dataset / relative
-    if not path.exists():
-        return [Check("calibration summary present", False, f"{path} not found")]
+def check_summary(base: Path, dataset: str, pattern: str) -> list[Check]:
+    found = sorted((base / "processed" / dataset).glob(pattern))
+    if not found:
+        return [
+            Check("calibration summary present", False, f"no {pattern} under processed/{dataset}")
+        ]
+    path = found[-1]
     data: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
     quantiles = data.get("size_quantiles_by_object") or data.get("object_size", {}).get(
         "size_quantiles_by_object", {}
@@ -182,7 +185,7 @@ def run(base: Path) -> dict[str, list[Check]]:
             base / "interim" / "D3" / "flags.csv",
         ),
         "D4": check_d4(base),
-        "D5": check_summary(base, "D5", "trace_summary.json"),
+        "D5": check_summary(base, "D5", "trace_summary*.json"),
     }
 
 
