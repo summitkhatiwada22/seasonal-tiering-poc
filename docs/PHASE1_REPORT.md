@@ -32,7 +32,7 @@ Date: 2026-10-29. Author: Claude, reviewed by the project owner.
 
 - **Google Cloud Storage:** verified against Google's own pricing page (us-central1). Storage, retrieval, minimum-duration and operations prices now carry status `sourced` with a link, and a test checks them.
 - **AWS:** the official page confirmed the rules (30/90/180-day minimums, 128 KB minimum billable size, 40 KB archive overhead, GET $0.0004). The owner's calculator readings (10 GB per month, rounded to cents) agree with our per-GB prices within rounding: Standard 0.02, Glacier Instant 0.04, Glacier Flexible 0.04, Deep Archive 0.01. They cannot confirm the third decimal, so a re-read at 10,000 GB is still wanted before Gate G2.
-- **Azure:** the owner's screenshot of Azure's own table (Hot 0.0184, Cool 0.01, Cold 0.0036, Archive 0.002 per GB per month) is saved in `docs/evidence/`. **It exposed two wrong values in our sheet**: Cold was 0.0045 and Archive was 0.00099 (an AWS figure). Both are corrected and a test now guards them. Region and redundancy are not visible in the image; we assume East US, LRS. Retrieval prices still come from secondary sources.
+- **Azure:** five screenshots of Azure's own pricing page (East US 2, LRS, flat namespace, USD) are saved in `docs/evidence/`. They confirm storage prices (Hot 0.0184, Cool 0.01, Cold 0.0036, Archive 0.002 per GB per month, first 50 TB), retrieval fees (Cool 0.01, Cold 0.03, Archive 0.02; Archive high priority 0.10), operation prices, early-deletion periods (30/90/180 days) and the up-to-15-hour archive rehydration. **They exposed two wrong values in our sheet**: Cold was 0.0045 and Archive was 0.00099 (an AWS figure). Both are corrected and tests guard them. The Azure sheet is East US 2, not East US (decision D-013). The Azure page itself still renders as placeholders in our tools.
 
 ## Findings that change the plan
 
@@ -58,7 +58,7 @@ None of this is legal advice. Before any investor material relies on D3 or D4, a
 
 | # | Item | Who | Blocks |
 | --- | --- | --- | --- |
-| 1 | AWS calculator re-read at 10,000 GB (exact decimals); confirm the Azure screenshot's region and redundancy; read Azure and AWS retrieval fees | Owner (10 minutes) | Gate G2 (simulator check) |
+| 1 | AWS calculator re-read at 10,000 GB (exact decimals) and AWS retrieval and request fees | Owner (10 minutes) | Gate G2 (simulator check) |
 | 2 | Measure real file sizes and download speed from a Codespace or the owner's computer | Phase 2, step 1 | Phase 2 plan |
 | 3 | Confirm mediacounts fields and date range after one sample download | Phase 2, step 1 | D2 role |
 | 4 | Read Common Crawl Terms of Use | Phase 8, before use | Compression track only |

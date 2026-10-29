@@ -59,6 +59,14 @@ def test_azure_matches_owner_screenshot_2026_10_29() -> None:
     # Archive was 0.00099 (an AWS figure) before the screenshot corrected it.
     assert azure.get("archive", "storage_usd_per_gb_month") == pytest.approx(0.002)
     assert azure.get("archive", "min_storage_days") == 180
+    assert azure.get("cold", "min_storage_days") == 90
+    assert azure.get("cool", "retrieval_usd_per_gb") == pytest.approx(0.01)
+    assert azure.get("cold", "retrieval_usd_per_gb") == pytest.approx(0.03)
+    assert azure.get("archive", "retrieval_usd_per_gb") == pytest.approx(0.02)
+    assert azure.get("archive", "restore_hours") == 15
+    # Operations are quoted per 10,000; the sheet stores per 1,000 (archive read $5 per 10,000).
+    assert azure.get("archive", "get_per_1000") == pytest.approx(0.5)
+    assert azure.get("hot", "put_per_1000") == pytest.approx(0.005)
 
 
 def test_unverified_values_are_listed_so_nobody_forgets_them() -> None:

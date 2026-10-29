@@ -9,7 +9,7 @@ megabytes of a few files so we can see the columns. It never downloads a full da
 The contact address goes into the User-Agent so the data owners can reach you, which is the
 polite convention for Wikimedia. Use any address you are happy to share with them.
 
-Standard library only. Requests are spaced at least one second apart.
+Standard library only. Works on Python 3.9 or newer. Requests are spaced at least one second apart.
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -211,7 +211,8 @@ def main() -> int:
     ua = f"seasonal-tiering-poc/0.1 (research; contact: {args.contact})"
     args.out.mkdir(parents=True, exist_ok=True)
 
-    report: dict[str, Any] = {"run_utc": datetime.now(UTC).isoformat(timespec="seconds")}
+    now = datetime.now(timezone.utc)  # noqa: UP017  (UTC alias needs Python 3.11)
+    report: dict[str, Any] = {"run_utc": now.isoformat(timespec="seconds")}
     for name, fn in [
         ("D1", probe_wikipedia),
         ("D2", probe_mediacounts),
