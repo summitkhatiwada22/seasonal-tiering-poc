@@ -13,7 +13,7 @@ Status: **GO, conditional.** Documentation read 2026-10-29. The fields and file 
 | Date fetched | Not downloaded yet |
 | Raw size on disk | **Unknown. Measure first.** |
 | Rows and columns used | To confirm. Expected: file name, number of transfers, possibly bytes transferred. |
-| Time coverage | **Unknown from readme.** To confirm from the folder listing. |
+| Time coverage | Year folders **2015 to 2026** under `mediacounts/daily/` (first probe did not descend into them; stage 2 does). |
 | Unit of "object" and "read" | Object = one media file (image, video or audio). Read = one transfer to a user. |
 | Manifest file | `manifests/D2.csv` (Phase 2) |
 

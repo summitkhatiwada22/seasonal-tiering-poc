@@ -13,7 +13,7 @@ Status: **GO, low risk.** npm's open-source terms and crawler policy were read o
 | Date fetched | Not downloaded yet |
 | Raw size on disk | Small (daily counts per package). Estimate only: kilobytes per package. |
 | Rows and columns used | Date, package name, downloads |
-| Time coverage | **A single request covers about 18 months (about 549 days).** Longer requests are truncated without warning. History back to 2015 is reachable by chunking the range, per the article. |
+| Time coverage | **Confirmed by test on 2026-10-29:** a request for 2020-01-01 to 2023-01-01 (3 years) returned 550 days, 2021-07-01 to 2023-01-01, with no error. The API silently keeps the **end** of the range. History before that needs chunks of 500 days or fewer. A 10-day request returned all 10 days correctly. |
 | Unit of "object" and "read" | Object = one package. Read = one download. |
 | Manifest file | `manifests/D3.csv` (Phase 2) |
 

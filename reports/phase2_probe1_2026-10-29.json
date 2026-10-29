@@ -1,0 +1,181 @@
+{
+  "run_utc": "2026-10-29T03:49:26+00:00",
+  "D1": {
+    "source": "D1 pageview_complete",
+    "top_level_entries": [
+      "2011/",
+      "2012/",
+      "2013/",
+      "2014/",
+      "2015/",
+      "2016/",
+      "2017/",
+      "2018/",
+      "2019/",
+      "2020/",
+      "2021/",
+      "2022/",
+      "2023/",
+      "2024/",
+      "2025/"
+    ],
+    "year_folders": [
+      "2011/",
+      "2012/",
+      "2013/",
+      "2014/",
+      "2015/",
+      "2016/",
+      "2017/",
+      "2018/",
+      "2019/",
+      "2020/",
+      "2021/",
+      "2022/",
+      "2023/",
+      "2024/",
+      "2025/",
+      "2026/"
+    ],
+    "months_2023": [
+      "2023-01/",
+      "2023-02/",
+      "2023-03/",
+      "2023-04/",
+      "2023-05/",
+      "2023-06/",
+      "2023-07/",
+      "2023-08/",
+      "2023-09/",
+      "2023-10/",
+      "2023-11/",
+      "2023-12/"
+    ],
+    "files_in_first_month": [
+      "pageviews-20230101-automated.bz2",
+      "pageviews-20230101-spider.bz2",
+      "pageviews-20230101-user.bz2",
+      "pageviews-20230102-automated.bz2",
+      "pageviews-20230102-spider.bz2",
+      "pageviews-20230102-user.bz2",
+      "pageviews-20230103-automated.bz2",
+      "pageviews-20230103-spider.bz2",
+      "pageviews-20230103-user.bz2",
+      "pageviews-20230104-automated.bz2"
+    ],
+    "file_count_first_month": 93,
+    "head_checks": [
+      {
+        "url": "https://dumps.wikimedia.org/other/pageview_complete/2023/2023-01/pageviews-20230101-automated.bz2",
+        "status": 200,
+        "bytes": 185416705,
+        "seconds": 1.6
+      },
+      {
+        "url": "https://dumps.wikimedia.org/other/pageview_complete/2023/2023-01/pageviews-20230101-spider.bz2",
+        "status": 200,
+        "bytes": 985193171,
+        "seconds": 1.52
+      },
+      {
+        "url": "https://dumps.wikimedia.org/other/pageview_complete/2023/2023-01/pageviews-20230101-user.bz2",
+        "status": 200,
+        "bytes": 463358219,
+        "seconds": 1.46
+      }
+    ],
+    "sample": {
+      "url": "https://dumps.wikimedia.org/other/pageview_complete/2023/2023-01/pageviews-20230101-automated.bz2",
+      "status": 206,
+      "fetched_bytes": 2000000,
+      "seconds": 6.7,
+      "first_lines": [
+        "aa.wikipedia '-var_dump(md5(173393686))-' null mobile-web 1 A1",
+        "aa.wikipedia '-var_dump(md5(202423737))-' null mobile-web 1 A1",
+        "aa.wikipedia '-var_dump(md5(471535377))-' null mobile-web 1 A1",
+        "aa.wikipedia '-var_dump(md5(798554902))-' null mobile-web 1 A1",
+        "aa.wikipedia - null mobile-web 94 A94",
+        "aa.wikipedia Category:User_aa null mobile-web 55 A55"
+      ],
+      "columns_in_first_line": 6
+    }
+  },
+  "D2": {
+    "source": "D2 mediacounts",
+    "entry_count": 12,
+    "first_entries": [
+      "2015/",
+      "2016/",
+      "2017/",
+      "2018/",
+      "2019/"
+    ],
+    "last_entries": [
+      "2022/",
+      "2023/",
+      "2024/",
+      "2025/",
+      "2026/"
+    ],
+    "head_checks": []
+  },
+  "D3": {
+    "source": "D3 npm downloads",
+    "point_last_week_react": {
+      "downloads": 205386791,
+      "start": "2026-10-21",
+      "end": "2026-10-27",
+      "package": "react"
+    },
+    "range_10_days": {
+      "days": 10,
+      "sample": [
+        {
+          "downloads": 732600,
+          "day": "2023-01-01"
+        },
+        {
+          "downloads": 1573559,
+          "day": "2023-01-02"
+        },
+        {
+          "downloads": 2738656,
+          "day": "2023-01-03"
+        }
+      ]
+    },
+    "range_3_years_requested": {
+      "days_returned": 550,
+      "first_day": "2021-07-01",
+      "last_day": "2023-01-01",
+      "error": null
+    }
+  },
+  "D4": {
+    "source": "D4 Seattle checkouts",
+    "head": {
+      "url": "https://cos-data.seattle.gov/api/v3/views/tmmm-ytt6/export.csv?accessType=DOWNLOAD",
+      "status": 200,
+      "bytes": 0,
+      "seconds": 5.4
+    },
+    "content_length_header": null,
+    "content_type": "text/csv; charset=utf-8",
+    "first_lines": [
+      "\"UsageClass\",\"CheckoutType\",\"MaterialType\",\"CheckoutYear\",\"CheckoutMonth\",\"Checkouts\",\"Title\",\"ISBN\",\"Creator\",\"Subjects\",\"Publisher\",\"PublicationYear\"",
+      "\"Digital\",\"OverDrive\",\"EBOOK\",\"2016\",\"10\",\"1\",\"Slim by Design: Mindless Eating Solutions for Everyday Life\",,\"Brian Wansink\",\"Health & Fitness, Nonfiction, Sociology\",\"HarperCollins Publishers Inc.\",\"2014\"",
+      "\"Physical\",\"Horizon\",\"VIDEODISC\",\"2016\",\"10\",\"7\",\"Trollfl\u00f6jten [videorecording] = The magic flute / Janus Films ; [presented by] Carmen F. Zollo ; [\u00e9crit et r\u00e9alis\u00e9 par Ingmar Bergman] ; Sveriges Radio AB.\",,,\"Operas, Feature films\",\"Criterion Collection,\",\"[2000]\"",
+      "\"Digital\",\"OverDrive\",\"EBOOK\",\"2016\",\"10\",\"1\",\"Great Expectations\",,\"Charles Dickens\",\"Classic Literature, Fiction\",\"Penguin Group (USA), Inc.\",\"2011\"",
+      "\"Physical\",\"Horizon\",\"BOOK\",\"2016\",\"10\",\"1\",\"A dangerous friend / Ward Just.\",,\"Just, Ward S.\",\"Vietnam War 1961 1975 Fiction, Vietnam History 1945 1975 Fiction, Americans Vietnam Fiction, Plantation life Fiction, Adventure fiction, Psychological fiction\",\"Houghton Mifflin Co.,\",\"1999.\""
+    ]
+  },
+  "D5": {
+    "source": "D5 IBM traces (page only, no download)",
+    "page": {
+      "url": "https://iotta.snia.org/traces/key-value/36305",
+      "status": 200,
+      "bytes": -1,
+      "seconds": 3.03
+    }
+  }
+}

@@ -11,8 +11,8 @@ Status: **GO.** Catalogue page and City of Seattle Open Data Policy read 2026-10
 | Access method | CSV export: `https://cos-data.seattle.gov/api/v3/views/tmmm-ytt6/export.csv?accessType=DOWNLOAD` (JSON and XML also offered) |
 | Rate limits and required headers | None stated |
 | Date fetched | Not downloaded yet |
-| Raw size on disk | **Not stated.** Measure first. |
-| Rows and columns used | Column list not visible; expected: title, month, checkouts, material type. Confirm on download. |
+| Raw size on disk | **Unknown.** The server sends no Content-Length (streamed export; a HEAD request reports 0 bytes). Size and row count are found by a full streaming download, timed in stage 2. |
+| Rows and columns used | **Observed header:** `UsageClass, CheckoutType, MaterialType, CheckoutYear, CheckoutMonth, Checkouts, Title, ISBN, Creator, Subjects, Publisher, PublicationYear`. Digital (OverDrive) and Physical (Horizon) items. |
 | Time coverage | April 2005 onward. The page shows "Dataset Last Updated" 2026-09-06. |
 | Unit of "object" and "read" | Object = one title. Read = one checkout. |
 | Manifest file | `manifests/D4.csv` (Phase 2) |
@@ -23,6 +23,7 @@ Human demand with obvious yearly rhythm: summer reading, tax guides, school term
 
 ## Known biases and caveats
 
+- **No stable object id.** ISBN is often blank, so an "object" is identified by Title plus Creator plus MaterialType; duplicates across formats must be merged by rule, recorded in the cleaning section.
 - **Monthly resolution.** Counts are per month, not per day. We cannot test warm-up windows shorter than about a month, and we must say so in every result that uses D4.
 - **Physical items** make checkouts a proxy for demand, not file reads. Electronic items are included.
 - **The dataset is updated in place.** Past values might be revised. We keep our own copy and its checksum (decision D-010) and never rely on re-downloading to reproduce a result.
