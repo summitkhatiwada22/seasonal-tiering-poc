@@ -1,0 +1,38 @@
+{
+  "distinct_objects_read": 34371,
+  "distinct_objects_seen": 36227,
+  "get_requests": 9900394,
+  "lines": 9924707,
+  "object_size": {
+    "bin_width_log10": 0.02,
+    "mean_bytes_per_object": 19873398.732961603,
+    "note": "quantiles are bin mid-points, accurate to about 2.3%",
+    "objects": 36227,
+    "size_quantiles_by_object": {
+      "p01": 4466.835921509631,
+      "p10": 5888.43655355589,
+      "p25": 8912.50938133745,
+      "p50": 58884.36553555884,
+      "p75": 16982436.524617426,
+      "p90": 16982436.524617426,
+      "p99": 776247116.6286927
+    },
+    "size_quantiles_by_weight": {
+      "p01": 4466.835921509631,
+      "p10": 5888.43655355589,
+      "p25": 8912.50938133745,
+      "p50": 58884.36553555884,
+      "p75": 16982436.524617426,
+      "p90": 16982436.524617426,
+      "p99": 776247116.6286927
+    },
+    "skipped_lines": 0
+  },
+  "operations": {
+    "REST.GET.OBJECT": 9900394,
+    "REST.PUT.OBJECT": 24313
+  },
+  "share_of_gets_to_objects_read_twice_or_more": 0.9998155628957797,
+  "source_file": "IBMObjectStoreTrace004Part0",
+  "unparsed_lines": 0
+}

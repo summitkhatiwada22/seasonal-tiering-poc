@@ -10,7 +10,7 @@ Status: **GO, low risk.** npm's open-source terms and crawler policy were read o
 | May we use it commercially? | **Yes for npm open source and its public APIs. Neither document names download statistics,** so we treat the download-count API as a public documented API and keep within the stated limits. |
 | Access method | REST API, one package per request |
 | Rate limits and required headers | Stay at or below 1 request per second (crawler policy), far below five million requests a month. Sequential requests, backoff on errors. A few hundred packages in chunks is a few thousand requests in total. |
-| Date fetched | Not downloaded yet |
+| Date fetched | 2026-10-29. 300 packages (top 100 of npm-high-impact plus 200 seeded from ranks 101-5000, D-024), 2016-2025; 16 bursty and 43 thin flags |
 | Raw size on disk | Small (daily counts per package). Estimate only: kilobytes per package. |
 | Rows and columns used | Date, package name, downloads |
 | Time coverage | **Confirmed by test on 2026-10-29:** a request for 2020-01-01 to 2023-01-01 (3 years) returned 550 days, 2021-07-01 to 2023-01-01, with no error. The API silently keeps the **end** of the range. History before that needs chunks of 500 days or fewer. A 10-day request returned all 10 days correctly. |

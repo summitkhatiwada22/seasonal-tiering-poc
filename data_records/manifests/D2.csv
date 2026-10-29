@@ -1,0 +1,2 @@
+dataset,url,sha256,bytes,downloaded_utc,path
+D2,https://dumps.wikimedia.org/other/mediacounts/daily/2023/mediacounts.2023-07-02.v00.tsv.bz2,e7d04cabf87e455d83b60aa8a7f0e280550bf419db88933d831c50d65acf7838,869127708,2026-10-29T11:09:07Z,raw/D2/mediacounts.2023-07-02.v00.tsv.bz2

@@ -10,7 +10,7 @@ Status: **GO.** Catalogue page and City of Seattle Open Data Policy read 2026-10
 | May we use it commercially? | **Yes, under the City's open-data policy.** Residual risk: the dataset page carries no licence line of its own, so the policy is the basis. We will cite the dataset and version and describe our changes, as section 1.D allows the City to require. |
 | Access method | CSV export: `https://cos-data.seattle.gov/api/v3/views/tmmm-ytt6/export.csv?accessType=DOWNLOAD` (JSON and XML also offered) |
 | Rate limits and required headers | None stated |
-| Date fetched | Not downloaded yet |
+| Date fetched | 2026-10-29. 51,804,190 rows (2005 to 2026-09), 22 yearly files, 6.8 GB raw and 2.0 GB Parquet; every year matches the server count |
 | Raw size on disk | **Unknown.** The server sends no Content-Length (streamed export; a HEAD request reports 0 bytes). A 60-second timed stream read 169,142 rows (2,809 rows per second, about the same 0.6 MB/s as Wikimedia, so the bottleneck is most likely the owner's connection). The export is not in random order: those rows were 98.8% from 2016. Total rows are unknown; the plan is to ask the Socrata API for a row count and to fetch one year at a time so a failed download can resume. |
 | Rows and columns used | **Observed header:** `UsageClass, CheckoutType, MaterialType, CheckoutYear, CheckoutMonth, Checkouts, Title, ISBN, Creator, Subjects, Publisher, PublicationYear`. Digital (OverDrive) and Physical (Horizon) items. |
 | Time coverage | April 2005 onward. The page shows "Dataset Last Updated" 2026-09-06. |

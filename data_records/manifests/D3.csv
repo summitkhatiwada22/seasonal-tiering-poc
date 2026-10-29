@@ -1,0 +1,4 @@
+dataset,url,sha256,bytes,downloaded_utc,path
+D3,api:npm-range-daily,5b84f46ee6e86abd39e5244f50d9368079c8f46e9bf5e9885df9465696fd3021,20914342,2026-10-29T10:27:49Z,raw/D3/downloads.jsonl
+D3,derived:package-list,a7257b5f96df2fcbe3a4b0da4ea2590276b5212e5e8961019c2cbe92234723f9,17559,2026-10-29T07:54:31Z,interim/D3/packages.csv
+D3,https://raw.githubusercontent.com/wooorm/npm-high-impact/main/lib/top.js,bbc16e783283f23d38559a1322d93af27b8a7a884b1fa9c5a1dd84e810684f0c,404035,2026-10-29T07:54:24Z,interim/D3/high_impact_top.js

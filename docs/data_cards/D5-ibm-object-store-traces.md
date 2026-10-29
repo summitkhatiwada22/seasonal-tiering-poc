@@ -10,7 +10,7 @@ Status: **GO for calibration only. Not a seasonality dataset.** Catalogue page a
 | May we use it commercially? | **Yes.** The licence grants the right to sell copies. Condition: keep the SNIA notice if the data is redistributed. We will not redistribute the traces, only results computed from them. |
 | Access method | Browser download with cookies enabled. The page links to shell-script and batch-script guides. No registration stated. |
 | Rate limits and required headers | None stated |
-| Date fetched | Page reachable from the owner's computer on 2026-10-29 (HTTP 200); no trace downloaded yet |
+| Date fetched | 2026-10-29: traces 002 part 0 (0.4 M lines) and 004 part 0 (9.9 M lines). Line layout `timestamp operation object_id [size ...]` confirmed. Not a read-again source: only requested objects appear in a trace |
 | Raw size on disk | 110 traces. Listed files range from 3.78 MB to 731 MB (traces 000-004). Trace 005 comes in five parts of about 880-900 MB each. Total not stated. |
 | Rows and columns used | **Not listed** on the catalogue page. Expect operation type, object id and size. Confirm on download. |
 | Time coverage | Recorded in 2019. **Each trace covers about 7 days, or about 1 day for the large trace parts.** |

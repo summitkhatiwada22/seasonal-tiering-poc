@@ -10,7 +10,7 @@ Status: **GO, with a changed plan.** Probed from the owner's computer on 2026-10
 | May we use it commercially? | **Yes.** CC0 places no conditions. |
 | Access method | Plain HTTP daily files, folder layout `pageview_complete/YYYY/YYYY-MM/pageviews-YYYYMMDD-{user,spider,automated}.bz2` (93 files in January 2023). Planned instead: Wikimedia per-article pageviews API for a fixed article list. |
 | Rate limits and required headers | Not stated on the readme. Send a contact address in the User-Agent and download politely. |
-| Date fetched | Not downloaded yet (documentation read 2026-10-29) |
+| Date fetched | 2026-10-29 (full run: 10,000 articles, 2016-2025; see PHASE2_REPORT.md). Old: Not downloaded yet (documentation read 2026-10-29) |
 | Raw size on disk | **Measured, per day, compressed (bz2), 2023-01-01:** `user` 463 MB, `automated` 185 MB, `spider` 985 MB. A year of `user` files alone is about 170 GB. Full-file download is **not feasible** on a free, home-internet budget. |
 | Rows and columns used | Observed line: `aa.wikipedia Category:User_aa null mobile-web 55 A55` = wiki, title, page id (`null` when unknown), access method, daily total, hourly counts encoded as letters+numbers. Six columns. |
 | Time coverage | Year folders **2011 to 2026** on the server (the readme's "December 2007" start does not match what is hosted) |

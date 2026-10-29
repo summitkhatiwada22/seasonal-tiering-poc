@@ -1,0 +1,122 @@
+{
+  "D1": [
+    {
+      "name": "date range complete",
+      "ok": true,
+      "detail": "2016-01-01 .. 2025-12-31, expected 2016-01-01 .. 2025-12-31"
+    },
+    {
+      "name": "rows = items x days",
+      "ok": true,
+      "detail": "36,530,000 rows; 10,000 items x 3,653 days = 36,530,000"
+    },
+    {
+      "name": "no duplicate (item, date)",
+      "ok": true,
+      "detail": "unique pairs equal rows"
+    },
+    {
+      "name": "no negative counts",
+      "ok": true,
+      "detail": "min 0"
+    },
+    {
+      "name": "every listed item downloaded",
+      "ok": true,
+      "detail": "10,000 in data, 10000 listed"
+    },
+    {
+      "name": "not mostly empty",
+      "ok": true,
+      "detail": "74.0% of cells above zero"
+    },
+    {
+      "name": "flags computed (informational)",
+      "ok": true,
+      "detail": "10,000 items; bursty 1,054, thin 1,189"
+    },
+    {
+      "name": "manifest checksums match",
+      "ok": true,
+      "detail": "84 files re-checked, 0 without stored path"
+    }
+  ],
+  "D2": [
+    {
+      "name": "size distribution measured",
+      "ok": true,
+      "detail": "median bytes about 24547.089156850285"
+    },
+    {
+      "name": "manifest checksums match",
+      "ok": true,
+      "detail": "1 files re-checked, 0 without stored path"
+    }
+  ],
+  "D3": [
+    {
+      "name": "date range complete",
+      "ok": true,
+      "detail": "2016-01-01 .. 2025-12-31, expected 2016-01-01 .. 2025-12-31"
+    },
+    {
+      "name": "rows = items x days",
+      "ok": true,
+      "detail": "1,095,900 rows; 300 items x 3,653 days = 1,095,900"
+    },
+    {
+      "name": "no duplicate (item, date)",
+      "ok": true,
+      "detail": "unique pairs equal rows"
+    },
+    {
+      "name": "no negative counts",
+      "ok": true,
+      "detail": "min 0"
+    },
+    {
+      "name": "every listed item downloaded",
+      "ok": true,
+      "detail": "300 in data, 300 listed"
+    },
+    {
+      "name": "not mostly empty",
+      "ok": true,
+      "detail": "79.6% of cells above zero"
+    },
+    {
+      "name": "flags computed (informational)",
+      "ok": true,
+      "detail": "300 items; bursty 16, thin 43"
+    },
+    {
+      "name": "manifest checksums match",
+      "ok": true,
+      "detail": "3 files re-checked, 0 without stored path"
+    }
+  ],
+  "D4": [
+    {
+      "name": "every year matches the server row count",
+      "ok": true,
+      "detail": "51,804,190 rows in 22 years"
+    },
+    {
+      "name": "manifest checksums match",
+      "ok": true,
+      "detail": "1045 files re-checked, 0 without stored path"
+    }
+  ],
+  "D5": [
+    {
+      "name": "size distribution measured",
+      "ok": true,
+      "detail": "median bytes about 58884.36553555884"
+    },
+    {
+      "name": "manifest checksums match",
+      "ok": true,
+      "detail": "2 files re-checked, 0 without stored path"
+    }
+  ]
+}

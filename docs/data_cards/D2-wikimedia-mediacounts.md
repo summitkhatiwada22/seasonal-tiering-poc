@@ -10,7 +10,7 @@ Status: **GO for object-size calibration only.** Probed 2026-10-29 (`reports/pha
 | May we use it commercially? | **Yes** for the counts. The images themselves carry their own licences, but we do not download the media. |
 | Access method | HTTP file download. A daily folder exists (`mediacounts/daily`). |
 | Rate limits and required headers | Not stated. Use a contact User-Agent and polite pacing. |
-| Date fetched | Not downloaded yet |
+| Date fetched | 2026-10-29: one file, 2023-07-02. 33.1 million media files; median about 25 KB, mean about 200 KB per transfer |
 | Raw size on disk | **Measured:** 738 MB (2023-01-01), 869 MB (2023-07-02), 810 MB (2023-12-31) per day, compressed. 365 daily files in 2023, so about 290 GB per year. At 0.65 MB/s one file takes about 20 minutes. |
 | Rows and columns used | **25 tab-separated columns.** Observed: column 1 = file path, column 2 = total response bytes, column 3 = total transfers (e.g. a path with 745 bytes and 1 transfer is a 745-byte file). So the average object size is column 2 divided by column 3. The remaining columns are breakdowns by file type and access method; their meaning is to be confirmed against the Wikimedia mediacounts documentation. Lines are sorted by path, not by popularity. |
 | Time coverage | Year folders **2015 to 2026** under `mediacounts/daily/` (first probe did not descend into them; stage 2 does). |
