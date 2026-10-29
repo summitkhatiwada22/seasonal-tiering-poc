@@ -50,6 +50,7 @@ LIST_LAST = (2022, 12)
 FETCH_START = date(2016, 1, 1)
 FETCH_END = date(2025, 12, 31)
 DEFAULT_ARTICLES = 5000
+MAX_MISSING_MONTHS = 3  # more gaps than this and the selection is no longer trustworthy
 CALIBRATION_ARTICLE = "Albert_Einstein"  # has views every single day
 
 _NAMESPACES = (
@@ -58,6 +59,14 @@ _NAMESPACES = (
 )
 NAMESPACE_RE = re.compile(rf"^({_NAMESPACES})(_talk)?:", re.IGNORECASE)
 EXCLUDED_TITLES = frozenset({"Main_Page", "-"})
+
+
+@dataclass(frozen=True)
+class Selection:
+    """The chosen articles, plus any months for which the server had no top list."""
+
+    rows: list[ArticleRow]
+    missing_months: list[tuple[int, int]]
 
 
 @dataclass(frozen=True)
@@ -86,15 +95,20 @@ def top_url(year: int, month: int) -> str:
     return f"{API}/top/{PROJECT}/{ACCESS}/{year}/{month:02d}/all-days"
 
 
-def fetch_top_month(http: Http, year: int, month: int, cache_dir: Path) -> list[tuple[str, int]]:
-    """The month's most-viewed pages, cached on disk so a re-run costs nothing."""
+def fetch_top_month(
+    http: Http, year: int, month: int, cache_dir: Path
+) -> list[tuple[str, int]] | None:
+    """The month's most-viewed pages, cached on disk so a re-run costs nothing.
+
+    Returns None if the server has no list for that month (it is missing 2020-07, for one).
+    """
     cache = cache_dir / f"{year}-{month:02d}.json"
     if cache.exists():
         body = json.loads(cache.read_text(encoding="utf-8"))
     else:
         body = http.get_json(top_url(year, month))
         if body is None:
-            raise FetchError(f"no top-pages data for {year}-{month:02d}")
+            return None
         cache_dir.mkdir(parents=True, exist_ok=True)
         cache.write_text(json.dumps(body, sort_keys=True), encoding="utf-8")
     articles = body["items"][0]["articles"]
@@ -106,10 +120,12 @@ def build_article_list(
     cache_dir: Path,
     n: int = DEFAULT_ARTICLES,
     months: list[tuple[int, int]] | None = None,
-) -> list[ArticleRow]:
+    max_missing: int = MAX_MISSING_MONTHS,
+) -> Selection:
     """Union of monthly top lists, ordinary articles only, ranked by total views, top n.
 
-    Ties are broken alphabetically so the result is identical on every run.
+    Ties are broken alphabetically so the result is identical on every run. A month the
+    server has no list for is skipped and reported; too many gaps is an error.
     """
     if n < 1:
         raise ValueError("n must be at least 1")
@@ -118,13 +134,21 @@ def build_article_list(
         raise ValueError("selection may not use months after December 2022")
     totals: dict[str, int] = {}
     counts: dict[str, int] = {}
+    missing: list[tuple[int, int]] = []
     for year, month in chosen:
-        for title, views in fetch_top_month(http, year, month, cache_dir):
+        top = fetch_top_month(http, year, month, cache_dir)
+        if top is None:
+            missing.append((year, month))
+            continue
+        for title, views in top:
             if is_article(title):
                 totals[title] = totals.get(title, 0) + views
                 counts[title] = counts.get(title, 0) + 1
+    if len(missing) > max_missing:
+        names = ", ".join(f"{y}-{m:02d}" for y, m in missing)
+        raise FetchError(f"too many months without top-pages data ({len(missing)}): {names}")
     ranked = sorted(totals, key=lambda t: (-totals[t], t))[:n]
-    return [ArticleRow(t, totals[t], counts[t]) for t in ranked]
+    return Selection([ArticleRow(t, totals[t], counts[t]) for t in ranked], missing)
 
 
 def write_article_list(path: Path, rows: list[ArticleRow]) -> None:
@@ -372,8 +396,16 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("--contact (or WIKIMEDIA_CONTACT) is required for downloads")
     http = Http(make_user_agent(args.contact), min_interval=args.min_interval)
     if args.command == "list":
-        rows = build_article_list(http, p["top_cache"], args.articles)
+        selection = build_article_list(http, p["top_cache"], args.articles)
+        rows = selection.rows
         write_article_list(p["articles"], rows)
+        gaps = p["articles"].with_name("missing_months.txt")
+        gaps.write_text(
+            "".join(f"{y}-{m:02d}\n" for y, m in selection.missing_months), encoding="utf-8"
+        )
+        if selection.missing_months:
+            names = ", ".join(f"{y}-{m:02d}" for y, m in selection.missing_months)
+            print(f"note: the server has no top-pages list for: {names} (skipped, recorded)")
         record(p["manifest"], "D1", "derived:article-list", p["articles"])
         for cached in sorted(p["top_cache"].glob("*.json")):
             ym = cached.stem

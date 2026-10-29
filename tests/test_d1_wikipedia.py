@@ -108,12 +108,14 @@ def test_article_list_ranking_filter_and_cache(tmp_path: Path) -> None:
     fake = FakeWikimedia(top, {})
     http = client(fake)
     months = [(2020, 1), (2020, 2)]
-    rows = d1.build_article_list(http, tmp_path, n=2, months=months)
+    selection = d1.build_article_list(http, tmp_path, n=2, months=months)
+    rows = selection.rows
     assert [r.article for r in rows] == ["Dog", "Cat"]  # Dog 85, Cat 55, Emu 10
     assert rows[0].total_top_views == 85 and rows[0].months_in_top == 2
+    assert selection.missing_months == []
     first_calls = len(fake.urls)
     again = d1.build_article_list(http, tmp_path, n=2, months=months)
-    assert again == rows and len(fake.urls) == first_calls  # second run used the cache
+    assert again.rows == rows and len(fake.urls) == first_calls  # second run used the cache
 
 
 def test_selection_refuses_months_after_cutoff(tmp_path: Path) -> None:
@@ -122,9 +124,21 @@ def test_selection_refuses_months_after_cutoff(tmp_path: Path) -> None:
         d1.build_article_list(http, tmp_path, months=[(2023, 1)])
 
 
-def test_missing_month_is_an_error(tmp_path: Path) -> None:
+def test_a_missing_month_is_skipped_and_reported(tmp_path: Path) -> None:
+    top = {(2020, 6): [("Cat", 5)], (2020, 8): [("Cat", 7)]}  # July 2020 is missing
+    http = client(FakeWikimedia(top, {}))
+    months = [(2020, 6), (2020, 7), (2020, 8)]
+    selection = d1.build_article_list(http, tmp_path, months=months)
+    assert selection.missing_months == [(2020, 7)]
+    assert selection.rows == [d1.ArticleRow("Cat", 12, 2)]
+
+
+def test_too_many_missing_months_is_an_error(tmp_path: Path) -> None:
+    http = client(FakeWikimedia({}, {}))
     with pytest.raises(FetchError, match="2020-05"):
-        d1.build_article_list(client(FakeWikimedia({}, {})), tmp_path, months=[(2020, 5)])
+        d1.build_article_list(http, tmp_path, months=[(2020, 5)], max_missing=0)
+    with pytest.raises(FetchError, match="too many"):  # no data at all is never acceptable
+        d1.build_article_list(http, tmp_path, months=[(2020, 5), (2020, 6)], max_missing=1)
 
 
 def test_article_list_roundtrip(tmp_path: Path) -> None:
