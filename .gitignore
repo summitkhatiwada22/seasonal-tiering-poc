@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+*.egg-info/
+
+# Secrets and local config
+.env
+
+# Data: never committed (see data/README.md and manifests/)
+data/raw/
+data/interim/
+data/processed/
+*.parquet
+
+# Editors and OS
+.DS_Store
+.idea/
+.vscode/

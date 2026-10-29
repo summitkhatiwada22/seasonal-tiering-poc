@@ -1,0 +1,12 @@
+# Synthetic dataset D7: planted seasonal patterns with known ground truth.
+# Used to test the pipeline end to end before real data is involved.
+#
+# Scale ladder from the plan: build on S, tune on M, final runs on L.
+# The in-memory generator caps at 200,000 objects; a streaming writer for L arrives in Phase 2.
+start: 2021-01-01
+days: 1095        # 3 years
+seed: 42
+scales:
+  S: {objects: 10000}
+  M: {objects: 100000}
+  L: {objects: 1000000}
