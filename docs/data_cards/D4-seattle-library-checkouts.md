@@ -11,7 +11,7 @@ Status: **GO.** Catalogue page and City of Seattle Open Data Policy read 2026-10
 | Access method | CSV export: `https://cos-data.seattle.gov/api/v3/views/tmmm-ytt6/export.csv?accessType=DOWNLOAD` (JSON and XML also offered) |
 | Rate limits and required headers | None stated |
 | Date fetched | Not downloaded yet |
-| Raw size on disk | **Unknown.** The server sends no Content-Length (streamed export; a HEAD request reports 0 bytes). Size and row count are found by a full streaming download, timed in stage 2. |
+| Raw size on disk | **Unknown.** The server sends no Content-Length (streamed export; a HEAD request reports 0 bytes). A 60-second timed stream read 169,142 rows (2,809 rows per second, about the same 0.6 MB/s as Wikimedia, so the bottleneck is most likely the owner's connection). The export is not in random order: those rows were 98.8% from 2016. Total rows are unknown; the plan is to ask the Socrata API for a row count and to fetch one year at a time so a failed download can resume. |
 | Rows and columns used | **Observed header:** `UsageClass, CheckoutType, MaterialType, CheckoutYear, CheckoutMonth, Checkouts, Title, ISBN, Creator, Subjects, Publisher, PublicationYear`. Digital (OverDrive) and Physical (Horizon) items. |
 | Time coverage | April 2005 onward. The page shows "Dataset Last Updated" 2026-09-06. |
 | Unit of "object" and "read" | Object = one title. Read = one checkout. |

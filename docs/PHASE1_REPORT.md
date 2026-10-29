@@ -20,8 +20,8 @@ Date: 2026-10-29. Author: Claude, reviewed by the project owner.
 
 | ID | Dataset | Resolution | Licence | Role | Verdict |
 | --- | --- | --- | --- | --- | --- |
-| D1 | Wikipedia pageviews | Daily + hourly, 2007 to now | CC0 | Seasonality at scale | **GO** (size to measure) |
-| D2 | Wikimedia mediacounts | Daily | CC0 | Seasonality + real file sizes | **GO** (fields to confirm) |
+| D1 | Wikipedia pageviews | Daily via API, 2015-07 to now | CC0 | Seasonality at scale | **GO** via API for a fixed article list (bulk files too large) |
+| D2 | Wikimedia mediacounts | Daily files, about 290 GB/year | CC0 | Real object sizes | **GO for size calibration only** |
 | D3 | npm downloads | Daily, 18-month request cap | npm open-source terms: commercial use allowed, public APIs permitted, stay at 1 request/second | Second seasonality source | **GO** (low risk) |
 | D4 | Seattle library checkouts | Monthly, 2005 to now | City open-data policy: open licence, commercial use allowed | Long human seasonality | **GO** |
 | D5 | IBM object-store traces | Requests, 7-day spans | SNIA licence: MIT-style, commercial use allowed | Size and re-read calibration | **GO for calibration only** |
@@ -59,6 +59,6 @@ None of this is legal advice. Before any investor material relies on D3 or D4, a
 | # | Item | Who | Blocks |
 | --- | --- | --- | --- |
 | 1 | AWS calculator re-read at 10,000 GB (exact decimals) and AWS retrieval and request fees | Owner (10 minutes) | Gate G2 (simulator check) |
-| 2 | Measure real file sizes and download speed from a Codespace or the owner's computer | Phase 2, step 1 | Phase 2 plan |
-| 3 | Confirm mediacounts fields and date range after one sample download | Phase 2, step 1 | D2 role |
+| 2 | ~~Measure real file sizes and download speed~~ Done 2026-10-29: 0.65 MB/s, sizes in the data cards | Done | |
+| 3 | Seattle: get row count and test yearly chunks via the Socrata API | Phase 2 | D4 plan |
 | 4 | Read Common Crawl Terms of Use | Phase 8, before use | Compression track only |

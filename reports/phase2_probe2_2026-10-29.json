@@ -1,0 +1,234 @@
+{
+  "run_utc": "2026-10-29T03:59:19+00:00",
+  "throughput_user_file": {
+    "url": "https://dumps.wikimedia.org/other/pageview_complete/2023/2023-01/pageviews-20230101-user.bz2",
+    "bytes": 30000000,
+    "seconds": 46.0,
+    "mb_per_second": 0.65
+  },
+  "D1_monthly": {
+    "source": "D1 monthly files",
+    "non_year_entries": [
+      "monthly/",
+      "readme.html"
+    ],
+    "first_year_folder": [
+      "2011/"
+    ],
+    "monthly": {
+      "url": "https://dumps.wikimedia.org/other/pageview_complete/monthly/2023/2023-12/",
+      "trail": [
+        "2023/",
+        "2023-12/"
+      ],
+      "files": [
+        "pageviews-202312-automated.bz2",
+        "pageviews-202312-user.bz2"
+      ],
+      "folder_count": 0
+    },
+    "monthly_heads": [
+      {
+        "url": "https://dumps.wikimedia.org/other/pageview_complete/monthly/2023/2023-12/pageviews-202312-automated.bz2",
+        "status": 200,
+        "bytes": 1757254584,
+        "seconds": 1.56
+      },
+      {
+        "url": "https://dumps.wikimedia.org/other/pageview_complete/monthly/2023/2023-12/pageviews-202312-user.bz2",
+        "status": 200,
+        "bytes": 2838785613,
+        "seconds": 1.06
+      }
+    ]
+  },
+  "D1_api": {
+    "source": "D1 per-article API",
+    "Albert_Einstein": {
+      "ok": true,
+      "days_returned": 365,
+      "seconds": 3.12,
+      "limit_headers": {},
+      "first": [
+        {
+          "project": "en.wikipedia",
+          "article": "Albert_Einstein",
+          "granularity": "daily",
+          "timestamp": "2023010100",
+          "access": "all-access",
+          "agent": "user",
+          "views": 16620
+        },
+        {
+          "project": "en.wikipedia",
+          "article": "Albert_Einstein",
+          "granularity": "daily",
+          "timestamp": "2023010200",
+          "access": "all-access",
+          "agent": "user",
+          "views": 17326
+        }
+      ],
+      "error": null
+    },
+    "Easter": {
+      "ok": true,
+      "days_returned": 365,
+      "seconds": 2.21,
+      "limit_headers": {},
+      "first": [
+        {
+          "project": "en.wikipedia",
+          "article": "Easter",
+          "granularity": "daily",
+          "timestamp": "2023010100",
+          "access": "all-access",
+          "agent": "user",
+          "views": 2479
+        },
+        {
+          "project": "en.wikipedia",
+          "article": "Easter",
+          "granularity": "daily",
+          "timestamp": "2023010200",
+          "access": "all-access",
+          "agent": "user",
+          "views": 2422
+        }
+      ],
+      "error": null
+    },
+    "Christmas_tree": {
+      "ok": true,
+      "days_returned": 365,
+      "seconds": 2.04,
+      "limit_headers": {},
+      "first": [
+        {
+          "project": "en.wikipedia",
+          "article": "Christmas_tree",
+          "granularity": "daily",
+          "timestamp": "2023010100",
+          "access": "all-access",
+          "agent": "user",
+          "views": 2382
+        },
+        {
+          "project": "en.wikipedia",
+          "article": "Christmas_tree",
+          "granularity": "daily",
+          "timestamp": "2023010200",
+          "access": "all-access",
+          "agent": "user",
+          "views": 2150
+        }
+      ],
+      "error": null
+    },
+    "top_2022_12": {
+      "ok": true,
+      "articles_returned": 1000,
+      "first_three": [
+        {
+          "article": "Main_Page",
+          "views": 145759528,
+          "rank": 1
+        },
+        {
+          "article": "Special:Search",
+          "views": 35907945,
+          "rank": 2
+        },
+        {
+          "article": "2022_FIFA_World_Cup",
+          "views": 14694919,
+          "rank": 3
+        }
+      ],
+      "error": null
+    }
+  },
+  "D2": {
+    "source": "D2 mediacounts, descended",
+    "listing": {
+      "url": "https://dumps.wikimedia.org/other/mediacounts/daily/2023/",
+      "trail": [
+        "2023/"
+      ],
+      "folder_count": 0
+    },
+    "file_count": 365,
+    "first_files": [
+      "mediacounts.2023-01-01.v00.tsv.bz2",
+      "mediacounts.2023-01-02.v00.tsv.bz2",
+      "mediacounts.2023-01-03.v00.tsv.bz2"
+    ],
+    "head_checks": [
+      {
+        "url": "https://dumps.wikimedia.org/other/mediacounts/daily/2023/mediacounts.2023-01-01.v00.tsv.bz2",
+        "status": 200,
+        "bytes": 737897342,
+        "seconds": 1.47
+      },
+      {
+        "url": "https://dumps.wikimedia.org/other/mediacounts/daily/2023/mediacounts.2023-07-02.v00.tsv.bz2",
+        "status": 200,
+        "bytes": 869127708,
+        "seconds": 1.19
+      },
+      {
+        "url": "https://dumps.wikimedia.org/other/mediacounts/daily/2023/mediacounts.2023-12-31.v00.tsv.bz2",
+        "status": 200,
+        "bytes": 809796129,
+        "seconds": 2.16
+      }
+    ],
+    "sample": {
+      "url": "https://dumps.wikimedia.org/other/mediacounts/daily/2023/mediacounts.2023-01-01.v00.tsv.bz2",
+      "status": 206,
+      "fetched_bytes": 2000000,
+      "seconds": 10.07,
+      "first_lines": [
+        "/favicon.ico\t1416960670\t981348\t981348\t0\t-\t-\t0\t0\t0\t0\t0\t0\t0\t-\t-\t0\t0\t0\t0\t-\t-\t906511\t1321\t73516",
+        "/math/0/0/0/0000b2746565165094f02bc1806ab415.png\t745\t1\t1\t0\t-\t-\t0\t0\t0\t0\t0\t0\t0\t-\t-\t0\t0\t0\t0\t-\t-\t0\t0\t1",
+        "/math/0/0/0/0000c1c1dabbe142aa33707e65a4ce45.png\t816\t2\t2\t0\t-\t-\t0\t0\t0\t0\t0\t0\t0\t-\t-\t0\t0\t0\t0\t-\t-\t0\t2\t0",
+        "/math/0/0/0/00015cd27dd44381f223f5c8ee2996eb.png\t877\t1\t1\t0\t-\t-\t0\t0\t0\t0\t0\t0\t0\t-\t-\t0\t0\t0\t0\t-\t-\t0\t0\t1",
+        "/math/0/0/0/0004f20168968911d49e8a92504936c6.png\t1476\t1\t1\t0\t-\t-\t0\t0\t0\t0\t0\t0\t0\t-\t-\t0\t0\t0\t0\t-\t-\t0\t0\t1",
+        "/math/0/0/0/00075261b76512292a6e800f8bdff870.png\t547\t1\t1\t0\t-\t-\t0\t0\t0\t0\t0\t0\t0\t-\t-\t0\t0\t0\t0\t-\t-\t0\t0\t1",
+        "/math/0/0/0/0007cadde9d528fa4d9193ec0525f9ea.png\t2396\t1\t1\t0\t-\t-\t0\t0\t0\t0\t0\t0\t0\t-\t-\t0\t0\t0\t0\t-\t-\t0\t0\t1",
+        "/math/0/0/0/0007e5620ee687063b1296057bd6b9b5.png\t1569\t1\t1\t0\t-\t-\t0\t0\t0\t0\t0\t0\t0\t-\t-\t0\t0\t0\t0\t-\t-\t0\t1\t0"
+      ],
+      "columns_in_first_line": 25
+    }
+  },
+  "D4_timed_stream": {
+    "source": "D4 Seattle export, timed stream",
+    "header": [
+      "UsageClass",
+      "CheckoutType",
+      "MaterialType",
+      "CheckoutYear",
+      "CheckoutMonth",
+      "Checkouts",
+      "Title",
+      "ISBN",
+      "Creator",
+      "Subjects",
+      "Publisher",
+      "PublicationYear"
+    ],
+    "seconds": 60.2,
+    "rows_read": 169142,
+    "rows_per_second": 2809,
+    "years_seen": {
+      "2016": 167079,
+      "2017": 2,
+      "2020": 53,
+      "2022": 1,
+      "2024": 847,
+      "2025": 969,
+      "2026": 191
+    },
+    "note": "Stopped after the time limit; row order in the export is arbitrary."
+  }
+}

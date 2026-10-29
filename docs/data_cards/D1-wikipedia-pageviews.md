@@ -1,6 +1,6 @@
 # Data card: Wikipedia pageviews (D1)
 
-Status: **GO, with a changed plan.** Probed from the owner's computer on 2026-10-29 (`reports/phase2_probe1_2026-10-29.json`). The daily files are too large to download in bulk (see sizes), so the planned route is the per-article API for a pre-registered article list. A second probe is checking the API and the monthly files.
+Status: **GO, with a changed plan.** Probed from the owner's computer on 2026-10-29 (`reports/phase2_probe1_2026-10-29.json`). The bulk files are too large to download at our measured speed (see sizes), so the route is the per-article API for a pre-registered article list. The API was tested the same day and works (`reports/phase2_probe2_2026-10-29.json`).
 
 | Field | Value |
 | --- | --- |
@@ -26,7 +26,10 @@ Content that people look up on a schedule: tax articles in spring, holiday topic
 - **No object sizes.** A page view says nothing about how many bytes the article holds. The simulator needs a size, so sizes will be drawn from a distribution calibrated on D5 and tested for sensitivity (decision D-009).
 - **Pages are cached** by Wikimedia, so views are not storage reads. We are using views as demand, not as measured cold reads.
 - **Bots and automated agents.** From 2020 the files flag agent types. We will keep user traffic and report results with and without automated traffic.
-- **Download speed.** The first 2 MB of one file took 6.7 seconds (about 0.3 MB/s). That includes start-up delay and is not a sustained rate; stage 2 measures sustained speed.
+- **Measured download speed: 0.65 MB/s sustained** (30 MB in 46 s) from the owner's connection. That is about 2.3 GB per hour. One daily `user` file (463 MB) takes about 12 minutes; one monthly `user` file (2.84 GB for December 2023, automated 1.76 GB) takes about 70 minutes.
+- **Monthly files exist** (`pageview_complete/monthly/YYYY/YYYY-MM/pageviews-YYYYMM-{user,automated}.bz2`) but ten years would be about 340 GB, so they are also out of reach.
+- **The API works.** One request returns a full year of daily views for one article (365 rows in 2 to 3 seconds). No rate-limit headers were returned. The `top` endpoint returns the 1,000 most-viewed pages for a month, but includes non-articles such as `Main_Page` and `Special:Search`, which the list builder must exclude by rule.
+- **Whether one request can span more than a year is not yet tested.** Until it is, the loader requests one calendar year per call and checks the row count.
 - **Three traffic types per day** (`user`, `spider`, `automated`) are separate files. Garbage titles from automated probes appear in the `automated` file.
 - **Rows without page IDs** (5 columns instead of 6). The readme says a fix is in progress. The parser must handle both.
 - **Hours are encoded as letters** (A = hour 0 to X = hour 23).
