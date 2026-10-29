@@ -22,10 +22,10 @@ Date: 2026-10-29. Author: Claude, reviewed by the project owner.
 | --- | --- | --- | --- | --- | --- |
 | D1 | Wikipedia pageviews | Daily + hourly, 2007 to now | CC0 | Seasonality at scale | **GO** (size to measure) |
 | D2 | Wikimedia mediacounts | Daily | CC0 | Seasonality + real file sizes | **GO** (fields to confirm) |
-| D3 | npm downloads | Daily, 18-month request cap | Not read | Second seasonality source | **GO if terms allow** |
-| D4 | Seattle library checkouts | Monthly, 2005 to now | Not stated | Long human seasonality | **GO if licence allows** |
-| D5 | IBM object-store traces | Requests, 7-day spans | SNIA licence, text not seen | Size and re-read calibration | **GO for calibration only** |
-| D6 | Common Crawl | No reads | Not verified | Compression track | **DEFERRED** to Phase 8 |
+| D3 | npm downloads | Daily, 18-month request cap | npm open-source terms: commercial use allowed, public APIs permitted, stay at 1 request/second | Second seasonality source | **GO** (low risk) |
+| D4 | Seattle library checkouts | Monthly, 2005 to now | City open-data policy: open licence, commercial use allowed | Long human seasonality | **GO** |
+| D5 | IBM object-store traces | Requests, 7-day spans | SNIA licence: MIT-style, commercial use allowed | Size and re-read calibration | **GO for calibration only** |
+| D6 | Common Crawl | No reads | Terms page unreadable | Compression track | **DEFERRED** to Phase 8 |
 | D7 | Synthetic generator | Daily, 3 years | Ours | Test of the test | **Done** (Phase 0) |
 
 ## Price sheets
@@ -42,13 +42,23 @@ Date: 2026-10-29. Author: Claude, reviewed by the project owner.
 4. **D5 cannot test seasonality** (7-day spans). It is a calibration source.
 5. **Free multi-region prices differ** from single-region. We model single region only (D-008).
 
+## Licences (read by Claude on 2026-10-29)
+
+| Dataset | Result | Where |
+| --- | --- | --- |
+| D1, D2 | CC0, no conditions | Wikimedia readmes |
+| D5 | SNIA licence allows commercial use; keep the SNIA notice if redistributing | iotta.snia.org/repository/download_license |
+| D4 | City of Seattle Open Data Policy requires an open licence allowing commercial use; the dataset page itself shows no licence line | seattle.gov Open Data Policy, sections 1.D and 3.E |
+| D3 | npm terms allow commercial use and public APIs; download statistics are not named; keep to 1 request per second | docs.npmjs.com open-source terms and crawler policy |
+| D6 | Terms of Use page would not load; deferred | commoncrawl.org/faq |
+
+None of this is legal advice. Before any investor material relies on D3 or D4, a lawyer can confirm it in an hour.
+
 ## Open items
 
 | # | Item | Who | Blocks |
 | --- | --- | --- | --- |
-| 1 | Read the SNIA download licence text; record commercial-use answer in D5 card | Owner | Using D5 in investor material |
-| 2 | Read Seattle licence line on data.seattle.gov; record in D4 card | Owner | Using D4 |
-| 3 | Read npm API terms; record in D3 card | Owner | Using D3 |
-| 4 | Compare AWS and Azure per-GB prices with each provider's calculator | Owner | Gate G2 (simulator check) |
-| 5 | Measure real file sizes and download speed from a Codespace | Phase 2, step 1 | Phase 2 plan |
-| 6 | Confirm mediacounts fields and date range after one sample download | Phase 2, step 1 | D2 role |
+| 1 | Compare AWS and Azure per-GB prices with each provider's calculator (AWS us-east-1, Azure East US) | Owner (10 minutes) | Gate G2 (simulator check) |
+| 2 | Measure real file sizes and download speed from a Codespace or the owner's computer | Phase 2, step 1 | Phase 2 plan |
+| 3 | Confirm mediacounts fields and date range after one sample download | Phase 2, step 1 | D2 role |
+| 4 | Read Common Crawl Terms of Use | Phase 8, before use | Compression track only |

@@ -6,7 +6,7 @@ Status: **DEFERRED to Phase 8, after Gate G3.** It is not needed to decide wheth
 | --- | --- |
 | Source URL | https://commoncrawl.org (data hosted on Amazon S3 under the AWS Open Data program) |
 | Owner / publisher | Common Crawl Foundation |
-| Licence or terms | **Not verified.** The only source we could read (a secondary article) says "Crawl data is freely available; individual page copyrights vary." Owner action: read https://commoncrawl.org/terms-of-use before Phase 8. |
+| Licence or terms | **Terms of Use page could not be read** (the page did not load for us). The FAQ (https://commoncrawl.org/faq) says "we apply as few restrictions as possible" and that the terms added "primarily in an effort to prevent abusive or illegal usage" are on the Terms of Use page. A secondary article says individual page copyrights vary. To be read before Phase 8. |
 | May we use it commercially? | **Unknown.** Individual pages carry their own copyright. |
 | Access method | Free download of WARC, WET, WAT and web-graph files |
 | Rate limits and required headers | Not checked |

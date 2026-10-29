@@ -1,15 +1,15 @@
 # Data card: npm package downloads (D3)
 
-Status: **GO, conditional on a terms check.** Facts below come from a third-party article that describes the API (the npm documentation page itself was not reachable). The terms of use have not been read.
+Status: **GO, low risk.** npm's open-source terms and crawler policy were read on 2026-10-29. Neither names download statistics specifically. API facts come from a third-party article because npm's own API page was not reachable.
 
 | Field | Value |
 | --- | --- |
 | Source URL | https://api.npmjs.org/downloads/ (endpoints `point` and `range`) |
 | Owner / publisher | npm, Inc. (GitHub / Microsoft) |
-| Licence or terms | **Not read yet.** Owner action: read npm's API terms before Phase 2 and record the result here. |
-| May we use it commercially? | **Unknown.** |
+| Licence or terms | npm Open-Source Terms (https://docs.npmjs.com/policies/open-source-terms/) and Crawler policy (https://docs.npmjs.com/policies/crawlers/), read 2026-10-29. Public documented APIs may be used; automated crawling of the Website is prohibited; requests must not be an "unreasonable volume" (the terms name five million requests a month by one party as not reasonable); commercial use of npm Open Source is allowed. The crawler policy asks experimental crawlers to stay at 1 request per second or less and says npm may rate-limit or ban an IP or user-agent. |
+| May we use it commercially? | **Yes for npm open source and its public APIs. Neither document names download statistics,** so we treat the download-count API as a public documented API and keep within the stated limits. |
 | Access method | REST API, one package per request |
-| Rate limits and required headers | Rate limiting occurs; no numbers published in our source. Plan: sequential requests, short delay, exponential backoff. |
+| Rate limits and required headers | Stay at or below 1 request per second (crawler policy), far below five million requests a month. Sequential requests, backoff on errors. A few hundred packages in chunks is a few thousand requests in total. |
 | Date fetched | Not downloaded yet |
 | Raw size on disk | Small (daily counts per package). Estimate only: kilobytes per package. |
 | Rows and columns used | Date, package name, downloads |
@@ -37,7 +37,7 @@ None yet.
 
 ## Role in the PoC
 
-Second real seasonality source with a different audience. Lower priority than D1 and D2. Drop it if the terms forbid our use.
+Second real seasonality source with a different audience. Lower priority than D1 and D2. If npm later objects to this use, drop it.
 
 ## Verification
 

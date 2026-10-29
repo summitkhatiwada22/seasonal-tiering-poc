@@ -1,13 +1,13 @@
 # Data card: Seattle Public Library checkouts by title (D4)
 
-Status: **GO, conditional on a licence check.** Catalogue page read 2026-10-29; the file itself was not downloaded.
+Status: **GO.** Catalogue page and City of Seattle Open Data Policy read 2026-10-29; the file itself was not downloaded. One residual risk is noted under the licence row.
 
 | Field | Value |
 | --- | --- |
 | Source URL | https://catalog.data.gov/dataset/checkouts-by-title (dataset id `tmmm-ytt6` on data.seattle.gov) |
 | Owner / publisher | City of Seattle, Seattle Public Library. Contact on the page: open.data@seattle.gov |
-| Licence or terms | **Not stated** on the Data.gov page (access level "public"). Owner action: open the dataset on data.seattle.gov and record the licence line here. |
-| May we use it commercially? | **Unknown until the licence line is read.** |
+| Licence or terms | The Data.gov page says "No license information was provided" and that the dataset is "covered by different Terms of Use than Data.gov". The governing document is the City of Seattle Open Data Policy (https://www.seattle.gov/documents/Departments/Tech/OpenData/COS_OpenDataPolicy.pdf). Section 3.E: datasets are published "on an open license basis", defined as allowing noncommercial and commercial use without restrictions on copying, publishing, distributing, modifying or using the data. Section 1.D: the City may require users to identify the source and version of a dataset and describe any modifications. |
+| May we use it commercially? | **Yes, under the City's open-data policy.** Residual risk: the dataset page carries no licence line of its own, so the policy is the basis. We will cite the dataset and version and describe our changes, as section 1.D allows the City to require. |
 | Access method | CSV export: `https://cos-data.seattle.gov/api/v3/views/tmmm-ytt6/export.csv?accessType=DOWNLOAD` (JSON and XML also offered) |
 | Rate limits and required headers | None stated |
 | Date fetched | Not downloaded yet |

@@ -1,13 +1,13 @@
 # Data card: IBM Cloud Object Storage traces (D5)
 
-Status: **GO for calibration only. Not a seasonality dataset.** Catalogue page read 2026-10-29. The licence text itself was not visible.
+Status: **GO for calibration only. Not a seasonality dataset.** Catalogue page and licence text read 2026-10-29.
 
 | Field | Value |
 | --- | --- |
 | Source URL | https://iotta.snia.org/traces/key-value/36305 (SNIA IOTTA repository, "IBM Object Store") |
 | Owner / publisher | IBM Research, hosted by SNIA IOTTA |
-| Licence or terms | "Free to download under the terms of the SNIA Trace Data Files Download License." **We have not seen the licence text.** Owner action: read it on the download page and record whether commercial and investor use is allowed. |
-| May we use it commercially? | **Unknown.** |
+| Licence or terms | SNIA Trace Data Files Download License (https://iotta.snia.org/repository/download_license, read 2026-10-29). Permissive, MIT-style: use, copy, modify, distribute, sublicense and sell copies "without restriction". Condition: keep the copyright notice (Copyright (c) 2008 SNIA) and permission notice in copies. Provided "AS IS", no warranty. Terms must be accepted to download. |
+| May we use it commercially? | **Yes.** The licence grants the right to sell copies. Condition: keep the SNIA notice if the data is redistributed. We will not redistribute the traces, only results computed from them. |
 | Access method | Browser download with cookies enabled. The page links to shell-script and batch-script guides. No registration stated. |
 | Rate limits and required headers | None stated |
 | Date fetched | Not downloaded yet |
