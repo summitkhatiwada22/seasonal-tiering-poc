@@ -54,8 +54,28 @@ def test_gcs_archive_has_a_365_day_minimum() -> None:
 def test_unverified_values_are_listed_so_nobody_forgets_them() -> None:
     gcs = load_all(PRICES_DIR)["gcs"]
     unverified = gcs.unverified()
-    assert "standard.storage_usd_per_gb_month" in unverified
+    # Storage, retrieval and minimum durations were verified against Google's page in Phase 1.
+    assert "standard.storage_usd_per_gb_month" not in unverified
     assert "coldline.storage_usd_per_gb_month" not in unverified
+    # Facts the page extract did not state stay flagged until someone checks them.
+    assert "archive.restore_hours" in unverified
+
+
+def test_gcs_matches_google_official_page_checked_2026_10_29() -> None:
+    gcs = load_all(PRICES_DIR)["gcs"]
+    expected = {
+        ("standard", "storage_usd_per_gb_month"): 0.020,
+        ("nearline", "storage_usd_per_gb_month"): 0.010,
+        ("coldline", "storage_usd_per_gb_month"): 0.004,
+        ("archive", "storage_usd_per_gb_month"): 0.0012,
+        ("nearline", "retrieval_usd_per_gb"): 0.01,
+        ("coldline", "retrieval_usd_per_gb"): 0.02,
+        ("archive", "retrieval_usd_per_gb"): 0.05,
+        ("nearline", "min_storage_days"): 30,
+        ("coldline", "min_storage_days"): 90,
+    }
+    for (tier, field), value in expected.items():
+        assert gcs.get(tier, field) == pytest.approx(value), (tier, field)
 
 
 def _write(tmp_path: Path, text: str) -> Path:

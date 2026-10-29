@@ -6,6 +6,12 @@
 #                          pricing page in Phase 1 before any result is published.
 # Every number the simulator uses comes from this file, never from code.
 #
+# Phase 1 check (2026-10-29): AWS's own page was fetched. Its price tables are drawn by script and
+# did not render here, so per-GB rates are STILL from secondary articles. The page's text did confirm
+# minimum storage durations (IA 30, Glacier IR/FR 90, Deep Archive 180 days), the 128 KB minimum
+# billable size, the 40 KB archive metadata overhead and Standard GET $0.0004 per 1,000.
+# TO DO for the owner: compare the per-GB numbers to the AWS Pricing Calculator (us-east-1).
+#
 # as_of is the date this sheet was compiled. The sources are secondary articles
 # dated 2026-03 to 2026-05, NOT AWS's own price page.
 
@@ -15,6 +21,7 @@ _sources:
   upstash: &upstash https://upstash.com/blog/aws-s3-pricing-explained-2026
   zop: &zop https://dev.to/zop_8abedcc7e12/s3-storage-class-automation-stop-paying-hot-prices-for-cold-data-45oi
   oneuptime_it: &oneuptime_it https://oneuptime.com/blog/post/2026-02-12-s3-intelligent-tiering-optimize-storage-costs/view
+  aws_official: &aws_official https://aws.amazon.com/s3//pricing  # fetched 2026-10-29; text rules only, price tables did not render
   memory: &memory "memory: not yet checked against a source; verify in Phase 1"
 
 cloud: aws
@@ -35,12 +42,12 @@ tiers:
     per_object_overhead_kb: {value: 0, status: sourced, source: *zop}
     restore_hours: {value: 0, status: sourced, source: *zop}
     put_per_1000: {value: 0.005, status: unverified, source: *memory}
-    get_per_1000: {value: 0.0004, status: unverified, source: *memory}
+    get_per_1000: {value: 0.0004, status: sourced, source: *aws_official}
   standard_ia:
     storage_usd_per_gb_month: {value: 0.0125, status: sourced, source: *devto_2026}
     retrieval_usd_per_gb: {value: 0.01, status: unverified, source: *memory}
-    min_storage_days: {value: 30, status: sourced, source: *upstash}
-    min_billable_object_kb: {value: 128, status: unverified, source: *memory}
+    min_storage_days: {value: 30, status: sourced, source: *aws_official}
+    min_billable_object_kb: {value: 128, status: sourced, source: *aws_official}
     per_object_overhead_kb: {value: 0, status: unverified, source: *memory}
     restore_hours: {value: 0, status: sourced, source: *zop}
     put_per_1000: {value: 0.01, status: unverified, source: *memory}
@@ -48,8 +55,8 @@ tiers:
   glacier_instant:
     storage_usd_per_gb_month: {value: 0.004, status: sourced, source: *devto_2026}
     retrieval_usd_per_gb: {value: 0.03, status: sourced, source: *usage_glacier}
-    min_storage_days: {value: 90, status: sourced, source: *zop}
-    min_billable_object_kb: {value: 128, status: sourced, source: *zop}
+    min_storage_days: {value: 90, status: sourced, source: *aws_official}
+    min_billable_object_kb: {value: 128, status: sourced, source: *aws_official}
     per_object_overhead_kb: {value: 0, status: unverified, source: *memory}
     restore_hours: {value: 0, status: sourced, source: *zop}
     put_per_1000: {value: 0.02, status: unverified, source: *memory}
@@ -57,9 +64,9 @@ tiers:
   glacier_flexible:
     storage_usd_per_gb_month: {value: 0.0036, status: sourced, source: *devto_2026}
     retrieval_usd_per_gb: {value: 0.01, status: sourced, source: *zop}   # standard retrieval
-    min_storage_days: {value: 90, status: sourced, source: *zop}
+    min_storage_days: {value: 90, status: sourced, source: *aws_official}
     min_billable_object_kb: {value: 0, status: unverified, source: *memory}
-    per_object_overhead_kb: {value: 40, status: sourced, source: *upstash}
+    per_object_overhead_kb: {value: 40, status: sourced, source: *aws_official}
     restore_hours: {value: 4, status: sourced, source: *zop}   # source says 3-5 hours
     put_per_1000: {value: 0.03, status: unverified, source: *memory}
     get_per_1000: {value: 0.0004, status: unverified, source: *memory}
@@ -67,9 +74,9 @@ tiers:
     storage_usd_per_gb_month: {value: 0.00099, status: sourced, source: *devto_2026}
     retrieval_usd_per_gb: {value: 0.02, status: sourced, source: *upstash}   # standard retrieval, 12 hours
     retrieval_bulk_usd_per_gb: {value: 0.0025, status: sourced, source: *upstash}
-    min_storage_days: {value: 180, status: sourced, source: *upstash}
+    min_storage_days: {value: 180, status: sourced, source: *aws_official}
     min_billable_object_kb: {value: 0, status: unverified, source: *memory}
-    per_object_overhead_kb: {value: 40, status: sourced, source: *upstash}
+    per_object_overhead_kb: {value: 40, status: sourced, source: *aws_official}
     restore_hours: {value: 12, status: sourced, source: *usage_glacier}
     bulk_restore_hours: {value: 48, status: sourced, source: *usage_glacier}
     put_per_1000: {value: 0.05, status: sourced, source: *upstash}

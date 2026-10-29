@@ -3,15 +3,19 @@
 # status: sourced     -> the value appears in a page listed under _sources.
 # status: unverified  -> written from memory; check against Google's own pricing page in Phase 1.
 #
-# Known conflict to resolve in Phase 1: Google changed prices in 2026. One source says multi-region
-# Nearline rose from $0.010 to $0.015 and multi-region Archive fell from $0.004 to $0.0024. The
-# values below are single-region; the multi-region numbers are recorded in the notes only.
+# Phase 1 check (2026-10-29): storage, retrieval and minimum-duration values below were read from
+# Google's own page, us-central1 (Iowa) single region. Google lists storage per hour; monthly values
+# are hourly x 730 (Standard 0.0200, Nearline 0.0100, Coldline 0.0040, Archive 0.0012).
+# The official page also lists US multi-region at Standard 0.026, Nearline 0.015, Coldline 0.00875,
+# Archive 0.003. We model single region only (decision D-008). Values that Google's page does not
+# state in the extract (minimum object size, restore hours) stay 'unverified'.
 
 _sources:
   devto_2026: &devto_2026 https://dev.to/mr_manushukla/cloud-storage-pricing-in-2026-aws-s3-vs-azure-vs-gcp-compared-e54
   finout: &finout https://finout.io/blog/cloud-storage-pricing-comparison
   autoclass_docs: &autoclass_docs https://docs.cloud.google.com/storage/docs/autoclass
   google_community: &google_community https://discuss.google.dev/t/gcp-costing-standard-even-though-buckets-default-class-is-archive/147848
+  gcs_official: &gcs_official https://cloud.google.com/storage/pricing  # fetched 2026-10-29, us-central1 (Iowa)
   memory: &memory "memory: not yet checked against a source; verify in Phase 1"
 
 cloud: gcs
@@ -23,37 +27,46 @@ tier_order: [standard, nearline, coldline, archive]
 
 tiers:
   standard:
-    storage_usd_per_gb_month: {value: 0.020, status: unverified, source: *memory}
-    retrieval_usd_per_gb: {value: 0.0, status: unverified, source: *memory}
-    min_storage_days: {value: 0, status: unverified, source: *memory}
+    storage_usd_per_gb_month: {value: 0.020, status: sourced, source: *gcs_official}
+    retrieval_usd_per_gb: {value: 0.0, status: sourced, source: *gcs_official}
+    min_storage_days: {value: 0, status: sourced, source: *gcs_official}
     min_billable_object_kb: {value: 0, status: unverified, source: *memory}
     per_object_overhead_kb: {value: 0, status: unverified, source: *memory}
     restore_hours: {value: 0, status: unverified, source: *memory}
+    class_a_per_1000: {value: 0.005, status: sourced, source: *gcs_official}
+    class_b_per_1000: {value: 0.0004, status: sourced, source: *gcs_official}
   nearline:
-    storage_usd_per_gb_month: {value: 0.010, status: unverified, source: *memory}
-    retrieval_usd_per_gb: {value: 0.01, status: unverified, source: *memory}
-    min_storage_days: {value: 30, status: unverified, source: *memory}
+    storage_usd_per_gb_month: {value: 0.010, status: sourced, source: *gcs_official}
+    retrieval_usd_per_gb: {value: 0.01, status: sourced, source: *gcs_official}
+    min_storage_days: {value: 30, status: sourced, source: *gcs_official}
     min_billable_object_kb: {value: 0, status: unverified, source: *memory}
     per_object_overhead_kb: {value: 0, status: unverified, source: *memory}
     restore_hours: {value: 0, status: unverified, source: *memory}
+    class_a_per_1000: {value: 0.01, status: sourced, source: *gcs_official}
+    class_b_per_1000: {value: 0.001, status: sourced, source: *gcs_official}
   coldline:
-    storage_usd_per_gb_month: {value: 0.004, status: sourced, source: *devto_2026}
-    retrieval_usd_per_gb: {value: 0.02, status: unverified, source: *memory}
-    min_storage_days: {value: 90, status: unverified, source: *memory}
+    storage_usd_per_gb_month: {value: 0.004, status: sourced, source: *gcs_official}
+    retrieval_usd_per_gb: {value: 0.02, status: sourced, source: *gcs_official}
+    min_storage_days: {value: 90, status: sourced, source: *gcs_official}
     min_billable_object_kb: {value: 0, status: unverified, source: *memory}
     per_object_overhead_kb: {value: 0, status: unverified, source: *memory}
     restore_hours: {value: 0, status: unverified, source: *memory}
+    class_a_per_1000: {value: 0.02, status: sourced, source: *gcs_official}
+    class_b_per_1000: {value: 0.01, status: sourced, source: *gcs_official}
   archive:
-    storage_usd_per_gb_month: {value: 0.0012, status: sourced, source: *devto_2026}
-    retrieval_usd_per_gb: {value: 0.05, status: unverified, source: *memory}
-    min_storage_days: {value: 365, status: sourced, source: *google_community}
+    storage_usd_per_gb_month: {value: 0.0012, status: sourced, source: *gcs_official}
+    retrieval_usd_per_gb: {value: 0.05, status: sourced, source: *gcs_official}
+    min_storage_days: {value: 365, status: sourced, source: *gcs_official}
     min_billable_object_kb: {value: 0, status: unverified, source: *memory}
     per_object_overhead_kb: {value: 0, status: unverified, source: *memory}
     restore_hours: {value: 0, status: unverified, source: *memory}
+    class_a_per_1000: {value: 0.05, status: sourced, source: *gcs_official}
+    class_b_per_1000: {value: 0.05, status: sourced, source: *gcs_official}
 
 extras:
   # Data transfer out, first 1 TB per month.
   egress_usd_per_gb_first_tier: {value: 0.12, status: sourced, source: *devto_2026}
   # Autoclass only moves objects of at least 128 KiB. Its fee rules and 30 / 90 / 365-day moves
   # are in the Phase 4 policy code (source: autoclass_docs).
-  autoclass_min_object_kb: {value: 128, status: sourced, source: *google_community}
+  autoclass_min_object_kb: {value: 128, status: sourced, source: *gcs_official}
+  autoclass_management_per_1000_objects: {value: 0.0025, status: sourced, source: *gcs_official}

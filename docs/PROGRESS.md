@@ -8,7 +8,7 @@ Stopping early is a valid outcome. If a stop point below fails, we stop and writ
 | Phase | What it does | Status | Stop or decision point |
 | --- | --- | --- | --- |
 | 0 | Repo and foundations | **Done 2026-10-29.** CI green on GitHub; `make check` passes (28 tests) in a fresh Codespace | CI green and `make check` passes on a clean machine |
-| 1 | Data feasibility spike | Not started | **Gate G1:** every dataset has a data card, a measured fetch cost and a go or no-go |
+| 1 | Data feasibility spike | **Done 2026-10-29, Gate G1 passed with conditions.** See [PHASE1_REPORT.md](PHASE1_REPORT.md) | **Gate G1:** every dataset has a data card, a measured fetch cost and a go or no-go |
 | 2 | Ingestion pipelines | Not started | Quality report passes on every dataset |
 | 3 | Cost and latency simulator | Not started | **Gate G2:** simulator matches hand calculations and the AWS pricing calculator |
 | 4 | Baseline policies, plus seasonal-naive | Not started | **Early check E1** (below) |
