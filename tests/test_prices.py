@@ -51,6 +51,16 @@ def test_gcs_archive_has_a_365_day_minimum() -> None:
     assert gcs.get("archive", "min_storage_days") == 365
 
 
+def test_azure_matches_owner_screenshot_2026_10_29() -> None:
+    azure = load_all(PRICES_DIR)["azure"]
+    assert azure.get("hot", "storage_usd_per_gb_month") == pytest.approx(0.0184)
+    assert azure.get("cool", "storage_usd_per_gb_month") == pytest.approx(0.010)
+    assert azure.get("cold", "storage_usd_per_gb_month") == pytest.approx(0.0036)
+    # Archive was 0.00099 (an AWS figure) before the screenshot corrected it.
+    assert azure.get("archive", "storage_usd_per_gb_month") == pytest.approx(0.002)
+    assert azure.get("archive", "min_storage_days") == 180
+
+
 def test_unverified_values_are_listed_so_nobody_forgets_them() -> None:
     gcs = load_all(PRICES_DIR)["gcs"]
     unverified = gcs.unverified()

@@ -10,7 +10,10 @@
 # did not render here, so per-GB rates are STILL from secondary articles. The page's text did confirm
 # minimum storage durations (IA 30, Glacier IR/FR 90, Deep Archive 180 days), the 128 KB minimum
 # billable size, the 40 KB archive metadata overhead and Standard GET $0.0004 per 1,000.
-# TO DO for the owner: compare the per-GB numbers to the AWS Pricing Calculator (us-east-1).
+# Owner's AWS Pricing Calculator readings (2026-10-29, 10 GB per month, rounded to cents by the
+# calculator, data transfer switched on): Standard 0.02, Glacier Instant 0.04, Glacier Flexible 0.04,
+# Deep Archive 0.01. These agree with the sheet within rounding (0.023 / 0.004 / 0.0036 / 0.00099
+# per GB) but cannot confirm the third decimal. TO DO: re-read at 10,000 GB for exact figures.
 #
 # as_of is the date this sheet was compiled. The sources are secondary articles
 # dated 2026-03 to 2026-05, NOT AWS's own price page.

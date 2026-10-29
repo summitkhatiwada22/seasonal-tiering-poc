@@ -3,13 +3,19 @@
 # status: sourced     -> the value appears in a page listed under _sources.
 # status: unverified  -> written from memory; check against Microsoft's own pricing page in Phase 1.
 #
-# Known conflict to resolve in Phase 1: the Cold tier is $0.0045/GB in one source and
-# $0.0036-0.004/GB in another. We use the first. Archive retrieval is quoted as $0.02-0.10 per GB;
-# we use the low end.
+# Phase 1 check (2026-10-29): the owner's screenshot of Azure's own table (first 50 TB per month)
+# shows Hot 0.0184, Cool 0.01, Cold 0.0036, Archive 0.002 per GB per month. Two earlier values
+# were WRONG and are corrected: Cold was 0.0045 (now 0.0036) and Archive was 0.00099 (now 0.002;
+# 0.00099 is the AWS Deep Archive price). The screenshot does not show the region or redundancy;
+# we assume East US, LRS, and the owner should confirm. Tiered prices for larger volumes
+# (Hot 0.0177 / 0.0170) are not modelled yet. Retrieval prices still come from secondary sources.
+# Early-deletion days (Cool 30, Cold 90, Archive 180) come from Azure's page text.
 
 _sources:
   devto_2026: &devto_2026 https://dev.to/mr_manushukla/cloud-storage-pricing-in-2026-aws-s3-vs-azure-vs-gcp-compared-e54
   finout: &finout https://finout.io/blog/cloud-storage-pricing-comparison
+  owner_screenshot: &owner_screenshot https://github.com/summitkhatiwada22/seasonal-tiering-poc/blob/main/docs/evidence/azure-blob-storage-prices-2026-10-29.png  # owner screenshot of Azure pay-as-you-go table, 2026-10-29; region and redundancy not shown
+  azure_official_text: &azure_official_text https://azure.microsoft.com/en-in/pricing/details/storage/blobs/archive-ga/  # fetched 2026-10-29; only early-deletion days rendered
   memory: &memory "memory: not yet checked against a source; verify in Phase 1"
 
 cloud: azure
@@ -21,30 +27,30 @@ tier_order: [hot, cool, cold, archive]
 
 tiers:
   hot:
-    storage_usd_per_gb_month: {value: 0.018, status: unverified, source: *memory}
+    storage_usd_per_gb_month: {value: 0.0184, status: sourced, source: *owner_screenshot}
     retrieval_usd_per_gb: {value: 0.0, status: unverified, source: *memory}
     min_storage_days: {value: 0, status: unverified, source: *memory}
     min_billable_object_kb: {value: 0, status: unverified, source: *memory}
     per_object_overhead_kb: {value: 0, status: unverified, source: *memory}
     restore_hours: {value: 0, status: unverified, source: *memory}
   cool:
-    storage_usd_per_gb_month: {value: 0.010, status: unverified, source: *memory}
+    storage_usd_per_gb_month: {value: 0.010, status: sourced, source: *owner_screenshot}
     retrieval_usd_per_gb: {value: 0.01, status: sourced, source: *devto_2026}
-    min_storage_days: {value: 30, status: unverified, source: *memory}
+    min_storage_days: {value: 30, status: sourced, source: *azure_official_text}
     min_billable_object_kb: {value: 128, status: sourced, source: *finout}
     per_object_overhead_kb: {value: 0, status: unverified, source: *memory}
     restore_hours: {value: 0, status: unverified, source: *memory}
   cold:
-    storage_usd_per_gb_month: {value: 0.0045, status: sourced, source: *finout}
+    storage_usd_per_gb_month: {value: 0.0036, status: sourced, source: *owner_screenshot}
     retrieval_usd_per_gb: {value: 0.03, status: sourced, source: *devto_2026}
-    min_storage_days: {value: 90, status: unverified, source: *memory}
+    min_storage_days: {value: 90, status: sourced, source: *azure_official_text}
     min_billable_object_kb: {value: 128, status: sourced, source: *finout}
     per_object_overhead_kb: {value: 0, status: unverified, source: *memory}
     restore_hours: {value: 0, status: unverified, source: *memory}
   archive:
-    storage_usd_per_gb_month: {value: 0.00099, status: sourced, source: *devto_2026}
+    storage_usd_per_gb_month: {value: 0.002, status: sourced, source: *owner_screenshot}
     retrieval_usd_per_gb: {value: 0.02, status: sourced, source: *devto_2026}   # low end of $0.02-0.10
-    min_storage_days: {value: 180, status: unverified, source: *memory}
+    min_storage_days: {value: 180, status: sourced, source: *azure_official_text}
     min_billable_object_kb: {value: 128, status: sourced, source: *finout}
     per_object_overhead_kb: {value: 0, status: unverified, source: *memory}
     restore_hours: {value: 15, status: unverified, source: *memory}
