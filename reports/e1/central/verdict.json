@@ -1,0 +1,1658 @@
+{
+  "setting": "central",
+  "picks_from": "central",
+  "rule": "docs/E1_PROTOCOL.md section 5",
+  "real_datasets_passing": [
+    "D1",
+    "D3",
+    "D4"
+  ],
+  "decision": "CONTINUE",
+  "hindsight_bound_reaches_5pct_somewhere": true,
+  "lines": [
+    {
+      "dataset": "D1",
+      "cloud": "aws",
+      "level": "L0",
+      "rival": "intelligent-tiering",
+      "rival_cost": 36.60378096849015,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal-planner:standard/standard_ia/glacier_instant:h180:lead1",
+      "seasonal_cost": 42.80769026840857,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": -0.1694882095720922,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive-planner:standard/standard_ia/glacier_instant:h180:lead1",
+      "reactive_cost": 44.0148338518911,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": -0.20246686782932755,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": 0.02742583528872422,
+      "hindsight_cost": 24.446312719771498,
+      "hindsight_gap": 0.332136952168527,
+      "perfect_forecast_best": "oracle:standard/glacier_flexible:lead1:recent0",
+      "perfect_forecast_gap": 0.042642843282845955,
+      "groups": {
+        "cohort_A": {
+          "objects": 5000,
+          "rival_cost": 20.97340913451029,
+          "seasonal_cost": 25.162953745286067,
+          "gap": -0.19975506051050962,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "cohort_B": {
+          "objects": 4518,
+          "rival_cost": 15.63037183397988,
+          "seasonal_cost": 17.64473652312249,
+          "gap": -0.12887503320704452,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "flagged": {
+          "objects": 1563,
+          "rival_cost": 4.609129618591734,
+          "seasonal_cost": 5.546577482623291,
+          "gap": -0.20338934714489176,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "unflagged": {
+          "objects": 7955,
+          "rival_cost": 31.99465134989844,
+          "seasonal_cost": 37.261112785785265,
+          "gap": -0.1646044327313334,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D1",
+      "cloud": "aws",
+      "level": "L1",
+      "rival": "intelligent-tiering:archive@90d:deep@180d",
+      "rival_cost": 35.867908131263,
+      "rival_cold_rate": 0.0023594064847041584,
+      "seasonal": "seasonal-it-prewarm:archive@90d:deep@180d:lead7",
+      "seasonal_cost": 37.816432698674305,
+      "seasonal_cold_rate": 0.0012758747023264333,
+      "seasonal_gap": -0.05432501277410551,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive-planner:standard/standard_ia/glacier_instant:h180:lead1",
+      "reactive_cost": 44.0148338518911,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": -0.22713690719886492,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": 0.1408252766345608,
+      "hindsight_cost": 23.100273043857573,
+      "hindsight_gap": 0.35596263491811964,
+      "perfect_forecast_best": "oracle:standard/glacier_flexible:lead1:recent0",
+      "perfect_forecast_gap": 0.023001521447878925,
+      "groups": {
+        "cohort_A": {
+          "objects": 5000,
+          "rival_cost": 20.55398828709501,
+          "seasonal_cost": 21.847538981370853,
+          "gap": -0.0629342916911173,
+          "rival_cold_rate": 0.01479886850534548,
+          "seasonal_cold_rate": 0.007363035068014476
+        },
+        "cohort_B": {
+          "objects": 4518,
+          "rival_cost": 15.313919844168,
+          "seasonal_cost": 15.968893717303466,
+          "gap": -0.04276983814727875,
+          "rival_cold_rate": 0.0011580444415875554,
+          "seasonal_cold_rate": 0.0006879969145598226
+        },
+        "flagged": {
+          "objects": 1563,
+          "rival_cost": 4.163585116015498,
+          "seasonal_cost": 4.772388657438739,
+          "gap": -0.14622099091512242,
+          "rival_cold_rate": 0.009509266328867911,
+          "seasonal_cold_rate": 0.006056083848129381
+        },
+        "unflagged": {
+          "objects": 7955,
+          "rival_cost": 31.704323015247514,
+          "seasonal_cost": 33.04404404123558,
+          "gap": -0.04225673026810117,
+          "rival_cold_rate": 0.0019609890811199686,
+          "seasonal_cold_rate": 0.0010095032547777353
+        }
+      }
+    },
+    {
+      "dataset": "D1",
+      "cloud": "azure",
+      "level": "L0",
+      "rival": "all-hot",
+      "rival_cost": 38.63190823455837,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal-planner:hot/cool/cold:h180:lead1",
+      "seasonal_cost": 35.12857361598321,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": 0.09068500052609962,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive:hot/cool:recent90",
+      "reactive_cost": 37.88231565728279,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": 0.019403457181673134,
+      "reactive_wait_ok": true,
+      "passes": true,
+      "seasonal_vs_reactive": 0.07269201983881846,
+      "hindsight_cost": 23.777546696635202,
+      "hindsight_gap": 0.3845101683233737,
+      "perfect_forecast_best": "oracle:hot/cold:lead1:recent0",
+      "perfect_forecast_gap": 0.19880492529400018,
+      "groups": {
+        "cohort_A": {
+          "objects": 5000,
+          "rival_cost": 22.597086092581087,
+          "seasonal_cost": 20.573643250487294,
+          "gap": 0.08954441443483796,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "cohort_B": {
+          "objects": 4518,
+          "rival_cost": 16.034822141977337,
+          "seasonal_cost": 14.554930365495938,
+          "gap": 0.09229237239914312,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "flagged": {
+          "objects": 1563,
+          "rival_cost": 7.027422524747477,
+          "seasonal_cost": 4.85505817663619,
+          "gap": 0.3091267588452494,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "unflagged": {
+          "objects": 7955,
+          "rival_cost": 31.60448570981095,
+          "seasonal_cost": 30.273515439347044,
+          "gap": 0.04211333424896502,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D1",
+      "cloud": "azure",
+      "level": "L1",
+      "rival": "all-hot",
+      "rival_cost": 38.63190823455837,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal-planner:hot/cool/cold:h180:lead1",
+      "seasonal_cost": 35.12857361598321,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": 0.09068500052609962,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive:hot/cool:recent90",
+      "reactive_cost": 37.88231565728279,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": 0.019403457181673134,
+      "reactive_wait_ok": true,
+      "passes": true,
+      "seasonal_vs_reactive": 0.07269201983881846,
+      "hindsight_cost": 23.777546696635202,
+      "hindsight_gap": 0.3845101683233737,
+      "perfect_forecast_best": "oracle:hot/cold:lead1:recent0",
+      "perfect_forecast_gap": 0.19880492529400018,
+      "groups": {
+        "cohort_A": {
+          "objects": 5000,
+          "rival_cost": 22.597086092581087,
+          "seasonal_cost": 20.573643250487294,
+          "gap": 0.08954441443483796,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "cohort_B": {
+          "objects": 4518,
+          "rival_cost": 16.034822141977337,
+          "seasonal_cost": 14.554930365495938,
+          "gap": 0.09229237239914312,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "flagged": {
+          "objects": 1563,
+          "rival_cost": 7.027422524747477,
+          "seasonal_cost": 4.85505817663619,
+          "gap": 0.3091267588452494,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "unflagged": {
+          "objects": 7955,
+          "rival_cost": 31.60448570981095,
+          "seasonal_cost": 30.273515439347044,
+          "gap": 0.04211333424896502,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D1",
+      "cloud": "gcs",
+      "level": "L0",
+      "rival": "autoclass:archive",
+      "rival_cost": 31.412868410300856,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal-planner:standard/nearline/coldline:h180:lead1",
+      "seasonal_cost": 36.630939631443816,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": -0.1661125355693993,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive-planner:standard/nearline/coldline:h180:lead1",
+      "reactive_cost": 37.44487215259459,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": -0.19202333462536436,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": 0.02173682200953586,
+      "hindsight_cost": 30.008085821924908,
+      "hindsight_gap": 0.04471997176530662,
+      "perfect_forecast_best": "oracle:standard/coldline:lead1:recent0",
+      "perfect_forecast_gap": -0.025047398532686893,
+      "groups": {
+        "cohort_A": {
+          "objects": 5000,
+          "rival_cost": 17.946270160327906,
+          "seasonal_cost": 21.656911029111374,
+          "gap": -0.2067639033422235,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "cohort_B": {
+          "objects": 4518,
+          "rival_cost": 13.46659824997296,
+          "seasonal_cost": 14.974028602332423,
+          "gap": -0.11193846614994163,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "flagged": {
+          "objects": 1563,
+          "rival_cost": 3.7721181031746847,
+          "seasonal_cost": 4.717011144932816,
+          "gap": -0.2504940237589306,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "unflagged": {
+          "objects": 7955,
+          "rival_cost": 27.640750307126183,
+          "seasonal_cost": 31.913928486510983,
+          "gap": -0.15459703994660057,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D1",
+      "cloud": "gcs",
+      "level": "L1",
+      "rival": "autoclass:archive",
+      "rival_cost": 31.412868410300856,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal-planner:standard/nearline/coldline:h180:lead1",
+      "seasonal_cost": 36.630939631443816,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": -0.1661125355693993,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive-planner:standard/nearline/coldline:h180:lead1",
+      "reactive_cost": 37.44487215259459,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": -0.19202333462536436,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": 0.02173682200953586,
+      "hindsight_cost": 30.008085821924908,
+      "hindsight_gap": 0.04471997176530662,
+      "perfect_forecast_best": "oracle:standard/coldline:lead1:recent0",
+      "perfect_forecast_gap": -0.025047398532686893,
+      "groups": {
+        "cohort_A": {
+          "objects": 5000,
+          "rival_cost": 17.946270160327906,
+          "seasonal_cost": 21.656911029111374,
+          "gap": -0.2067639033422235,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "cohort_B": {
+          "objects": 4518,
+          "rival_cost": 13.46659824997296,
+          "seasonal_cost": 14.974028602332423,
+          "gap": -0.11193846614994163,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "flagged": {
+          "objects": 1563,
+          "rival_cost": 3.7721181031746847,
+          "seasonal_cost": 4.717011144932816,
+          "gap": -0.2504940237589306,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "unflagged": {
+          "objects": 7955,
+          "rival_cost": 27.640750307126183,
+          "seasonal_cost": 31.913928486510983,
+          "gap": -0.15459703994660057,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D3",
+      "cloud": "aws",
+      "level": "L0",
+      "rival": "intelligent-tiering",
+      "rival_cost": 0.6384122244824463,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal-planner:standard/standard_ia/glacier_instant:h180:lead1",
+      "seasonal_cost": 0.6384818049061731,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": -0.00010898980479767673,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive-planner:standard/standard_ia/glacier_instant:h180:lead1",
+      "reactive_cost": 0.6514554667822562,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": -0.02043075273250583,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": 0.019914886799805465,
+      "hindsight_cost": 0.31597799180262504,
+      "hindsight_gap": 0.5050564828097004,
+      "perfect_forecast_best": "oracle:standard/deep_archive:lead1:recent0",
+      "perfect_forecast_gap": 0.12661313242051286,
+      "groups": {
+        "flagged": {
+          "objects": 36,
+          "rival_cost": 0.11485533024526937,
+          "seasonal_cost": 0.0636539415828963,
+          "gap": 0.44579026983801595,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "unflagged": {
+          "objects": 251,
+          "rival_cost": 0.5235568942371734,
+          "seasonal_cost": 0.5748278633232748,
+          "gap": -0.09792817103631801,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D3",
+      "cloud": "aws",
+      "level": "L1",
+      "rival": "intelligent-tiering:archive@90d:deep@180d",
+      "rival_cost": 0.6200308683524964,
+      "rival_cold_rate": 0.0010667959752697297,
+      "seasonal": "seasonal-it-prewarm:archive@90d:deep@180d:lead7",
+      "seasonal_cost": 0.6265447939964411,
+      "seasonal_cold_rate": 0.0008970784337495454,
+      "seasonal_gap": -0.010505808624098112,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive-planner:standard/standard_ia/glacier_instant:h180:lead1",
+      "reactive_cost": 0.6514554667822562,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": -0.05068231282300362,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": 0.03823848913089445,
+      "hindsight_cost": 0.30543460316234655,
+      "hindsight_gap": 0.5073880692844754,
+      "perfect_forecast_best": "oracle:standard/deep_archive:lead1:recent0",
+      "perfect_forecast_gap": 0.10072081661556342,
+      "groups": {
+        "flagged": {
+          "objects": 36,
+          "rival_cost": 0.10566267795364821,
+          "seasonal_cost": 0.10566418074340407,
+          "gap": -1.4222521943940691e-05,
+          "rival_cold_rate": 0.06666666666666667,
+          "seasonal_cold_rate": 0.06666666666666667
+        },
+        "unflagged": {
+          "objects": 251,
+          "rival_cost": 0.5143681903988446,
+          "seasonal_cost": 0.5208806132530335,
+          "gap": -0.01266101398910191,
+          "rival_cold_rate": 0.0007792524047242177,
+          "seasonal_cold_rate": 0.0006087909411907951
+        }
+      }
+    },
+    {
+      "dataset": "D3",
+      "cloud": "azure",
+      "level": "L0",
+      "rival": "all-hot",
+      "rival_cost": 0.6990125982640967,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal-planner:hot/cool/cold:h180:lead1",
+      "seasonal_cost": 0.5374041825232073,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": 0.2311952833786144,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive:hot/cool:recent90",
+      "reactive_cost": 0.6109878884467652,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": 0.12592721509730864,
+      "reactive_wait_ok": true,
+      "passes": true,
+      "seasonal_vs_reactive": 0.12043398456002152,
+      "hindsight_cost": 0.3107618426431463,
+      "hindsight_gap": 0.5554274080111269,
+      "perfect_forecast_best": "oracle:hot/archive:lead1:recent0",
+      "perfect_forecast_gap": 0.29355749316537083,
+      "groups": {
+        "flagged": {
+          "objects": 36,
+          "rival_cost": 0.19692810509991537,
+          "seasonal_cost": 0.05786558490512493,
+          "gap": 0.7061588295090451,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "unflagged": {
+          "objects": 251,
+          "rival_cost": 0.5020844931641831,
+          "seasonal_cost": 0.47953859761808315,
+          "gap": 0.044904584493366095,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D3",
+      "cloud": "azure",
+      "level": "L1",
+      "rival": "all-hot",
+      "rival_cost": 0.6990125982640967,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal-planner:hot/cool/cold:h180:lead1",
+      "seasonal_cost": 0.5374041825232073,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": 0.2311952833786144,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive:hot/cool:recent90",
+      "reactive_cost": 0.6109878884467652,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": 0.12592721509730864,
+      "reactive_wait_ok": true,
+      "passes": true,
+      "seasonal_vs_reactive": 0.12043398456002152,
+      "hindsight_cost": 0.3107618426431463,
+      "hindsight_gap": 0.5554274080111269,
+      "perfect_forecast_best": "oracle:hot/archive:lead1:recent0",
+      "perfect_forecast_gap": 0.29355749316537083,
+      "groups": {
+        "flagged": {
+          "objects": 36,
+          "rival_cost": 0.19692810509991537,
+          "seasonal_cost": 0.05786558490512493,
+          "gap": 0.7061588295090451,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "unflagged": {
+          "objects": 251,
+          "rival_cost": 0.5020844931641831,
+          "seasonal_cost": 0.47953859761808315,
+          "gap": 0.044904584493366095,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D3",
+      "cloud": "gcs",
+      "level": "L0",
+      "rival": "autoclass:archive",
+      "rival_cost": 0.5506524342705417,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal-planner:standard/nearline/coldline:h90:lead1",
+      "seasonal_cost": 0.5484237779385203,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": 0.004047301334413889,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive-planner:standard/nearline/coldline:h180:lead1",
+      "reactive_cost": 0.545949616160868,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": 0.008540447325732003,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": -0.004531850017682304,
+      "hindsight_cost": 0.46828509559988907,
+      "hindsight_gap": 0.14958135757588353,
+      "perfect_forecast_best": "oracle:standard/archive:lead1:recent0",
+      "perfect_forecast_gap": 0.059653113456966333,
+      "groups": {
+        "flagged": {
+          "objects": 36,
+          "rival_cost": 0.09979074072981176,
+          "seasonal_cost": 0.05785241194524293,
+          "gap": 0.4202627265601613,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "unflagged": {
+          "objects": 251,
+          "rival_cost": 0.45086169354072625,
+          "seasonal_cost": 0.49057136599327544,
+          "gap": -0.08807506386426289,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D3",
+      "cloud": "gcs",
+      "level": "L1",
+      "rival": "autoclass:archive",
+      "rival_cost": 0.5506524342705417,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal-planner:standard/nearline/coldline:h90:lead1",
+      "seasonal_cost": 0.5484237779385203,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": 0.004047301334413889,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive-planner:standard/nearline/coldline:h180:lead1",
+      "reactive_cost": 0.545949616160868,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": 0.008540447325732003,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": -0.004531850017682304,
+      "hindsight_cost": 0.46828509559988907,
+      "hindsight_gap": 0.14958135757588353,
+      "perfect_forecast_best": "oracle:standard/archive:lead1:recent0",
+      "perfect_forecast_gap": 0.059653113456966333,
+      "groups": {
+        "flagged": {
+          "objects": 36,
+          "rival_cost": 0.09979074072981176,
+          "seasonal_cost": 0.05785241194524293,
+          "gap": 0.4202627265601613,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "unflagged": {
+          "objects": 251,
+          "rival_cost": 0.45086169354072625,
+          "seasonal_cost": 0.49057136599327544,
+          "gap": -0.08807506386426289,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D4",
+      "cloud": "aws",
+      "level": "L0",
+      "rival": "intelligent-tiering",
+      "rival_cost": 19.03513899757083,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal:standard/glacier_instant:lead7:recent90",
+      "seasonal_cost": 25.832089549357498,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": -0.35707385969989835,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive:standard/glacier_instant:recent90",
+      "reactive_cost": 24.226769707058182,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": -0.27273931176178334,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": -0.06626223230378203,
+      "hindsight_cost": 10.209147261710015,
+      "hindsight_gap": 0.46366836286234336,
+      "perfect_forecast_best": "oracle:standard/deep_archive:lead1:recent0",
+      "perfect_forecast_gap": 0.2681582496211512,
+      "groups": {
+        "physical": {
+          "objects": 5117,
+          "rival_cost": 11.035605479955382,
+          "seasonal_cost": 15.564331636444932,
+          "gap": -0.41037405375856717,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "digital": {
+          "objects": 4883,
+          "rival_cost": 7.999533517615467,
+          "seasonal_cost": 10.267757912912558,
+          "gap": -0.28354458298128504,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D4",
+      "cloud": "aws",
+      "level": "L1",
+      "rival": "intelligent-tiering:archive@90d:deep@180d",
+      "rival_cost": 14.173807571675564,
+      "rival_cold_rate": 0.002578419356303055,
+      "seasonal": "seasonal-it-prewarm:archive@90d:deep@180d:lead7",
+      "seasonal_cost": 16.9266492565385,
+      "seasonal_cold_rate": 0.001525262154432793,
+      "seasonal_gap": -0.19422033712127695,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive-planner:standard/glacier_instant/deep_archive:h180:lead7",
+      "reactive_cost": 22.052890887423633,
+      "reactive_cold_rate": 0.0015089200599210132,
+      "reactive_gap": -0.555890382729151,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": 0.23245213777430584,
+      "hindsight_cost": 9.752569036756093,
+      "hindsight_gap": 0.311930193249887,
+      "perfect_forecast_best": "oracle:standard/deep_archive:lead1:recent0",
+      "perfect_forecast_gap": 0.01715122261673996,
+      "groups": {
+        "physical": {
+          "objects": 5117,
+          "rival_cost": 8.566719289686343,
+          "seasonal_cost": 10.163785174256528,
+          "gap": -0.1864267790930101,
+          "rival_cold_rate": 0.0040165495173057454,
+          "seasonal_cold_rate": 0.0024374289083235073
+        },
+        "digital": {
+          "objects": 4883,
+          "rival_cost": 5.607088281989215,
+          "seasonal_cost": 6.762864082281968,
+          "gap": -0.2061276267051606,
+          "rival_cold_rate": 0.0014675686635470106,
+          "seasonal_cold_rate": 0.0008206798447466835
+        }
+      }
+    },
+    {
+      "dataset": "D4",
+      "cloud": "azure",
+      "level": "L0",
+      "rival": "azure-last-access:cool@30d",
+      "rival_cost": 29.91643812752821,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal:hot/cold:lead7:recent90",
+      "seasonal_cost": 22.097550644413854,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": 0.26135756702665913,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive:hot/cold:recent90",
+      "reactive_cost": 20.99732228340676,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": 0.2981342834364479,
+      "reactive_wait_ok": true,
+      "passes": true,
+      "seasonal_vs_reactive": -0.052398508064838145,
+      "hindsight_cost": 11.340418532204401,
+      "hindsight_gap": 0.6209301894877222,
+      "perfect_forecast_best": "oracle:hot/archive:lead1:recent0",
+      "perfect_forecast_gap": 0.5282268038882254,
+      "groups": {
+        "physical": {
+          "objects": 5117,
+          "rival_cost": 16.93405874604626,
+          "seasonal_cost": 13.349948957540425,
+          "gap": 0.211650959894222,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "digital": {
+          "objects": 4883,
+          "rival_cost": 12.982379381481927,
+          "seasonal_cost": 8.747601686873445,
+          "gap": 0.32619426456208567,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D4",
+      "cloud": "azure",
+      "level": "L1",
+      "rival": "azure-last-access:cool@30d",
+      "rival_cost": 29.91643812752821,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal:hot/cold:lead7:recent90",
+      "seasonal_cost": 22.097550644413854,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": 0.26135756702665913,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive:hot/cold:recent90",
+      "reactive_cost": 20.99732228340676,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": 0.2981342834364479,
+      "reactive_wait_ok": true,
+      "passes": true,
+      "seasonal_vs_reactive": -0.052398508064838145,
+      "hindsight_cost": 11.340418532204401,
+      "hindsight_gap": 0.6209301894877222,
+      "perfect_forecast_best": "oracle:hot/archive:lead1:recent0",
+      "perfect_forecast_gap": 0.5282268038882254,
+      "groups": {
+        "physical": {
+          "objects": 5117,
+          "rival_cost": 16.93405874604626,
+          "seasonal_cost": 13.349948957540425,
+          "gap": 0.211650959894222,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "digital": {
+          "objects": 4883,
+          "rival_cost": 12.982379381481927,
+          "seasonal_cost": 8.747601686873445,
+          "gap": 0.32619426456208567,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D4",
+      "cloud": "gcs",
+      "level": "L0",
+      "rival": "autoclass:archive",
+      "rival_cost": 13.34129813701913,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal:standard/coldline:lead7:recent30",
+      "seasonal_cost": 22.54038776483708,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": -0.6895198303298933,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive:standard/coldline:recent90",
+      "reactive_cost": 21.136156804197327,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": -0.5842653831076003,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": -0.06643738375185104,
+      "hindsight_cost": 12.106314062112073,
+      "hindsight_gap": 0.09256850886798274,
+      "perfect_forecast_best": "oracle:standard/archive:lead1:recent0",
+      "perfect_forecast_gap": -0.07254653556949164,
+      "groups": {
+        "physical": {
+          "objects": 5117,
+          "rival_cost": 8.012591126266678,
+          "seasonal_cost": 13.330425983127794,
+          "gap": -0.6636847897340377,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "digital": {
+          "objects": 4883,
+          "rival_cost": 5.328707010752447,
+          "seasonal_cost": 9.209961781709282,
+          "gap": -0.7283670810057876,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D4",
+      "cloud": "gcs",
+      "level": "L1",
+      "rival": "autoclass:archive",
+      "rival_cost": 13.34129813701913,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal:standard/coldline:lead7:recent30",
+      "seasonal_cost": 22.54038776483708,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": -0.6895198303298933,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive:standard/coldline:recent90",
+      "reactive_cost": 21.136156804197327,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": -0.5842653831076003,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": -0.06643738375185104,
+      "hindsight_cost": 12.106314062112073,
+      "hindsight_gap": 0.09256850886798274,
+      "perfect_forecast_best": "oracle:standard/archive:lead1:recent0",
+      "perfect_forecast_gap": -0.07254653556949164,
+      "groups": {
+        "physical": {
+          "objects": 5117,
+          "rival_cost": 8.012591126266678,
+          "seasonal_cost": 13.330425983127794,
+          "gap": -0.6636847897340377,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "digital": {
+          "objects": 4883,
+          "rival_cost": 5.328707010752447,
+          "seasonal_cost": 9.209961781709282,
+          "gap": -0.7283670810057876,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "aws",
+      "level": "L0",
+      "rival": "intelligent-tiering",
+      "rival_cost": 3.489716769445166,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal-planner:standard/standard_ia/glacier_instant:h180:lead1",
+      "seasonal_cost": 4.158315312975044,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": -0.19159106245638946,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive:standard/standard_ia:recent90",
+      "reactive_cost": 4.184445860619244,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": -0.19907893306898194,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": 0.006244685321447174,
+      "hindsight_cost": 1.8854576069740068,
+      "hindsight_gap": 0.459710420203019,
+      "perfect_forecast_best": "oracle:standard/glacier_instant:lead1:recent0",
+      "perfect_forecast_gap": 0.013258155409570649,
+      "groups": {
+        "annual_seasonal": {
+          "objects": 1502,
+          "rival_cost": 0.8637066335550725,
+          "seasonal_cost": 0.8553876250918946,
+          "gap": 0.009631752426094375,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "decaying": {
+          "objects": 1449,
+          "rival_cost": 0.22266409840597506,
+          "seasonal_cost": 0.4348992155882603,
+          "gap": -0.953162717751314,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "evergreen": {
+          "objects": 4040,
+          "rival_cost": 1.643216091930913,
+          "seasonal_cost": 1.7208252397543609,
+          "gap": -0.04723003152449112,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "sporadic": {
+          "objects": 1511,
+          "rival_cost": 0.2730299057454525,
+          "seasonal_cost": 0.641726389624897,
+          "gap": -1.3503886428587153,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "weekly": {
+          "objects": 1498,
+          "rival_cost": 0.487100039807754,
+          "seasonal_cost": 0.5054768429156333,
+          "gap": -0.037726958747800854,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "aws",
+      "level": "L1",
+      "rival": "intelligent-tiering:archive@90d:deep@180d",
+      "rival_cost": 3.41471147189157,
+      "rival_cold_rate": 0.0060506906212906535,
+      "seasonal": "seasonal-it-prewarm:archive@90d:deep@180d:lead7",
+      "seasonal_cost": 3.5923181666780892,
+      "seasonal_cold_rate": 0.004211873241966516,
+      "seasonal_gap": -0.052012211353287485,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive-planner:standard/standard_ia/glacier_instant/glacier_flexible/deep_archive:h180:lead30",
+      "reactive_cost": 3.8439697521458713,
+      "reactive_cold_rate": 0.0028026687851028017,
+      "reactive_gap": -0.12570850679120915,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": 0.06546658836930208,
+      "hindsight_cost": 1.8395125125760183,
+      "hindsight_gap": 0.4612978204108631,
+      "perfect_forecast_best": "oracle-it-prewarm:archive@90d:deep@180d:lead1",
+      "perfect_forecast_gap": -0.0074929989594803015,
+      "groups": {
+        "annual_seasonal": {
+          "objects": 1502,
+          "rival_cost": 0.8632946998696418,
+          "seasonal_cost": 0.8681234162180813,
+          "gap": -0.005593358037722984,
+          "rival_cold_rate": 0.00013716362763504188,
+          "seasonal_cold_rate": 8.286969169617113e-05
+        },
+        "decaying": {
+          "objects": 1449,
+          "rival_cost": 0.18378162254972685,
+          "seasonal_cost": 0.23580662157929716,
+          "gap": -0.2830805295316925,
+          "rival_cold_rate": 0.0018051050627556056,
+          "seasonal_cold_rate": 0.0010153715978000282
+        },
+        "evergreen": {
+          "objects": 4040,
+          "rival_cost": 1.6280295070629425,
+          "seasonal_cost": 1.683181628296284,
+          "gap": -0.03387661034033651,
+          "rival_cold_rate": 0.005821236803256167,
+          "seasonal_cold_rate": 0.003362346377560762
+        },
+        "sporadic": {
+          "objects": 1511,
+          "rival_cost": 0.2575359106161319,
+          "seasonal_cost": 0.30546945834777683,
+          "gap": -0.18612374335279358,
+          "rival_cold_rate": 0.19337489304486005,
+          "seasonal_cold_rate": 0.1434624943975879
+        },
+        "weekly": {
+          "objects": 1498,
+          "rival_cost": 0.4820697317931284,
+          "seasonal_cost": 0.49973704223665155,
+          "gap": -0.036648868987909644,
+          "rival_cold_rate": 0.0035951773399482065,
+          "seasonal_cold_rate": 0.002011022680920897
+        }
+      }
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "azure",
+      "level": "L0",
+      "rival": "all-hot",
+      "rival_cost": 3.517156783991232,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal:hot/cool:lead7:recent90",
+      "seasonal_cost": 3.753650889611335,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": -0.06724013745890867,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive:hot/cool:recent90",
+      "reactive_cost": 3.6849576237695514,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": -0.047709229381551976,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": -0.018641534816759675,
+      "hindsight_cost": 1.928364044445574,
+      "hindsight_gap": 0.45172644756049596,
+      "perfect_forecast_best": "oracle:hot/cold:lead1:recent0",
+      "perfect_forecast_gap": 0.0902148432770179,
+      "groups": {
+        "annual_seasonal": {
+          "objects": 1502,
+          "rival_cost": 0.7450846704925059,
+          "seasonal_cost": 0.8390349629697038,
+          "gap": -0.12609344440692372,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "decaying": {
+          "objects": 1449,
+          "rival_cost": 0.40423237246688803,
+          "seasonal_cost": 0.35207180811662037,
+          "gap": 0.12903608890092122,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "evergreen": {
+          "objects": 4040,
+          "rival_cost": 1.5422552918319947,
+          "seasonal_cost": 1.6333910943883692,
+          "gap": -0.05909255298979543,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "sporadic": {
+          "objects": 1511,
+          "rival_cost": 0.3788655942121266,
+          "seasonal_cost": 0.4479268551459036,
+          "gap": -0.18228432982254272,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "weekly": {
+          "objects": 1498,
+          "rival_cost": 0.44671885498771685,
+          "seasonal_cost": 0.4812261689907358,
+          "gap": -0.07724615519971234,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "azure",
+      "level": "L1",
+      "rival": "all-hot",
+      "rival_cost": 3.517156783991232,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal:hot/cool:lead7:recent90",
+      "seasonal_cost": 3.753650889611335,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": -0.06724013745890867,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive:hot/cool:recent90",
+      "reactive_cost": 3.6849576237695514,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": -0.047709229381551976,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": -0.018641534816759675,
+      "hindsight_cost": 1.928364044445574,
+      "hindsight_gap": 0.45172644756049596,
+      "perfect_forecast_best": "oracle:hot/cold:lead1:recent0",
+      "perfect_forecast_gap": 0.0902148432770179,
+      "groups": {
+        "annual_seasonal": {
+          "objects": 1502,
+          "rival_cost": 0.7450846704925059,
+          "seasonal_cost": 0.8390349629697038,
+          "gap": -0.12609344440692372,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "decaying": {
+          "objects": 1449,
+          "rival_cost": 0.40423237246688803,
+          "seasonal_cost": 0.35207180811662037,
+          "gap": 0.12903608890092122,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "evergreen": {
+          "objects": 4040,
+          "rival_cost": 1.5422552918319947,
+          "seasonal_cost": 1.6333910943883692,
+          "gap": -0.05909255298979543,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "sporadic": {
+          "objects": 1511,
+          "rival_cost": 0.3788655942121266,
+          "seasonal_cost": 0.4479268551459036,
+          "gap": -0.18228432982254272,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "weekly": {
+          "objects": 1498,
+          "rival_cost": 0.44671885498771685,
+          "seasonal_cost": 0.4812261689907358,
+          "gap": -0.07724615519971234,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "gcs",
+      "level": "L0",
+      "rival": "autoclass:archive",
+      "rival_cost": 3.0874460332147398,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal-planner:standard/nearline/coldline:h180:lead1",
+      "seasonal_cost": 3.593572400317226,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": -0.16393043365214477,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive-planner:standard/nearline/coldline:h180:lead1",
+      "reactive_cost": 3.6151161145359376,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": -0.1709082768231489,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": 0.00595934225517325,
+      "hindsight_cost": 2.85793018714527,
+      "hindsight_gap": 0.07433841550600029,
+      "perfect_forecast_best": "oracle-planner:standard/nearline/coldline:h30:lead1",
+      "perfect_forecast_gap": -0.013774083639924495,
+      "groups": {
+        "annual_seasonal": {
+          "objects": 1502,
+          "rival_cost": 0.7907406035926134,
+          "seasonal_cost": 0.7861247525902413,
+          "gap": 0.005837376987346654,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "decaying": {
+          "objects": 1449,
+          "rival_cost": 0.17757425618043882,
+          "seasonal_cost": 0.3786948770007167,
+          "gap": -1.1326001028882975,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "evergreen": {
+          "objects": 4040,
+          "rival_cost": 1.4465330250501331,
+          "seasonal_cost": 1.4765604174949165,
+          "gap": -0.02075817967843685,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "sporadic": {
+          "objects": 1511,
+          "rival_cost": 0.24024589227823362,
+          "seasonal_cost": 0.5126727913830302,
+          "gap": -1.1339502895195959,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "weekly": {
+          "objects": 1498,
+          "rival_cost": 0.4323522561133238,
+          "seasonal_cost": 0.4395195618483197,
+          "gap": -0.016577468103039728,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "gcs",
+      "level": "L1",
+      "rival": "autoclass:archive",
+      "rival_cost": 3.0874460332147398,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal-planner:standard/nearline/coldline:h180:lead1",
+      "seasonal_cost": 3.593572400317226,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": -0.16393043365214477,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive-planner:standard/nearline/coldline:h180:lead1",
+      "reactive_cost": 3.6151161145359376,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": -0.1709082768231489,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": 0.00595934225517325,
+      "hindsight_cost": 2.85793018714527,
+      "hindsight_gap": 0.07433841550600029,
+      "perfect_forecast_best": "oracle-planner:standard/nearline/coldline:h30:lead1",
+      "perfect_forecast_gap": -0.013774083639924495,
+      "groups": {
+        "annual_seasonal": {
+          "objects": 1502,
+          "rival_cost": 0.7907406035926134,
+          "seasonal_cost": 0.7861247525902413,
+          "gap": 0.005837376987346654,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "decaying": {
+          "objects": 1449,
+          "rival_cost": 0.17757425618043882,
+          "seasonal_cost": 0.3786948770007167,
+          "gap": -1.1326001028882975,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "evergreen": {
+          "objects": 4040,
+          "rival_cost": 1.4465330250501331,
+          "seasonal_cost": 1.4765604174949165,
+          "gap": -0.02075817967843685,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "sporadic": {
+          "objects": 1511,
+          "rival_cost": 0.24024589227823362,
+          "seasonal_cost": 0.5126727913830302,
+          "gap": -1.1339502895195959,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "weekly": {
+          "objects": 1498,
+          "rival_cost": 0.4323522561133238,
+          "seasonal_cost": 0.4395195618483197,
+          "gap": -0.016577468103039728,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D7",
+      "cloud": "aws",
+      "level": "L0",
+      "rival": "intelligent-tiering",
+      "rival_cost": 3.4381395273892426,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal-planner:standard/standard_ia/glacier_instant:h180:lead1",
+      "seasonal_cost": 4.233615104894814,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": -0.2313680323816345,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive:standard/standard_ia:recent90",
+      "reactive_cost": 4.191290438803772,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": -0.21905769251500873,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": -0.010098242226115328,
+      "hindsight_cost": 2.1626546937027284,
+      "hindsight_gap": 0.37098111450266125,
+      "perfect_forecast_best": "oracle:standard/glacier_instant:lead1:recent0",
+      "perfect_forecast_gap": 0.0016985883663729329,
+      "groups": {
+        "annual_seasonal": {
+          "objects": 1502,
+          "rival_cost": 0.8104734310048265,
+          "seasonal_cost": 0.8754326353571097,
+          "gap": -0.08014970246679964,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "decaying": {
+          "objects": 1449,
+          "rival_cost": 0.2195758679003728,
+          "seasonal_cost": 0.43836222994587026,
+          "gap": -0.9964044051724592,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "evergreen": {
+          "objects": 4040,
+          "rival_cost": 1.6440109661106854,
+          "seasonal_cost": 1.7229139962146407,
+          "gap": -0.04799422371896944,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "sporadic": {
+          "objects": 1511,
+          "rival_cost": 0.27434601910258705,
+          "seasonal_cost": 0.6888810234671079,
+          "gap": -1.5109933277709144,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "weekly": {
+          "objects": 1498,
+          "rival_cost": 0.4897332432707723,
+          "seasonal_cost": 0.5080252199100873,
+          "gap": -0.037350898454735715,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D7",
+      "cloud": "aws",
+      "level": "L1",
+      "rival": "intelligent-tiering:archive@90d:deep@180d",
+      "rival_cost": 3.3582800997892566,
+      "rival_cold_rate": 0.0065538641360309464,
+      "seasonal": "seasonal-it-prewarm:archive@90d:deep@180d:lead7",
+      "seasonal_cost": 3.543711737665581,
+      "seasonal_cold_rate": 0.0044165530292488795,
+      "seasonal_gap": -0.055216251285281626,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive-planner:standard/standard_ia/glacier_instant/glacier_flexible/deep_archive:h180:lead30",
+      "reactive_cost": 3.929825557126149,
+      "reactive_cold_rate": 0.0031586563882781845,
+      "reactive_gap": -0.17018993066503252,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": 0.09825215237872542,
+      "hindsight_cost": 2.067326808565064,
+      "hindsight_gap": 0.38440905846573203,
+      "perfect_forecast_best": "oracle-it-prewarm:archive@90d:deep@180d:lead1",
+      "perfect_forecast_gap": -0.007846077035731591,
+      "groups": {
+        "annual_seasonal": {
+          "objects": 1502,
+          "rival_cost": 0.808343435472985,
+          "seasonal_cost": 0.816615768768729,
+          "gap": -0.010233686491068594,
+          "rival_cold_rate": 0.0005307650599220877,
+          "seasonal_cold_rate": 0.00024749961015234817
+        },
+        "decaying": {
+          "objects": 1449,
+          "rival_cost": 0.17954826013663555,
+          "seasonal_cost": 0.22937139447098365,
+          "gap": -0.27749160195945577,
+          "rival_cold_rate": 0.0016457635775495147,
+          "seasonal_cold_rate": 0.0010215084274445264
+        },
+        "evergreen": {
+          "objects": 4040,
+          "rival_cost": 1.6263146374687762,
+          "seasonal_cost": 1.6992610271080644,
+          "gap": -0.04485379886442087,
+          "rival_cold_rate": 0.005657298616533338,
+          "seasonal_cold_rate": 0.00307177288517554
+        },
+        "sporadic": {
+          "objects": 1511,
+          "rival_cost": 0.25760916508859305,
+          "seasonal_cost": 0.29573749247888453,
+          "gap": -0.14800842732896924,
+          "rival_cold_rate": 0.20304568527918782,
+          "seasonal_cold_rate": 0.14869873499315123
+        },
+        "weekly": {
+          "objects": 1498,
+          "rival_cost": 0.48646460162226773,
+          "seasonal_cost": 0.5027260548389214,
+          "gap": -0.033427824270100714,
+          "rival_cold_rate": 0.0036743707878003273,
+          "seasonal_cold_rate": 0.0019418954422571679
+        }
+      }
+    },
+    {
+      "dataset": "D7",
+      "cloud": "azure",
+      "level": "L0",
+      "rival": "all-hot",
+      "rival_cost": 3.516335983991232,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal-planner:hot/cool/cold:h180:lead1",
+      "seasonal_cost": 3.730752738837019,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": -0.06097732293556679,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive:hot/cool:recent90",
+      "reactive_cost": 3.6613743445530833,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": -0.041247014284802486,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": -0.01894873010926834,
+      "hindsight_cost": 2.1158924993173116,
+      "hindsight_gap": 0.3982678251025208,
+      "perfect_forecast_best": "oracle:hot/cold:lead1:recent0",
+      "perfect_forecast_gap": 0.10040741777315243,
+      "groups": {
+        "annual_seasonal": {
+          "objects": 1502,
+          "rival_cost": 0.7447234704925058,
+          "seasonal_cost": 0.7984481956685376,
+          "gap": -0.0721405022195718,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "decaying": {
+          "objects": 1449,
+          "rival_cost": 0.404147172466888,
+          "seasonal_cost": 0.3973553475605291,
+          "gap": 0.01680532580471139,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "evergreen": {
+          "objects": 4040,
+          "rival_cost": 1.5419160918319947,
+          "seasonal_cost": 1.4920114227717356,
+          "gap": 0.03236535977840793,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "sporadic": {
+          "objects": 1511,
+          "rival_cost": 0.3789771942121266,
+          "seasonal_cost": 0.5897303011961803,
+          "gap": -0.5561102625771406,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "weekly": {
+          "objects": 1498,
+          "rival_cost": 0.4465720549877168,
+          "seasonal_cost": 0.45320747164003394,
+          "gap": -0.014858557713602671,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D7",
+      "cloud": "azure",
+      "level": "L1",
+      "rival": "all-hot",
+      "rival_cost": 3.516335983991232,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal-planner:hot/cool/cold:h180:lead1",
+      "seasonal_cost": 3.730752738837019,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": -0.06097732293556679,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive:hot/cool:recent90",
+      "reactive_cost": 3.6613743445530833,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": -0.041247014284802486,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": -0.01894873010926834,
+      "hindsight_cost": 2.1158924993173116,
+      "hindsight_gap": 0.3982678251025208,
+      "perfect_forecast_best": "oracle:hot/cold:lead1:recent0",
+      "perfect_forecast_gap": 0.10040741777315243,
+      "groups": {
+        "annual_seasonal": {
+          "objects": 1502,
+          "rival_cost": 0.7447234704925058,
+          "seasonal_cost": 0.7984481956685376,
+          "gap": -0.0721405022195718,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "decaying": {
+          "objects": 1449,
+          "rival_cost": 0.404147172466888,
+          "seasonal_cost": 0.3973553475605291,
+          "gap": 0.01680532580471139,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "evergreen": {
+          "objects": 4040,
+          "rival_cost": 1.5419160918319947,
+          "seasonal_cost": 1.4920114227717356,
+          "gap": 0.03236535977840793,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "sporadic": {
+          "objects": 1511,
+          "rival_cost": 0.3789771942121266,
+          "seasonal_cost": 0.5897303011961803,
+          "gap": -0.5561102625771406,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "weekly": {
+          "objects": 1498,
+          "rival_cost": 0.4465720549877168,
+          "seasonal_cost": 0.45320747164003394,
+          "gap": -0.014858557713602671,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D7",
+      "cloud": "gcs",
+      "level": "L0",
+      "rival": "autoclass:archive",
+      "rival_cost": 3.04098073723498,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal-planner:standard/nearline/coldline:h180:lead1",
+      "seasonal_cost": 3.6396103558242383,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": -0.19685413039924882,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive-planner:standard/nearline/coldline:h180:lead1",
+      "reactive_cost": 3.698505718451385,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": -0.21622135686865995,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": 0.01592409667864647,
+      "hindsight_cost": 2.8292625010619696,
+      "hindsight_gap": 0.06962169591561296,
+      "perfect_forecast_best": "oracle-planner:standard/nearline/coldline:h30:lead1",
+      "perfect_forecast_gap": -0.026575839933196566,
+      "groups": {
+        "annual_seasonal": {
+          "objects": 1502,
+          "rival_cost": 0.7447097457079204,
+          "seasonal_cost": 0.7938519991770493,
+          "gap": -0.06598846564363714,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "decaying": {
+          "objects": 1449,
+          "rival_cost": 0.17365621622148522,
+          "seasonal_cost": 0.36916817956275594,
+          "gap": -1.1258564052317608,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "evergreen": {
+          "objects": 4040,
+          "rival_cost": 1.4469310902242607,
+          "seasonal_cost": 1.4858614814394324,
+          "gap": -0.02690549085453542,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "sporadic": {
+          "objects": 1511,
+          "rival_cost": 0.24166705315478731,
+          "seasonal_cost": 0.548510324732732,
+          "gap": -1.2696942656118377,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "weekly": {
+          "objects": 1498,
+          "rival_cost": 0.4340166319265292,
+          "seasonal_cost": 0.4422183709122673,
+          "gap": -0.01889729190637679,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    },
+    {
+      "dataset": "D7",
+      "cloud": "gcs",
+      "level": "L1",
+      "rival": "autoclass:archive",
+      "rival_cost": 3.04098073723498,
+      "rival_cold_rate": 0.0,
+      "seasonal": "seasonal-planner:standard/nearline/coldline:h180:lead1",
+      "seasonal_cost": 3.6396103558242383,
+      "seasonal_cold_rate": 0.0,
+      "seasonal_gap": -0.19685413039924882,
+      "seasonal_wait_ok": true,
+      "reactive": "reactive-planner:standard/nearline/coldline:h180:lead1",
+      "reactive_cost": 3.698505718451385,
+      "reactive_cold_rate": 0.0,
+      "reactive_gap": -0.21622135686865995,
+      "reactive_wait_ok": true,
+      "passes": false,
+      "seasonal_vs_reactive": 0.01592409667864647,
+      "hindsight_cost": 2.8292625010619696,
+      "hindsight_gap": 0.06962169591561296,
+      "perfect_forecast_best": "oracle-planner:standard/nearline/coldline:h30:lead1",
+      "perfect_forecast_gap": -0.026575839933196566,
+      "groups": {
+        "annual_seasonal": {
+          "objects": 1502,
+          "rival_cost": 0.7447097457079204,
+          "seasonal_cost": 0.7938519991770493,
+          "gap": -0.06598846564363714,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "decaying": {
+          "objects": 1449,
+          "rival_cost": 0.17365621622148522,
+          "seasonal_cost": 0.36916817956275594,
+          "gap": -1.1258564052317608,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "evergreen": {
+          "objects": 4040,
+          "rival_cost": 1.4469310902242607,
+          "seasonal_cost": 1.4858614814394324,
+          "gap": -0.02690549085453542,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "sporadic": {
+          "objects": 1511,
+          "rival_cost": 0.24166705315478731,
+          "seasonal_cost": 0.548510324732732,
+          "gap": -1.2696942656118377,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        },
+        "weekly": {
+          "objects": 1498,
+          "rival_cost": 0.4340166319265292,
+          "seasonal_cost": 0.4422183709122673,
+          "gap": -0.01889729190637679,
+          "rival_cold_rate": 0.0,
+          "seasonal_cold_rate": 0.0
+        }
+      }
+    }
+  ]
+}
