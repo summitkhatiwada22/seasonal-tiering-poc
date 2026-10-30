@@ -1,0 +1,43 @@
+policy,family,rival,params,cost,reads,cold_reads,cold_rate,wait_hours_all,wait_hours_first,wait_p99_hours,wait_max_hours,dataset,year,draw
+all-hot,lifecycle,true,"{""after_days"": 30, ""target"": ""hot""}",53.05736515631824,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+lifecycle:cool@30d,lifecycle,true,"{""after_days"": 30, ""target"": ""cool""}",105.1612535511404,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+lifecycle:cool@90d,lifecycle,true,"{""after_days"": 90, ""target"": ""cool""}",105.1612535511404,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+lifecycle:cold@30d,lifecycle,true,"{""after_days"": 30, ""target"": ""cold""}",240.93283056921857,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+lifecycle:cold@90d,lifecycle,true,"{""after_days"": 90, ""target"": ""cold""}",240.93283056921857,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+azure-last-access:cool@30d,access-lifecycle,true,"{""archive"": null, ""cold"": null, ""cool"": 30}",35.24483123639925,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+"azure-last-access:cool@30d,cold@90d",access-lifecycle,true,"{""archive"": null, ""cold"": 90, ""cool"": 30}",151.12729397722597,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+"azure-last-access:cool@90d,cold@180d",access-lifecycle,true,"{""archive"": null, ""cold"": 180, ""cool"": 90}",89.791109975523,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+smart-tier,managed,true,{},17.31472245751613,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+seasonal-planner:hot/cool/cold:h30:lead1,seasonal,false,"{""classes"": [""hot"", ""cool"", ""cold""], ""horizon"": 30, ""lead"": 1}",25.51006771439918,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+reactive-planner:hot/cool/cold:h30:lead1,reactive,false,"{""classes"": [""hot"", ""cool"", ""cold""], ""horizon"": 30, ""lead"": 1}",26.81529673319917,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+seasonal-planner:hot/cool/cold:h90:lead1,seasonal,false,"{""classes"": [""hot"", ""cool"", ""cold""], ""horizon"": 90, ""lead"": 1}",24.806512236351267,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+reactive-planner:hot/cool/cold:h90:lead1,reactive,false,"{""classes"": [""hot"", ""cool"", ""cold""], ""horizon"": 90, ""lead"": 1}",26.11612242883544,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+seasonal-planner:hot/cool/cold:h180:lead1,seasonal,false,"{""classes"": [""hot"", ""cool"", ""cold""], ""horizon"": 180, ""lead"": 1}",24.331798427559978,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+reactive-planner:hot/cool/cold:h180:lead1,reactive,false,"{""classes"": [""hot"", ""cool"", ""cold""], ""horizon"": 180, ""lead"": 1}",24.902231872689324,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+seasonal:hot/cool:lead7:recent7,seasonal,false,"{""cold"": ""cool"", ""lead"": 7, ""mode"": ""move"", ""recency"": 7, ""warm"": ""hot""}",36.239893078718076,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+seasonal:hot/cool:lead30:recent7,seasonal,false,"{""cold"": ""cool"", ""lead"": 30, ""mode"": ""move"", ""recency"": 7, ""warm"": ""hot""}",36.64868194862907,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+reactive:hot/cool:recent7,reactive,false,"{""cold"": ""cool"", ""lead"": 1, ""mode"": ""move"", ""recency"": 7, ""warm"": ""hot""}",37.22000325764293,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+seasonal:hot/cool:lead7:recent30,seasonal,false,"{""cold"": ""cool"", ""lead"": 7, ""mode"": ""move"", ""recency"": 30, ""warm"": ""hot""}",35.456280227667804,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+seasonal:hot/cool:lead30:recent30,seasonal,false,"{""cold"": ""cool"", ""lead"": 30, ""mode"": ""move"", ""recency"": 30, ""warm"": ""hot""}",35.795466730178774,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+reactive:hot/cool:recent30,reactive,false,"{""cold"": ""cool"", ""lead"": 1, ""mode"": ""move"", ""recency"": 30, ""warm"": ""hot""}",35.24483123639925,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+seasonal:hot/cool:lead7:recent90,seasonal,false,"{""cold"": ""cool"", ""lead"": 7, ""mode"": ""move"", ""recency"": 90, ""warm"": ""hot""}",35.52667911496738,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+seasonal:hot/cool:lead30:recent90,seasonal,false,"{""cold"": ""cool"", ""lead"": 30, ""mode"": ""move"", ""recency"": 90, ""warm"": ""hot""}",35.83250349159614,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+reactive:hot/cool:recent90,reactive,false,"{""cold"": ""cool"", ""lead"": 1, ""mode"": ""move"", ""recency"": 90, ""warm"": ""hot""}",35.02422243292302,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+seasonal:hot/cold:lead7:recent7,seasonal,false,"{""cold"": ""cold"", ""lead"": 7, ""mode"": ""move"", ""recency"": 7, ""warm"": ""hot""}",22.77330596780154,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+seasonal:hot/cold:lead30:recent7,seasonal,false,"{""cold"": ""cold"", ""lead"": 30, ""mode"": ""move"", ""recency"": 7, ""warm"": ""hot""}",23.074371719531168,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+reactive:hot/cold:recent7,reactive,false,"{""cold"": ""cold"", ""lead"": 1, ""mode"": ""move"", ""recency"": 7, ""warm"": ""hot""}",29.08050750191757,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+seasonal:hot/cold:lead7:recent30,seasonal,false,"{""cold"": ""cold"", ""lead"": 7, ""mode"": ""move"", ""recency"": 30, ""warm"": ""hot""}",21.684864226800556,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+seasonal:hot/cold:lead30:recent30,seasonal,false,"{""cold"": ""cold"", ""lead"": 30, ""mode"": ""move"", ""recency"": 30, ""warm"": ""hot""}",21.974006352160206,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+reactive:hot/cold:recent30,reactive,false,"{""cold"": ""cold"", ""lead"": 1, ""mode"": ""move"", ""recency"": 30, ""warm"": ""hot""}",23.279373552763058,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+seasonal:hot/cold:lead7:recent90,seasonal,false,"{""cold"": ""cold"", ""lead"": 7, ""mode"": ""move"", ""recency"": 90, ""warm"": ""hot""}",21.89992955392424,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+seasonal:hot/cold:lead30:recent90,seasonal,false,"{""cold"": ""cold"", ""lead"": 30, ""mode"": ""move"", ""recency"": 90, ""warm"": ""hot""}",22.033412761721948,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+reactive:hot/cold:recent90,reactive,false,"{""cold"": ""cold"", ""lead"": 1, ""mode"": ""move"", ""recency"": 90, ""warm"": ""hot""}",21.64800736888024,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+seasonal:cool/cold:lead7:recent7,seasonal,false,"{""cold"": ""cold"", ""lead"": 7, ""mode"": ""move"", ""recency"": 7, ""warm"": ""cool""}",92.66719281072324,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+seasonal:cool/cold:lead30:recent7,seasonal,false,"{""cold"": ""cold"", ""lead"": 30, ""mode"": ""move"", ""recency"": 7, ""warm"": ""cool""}",92.79041679568559,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+reactive:cool/cold:recent7,reactive,false,"{""cold"": ""cold"", ""lead"": 1, ""mode"": ""move"", ""recency"": 7, ""warm"": ""cool""}",96.66164966875681,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+seasonal:cool/cold:lead7:recent30,seasonal,false,"{""cold"": ""cold"", ""lead"": 7, ""mode"": ""move"", ""recency"": 30, ""warm"": ""cool""}",92.52563906727,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+seasonal:cool/cold:lead30:recent30,seasonal,false,"{""cold"": ""cold"", ""lead"": 30, ""mode"": ""move"", ""recency"": 30, ""warm"": ""cool""}",92.64163637249226,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+reactive:cool/cold:recent30,reactive,false,"{""cold"": ""cold"", ""lead"": 1, ""mode"": ""move"", ""recency"": 30, ""warm"": ""cool""}",94.67237271099512,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+seasonal:cool/cold:lead7:recent90,seasonal,false,"{""cold"": ""cold"", ""lead"": 7, ""mode"": ""move"", ""recency"": 90, ""warm"": ""cool""}",92.08773987941348,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+seasonal:cool/cold:lead30:recent90,seasonal,false,"{""cold"": ""cold"", ""lead"": 30, ""mode"": ""move"", ""recency"": 90, ""warm"": ""cool""}",92.12929327974543,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
+reactive:cool/cold:recent90,reactive,false,"{""cold"": ""cold"", ""lead"": 1, ""mode"": ""move"", ""recency"": 90, ""warm"": ""cool""}",92.43032022404296,359807.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2025,actual
