@@ -41,6 +41,14 @@
 # by this project). Standard has no retrieval fee, so the sheet's 0.0 retrieval is consistent.
 # Request fees were not entered.
 #
+# Owner's calculator reading 2026-10-30, Glacier Instant Retrieval (10,000 GB, 1,000 GB retrieved,
+# no requests): total $70.00 = 40.00 storage (0.004) + 30.00 retrieval (0.03 per GB). The
+# calculator showed no object-size or overhead line for this class. Request fees not entered.
+#
+# STILL UNCONFIRMED after the calculator readings (2026-10-30): Standard-IA (all values), every
+# per-1,000 request fee (PUT and GET) for every class, Bulk retrieval, the Glacier restore-request
+# fees, and all S3 Intelligent-Tiering prices (the main rival policy).
+#
 # as_of is the date this sheet was compiled. The sources are secondary articles
 # dated 2026-03 to 2026-05, NOT AWS's own price page.
 

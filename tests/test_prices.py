@@ -196,3 +196,12 @@ def test_aws_standard_matches_owner_calculator_2026_10_30() -> None:
     )
     assert round(total, 2) == 230.70
     assert aws.get("standard", "retrieval_usd_per_gb") == 0.0
+
+
+def test_aws_glacier_instant_matches_owner_calculator_2026_10_30() -> None:
+    """10,000 GB of Glacier Instant plus 1,000 GB retrieved came to $70.00 a month."""
+    aws = load_all(PRICES_DIR)["aws"]
+    total = 10_000 * aws.get("glacier_instant", "storage_usd_per_gb_month") + 1_000 * aws.get(
+        "glacier_instant", "retrieval_usd_per_gb"
+    )
+    assert round(total, 2) == 70.00
