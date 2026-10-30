@@ -58,9 +58,9 @@ None of this is legal advice. Before any investor material relies on D3 or D4, a
 
 | # | Item | Who | Blocks |
 | --- | --- | --- | --- |
-| 1 | AWS calculator re-read at 10,000 GB (exact decimals) and AWS retrieval and request fees | Owner (10 minutes) | Gate G2 (simulator check) |
+| 1 | ~~AWS calculator re-read at 10,000 GB (exact decimals) and AWS retrieval and request fees~~ Done 2026-10-30: all prices read from AWS's official pages (D-025); the owner's calculator readings for five classes agree and are reproduced by tests | Done | |
 | 2 | ~~Measure real file sizes and download speed~~ Done 2026-10-29: 0.65 MB/s, sizes in the data cards | Done | |
-| 3 | Seattle: get row count and test yearly chunks via the Socrata API | Phase 2 | D4 plan |
+| 3 | ~~Seattle: get row count and test yearly chunks via the Socrata API~~ Done in Phase 2 (D-021): all 22 years match the server row count | Done | |
 | 4 | Read Common Crawl Terms of Use | Phase 8, before use | Compression track only |
 
 

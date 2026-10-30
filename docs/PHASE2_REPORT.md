@@ -31,7 +31,11 @@ All downloads ran on the owner's Mac onto a 32 GB flash drive (the build workspa
 
 ## Open items carried forward
 
-- AWS retrieval and request fees: owner's calculator readings needed before Gate G2 (Phase 3). See `configs/prices/aws.yaml`.
-- Back up the raw D4 copy and the Parquet files to a second place (the flash drive is the only copy).
-- Remove the stale `processed/D5/trace_summary.json` (from the first run; superseded by the per-trace files).
-- Remind the owner at Phase 3 (model choice) and Phase 6 (manual freeze tag).
+Status as of 2026-10-30:
+
+- ~~AWS retrieval and request fees~~ Done: every AWS, Azure and Google price is now read from an official source (D-025); no value is unverified.
+- Back up the raw D4 copy and the Parquet files to a second place (the flash drive is the only copy). **Owner's decision: no backup; the flash drive stays the only copy.** If the drive fails, the downloads can be repeated from the saved lists, but D4 is updated in place by its publisher and may have been revised by then (D-010), so a re-download could change numbers already reported.
+- ~~Remove the stale `processed/D5/trace_summary.json`~~ Done: only the per-trace files remain.
+- Model reminder for Phase 3 was given; the owner chooses the model.
+- Still to do: sealed-year loader guard (Phase 4); manual freeze tag on GitHub (Phase 6, tag pushes fail from the build workspace); read Common Crawl terms (Phase 8).
+- Data integrity re-check on 2026-10-30, run independently of the pipeline code: all 1,135 files listed in the manifests (D1 84, D2 1, D3 3, D4 1,045, D5 2; 9.4 GB) are present at the recorded size and their SHA-256 matches. Nothing has changed since Phase 2.

@@ -1,8 +1,9 @@
 """Load and validate cloud price sheets from ``configs/prices/*.yaml``.
 
 Every price the simulator uses comes through this module, so each number carries its provenance:
-a value is either ``sourced`` (it appears in a cited page) or ``unverified`` (to be checked in
-Phase 1). Malformed sheets fail loudly instead of silently producing wrong costs.
+a value is either ``sourced`` (it appears in a cited official page) or ``unverified`` (not yet
+checked; none are left since 2026-10-30, and a test keeps it that way). Malformed sheets fail
+loudly instead of silently producing wrong costs.
 """
 
 from __future__ import annotations

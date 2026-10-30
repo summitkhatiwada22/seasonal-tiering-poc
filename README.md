@@ -20,7 +20,7 @@ Run `make status` any time, or read [docs/PROGRESS.md](docs/PROGRESS.md). That f
 
 - **Thresholds are fixed before the test.** Pass/fail rules are written down and tagged in git before the sealed test years are read ([docs/PREREGISTRATION.md](docs/PREREGISTRATION.md) arrives in Phase 6).
 - **We compare against the strongest rival**, S3 Intelligent-Tiering and Google Autoclass, not a weak baseline.
-- **Every price has a receipt.** Each number in `configs/prices/` says whether it is `sourced` (with a link) or `unverified` (to be checked), and tests enforce that.
+- **Every price has a receipt.** Each number in `configs/prices/` carries a link to an official AWS, Azure or Google source and the rows read are copied in [docs/evidence/](docs/evidence/official-prices-2026-10-30.md). A test fails if any price is ever marked `unverified`.
 - **We test the tester.** A synthetic generator plants known seasonal patterns and a no-season control, so we can tell a real win from a false one.
 - **Every result is reproducible** from raw data with one command, at a tagged commit. Data is never committed; every downloaded file is recorded with a checksum in [data_records/manifests/](data_records/manifests/).
 - **Stopping is allowed.** If early checks fail, we stop and write up why.
@@ -48,6 +48,7 @@ The real datasets are downloaded to a folder outside the repository by following
 | `docs/data_cards/` | One card per dataset: source, licence, caveats |
 | `docs/PHASE1_REPORT.md`, `docs/PHASE2_REPORT.md` | What each finished phase found |
 | `docs/RUNBOOK_PHASE2.md` | Commands to download and check the real data |
+| `docs/evidence/` | Official price rows (text) and the owner's calculator screenshots |
 | `configs/prices/` | AWS, Google and Azure price sheets with sources |
 | `configs/datasets/` | Dataset sizes and seeds |
 | `src/sat/synth/` | Synthetic data generator with ground truth |
