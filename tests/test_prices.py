@@ -150,3 +150,21 @@ def test_missing_required_field_is_rejected(tmp_path: Path) -> None:
     bad = "\n".join(line for line in GOOD_TIER.splitlines() if "restore_hours" not in line)
     with pytest.raises(PriceSheetError, match="restore_hours"):
         load_price_sheet(_write(tmp_path, _sheet(bad)))
+
+
+def test_aws_glacier_flexible_matches_owner_calculator_2026_10_30() -> None:
+    """10,000 GB in 16 MB objects plus 1,000 GB standard retrieval came to $46.18 a month."""
+    aws = load_all(PRICES_DIR)["aws"]
+    gb_stored, retrieved_gb = 10_000, 1_000
+    objects = gb_stored * 1024 / 16  # the calculator counts in binary units
+    overhead_kb = aws.get("glacier_flexible", "per_object_overhead_kb")
+    assert overhead_kb == 40  # 32 KB archive metadata + 8 KB name index in Standard
+    glacier_gb = objects * (overhead_kb - 8) / 1024 / 1024
+    standard_gb = objects * 8 / 1024 / 1024
+    total = (
+        gb_stored * aws.get("glacier_flexible", "storage_usd_per_gb_month")
+        + glacier_gb * aws.get("glacier_flexible", "storage_usd_per_gb_month")
+        + standard_gb * aws.get("standard", "storage_usd_per_gb_month")
+        + retrieved_gb * aws.get("glacier_flexible", "retrieval_usd_per_gb")
+    )
+    assert round(total, 2) == 46.18

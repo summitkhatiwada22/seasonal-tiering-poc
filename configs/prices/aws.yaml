@@ -24,6 +24,13 @@
 # not modelled). The official price tables are script-drawn and the pricing API is blocked here.
 # Resolve with the owner's calculator readings before Gate G2.
 #
+# Owner's calculator reading 2026-10-30 (us-east-1, Glacier Flexible Retrieval, 10,000 GB stored,
+# 16 MB average object, 1,000 GB Standard retrieval, no requests entered, data transfer on):
+# total $46.18 per month. It reproduces to the cent from storage 0.0036, standard retrieval
+# 0.01 per GB and 40 KB overhead per object (32 KB at the Glacier rate, 8 KB at the Standard
+# rate): see tests/test_prices.py. Screenshots in docs/evidence/. Request fees were not entered,
+# so per-request prices are still unconfirmed.
+#
 # as_of is the date this sheet was compiled. The sources are secondary articles
 # dated 2026-03 to 2026-05, NOT AWS's own price page.
 
