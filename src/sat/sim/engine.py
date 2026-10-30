@@ -116,6 +116,8 @@ class _Engine:
         self.ledger = _Ledger(self.n_days, n, self.weight, config.measure_from)
         self.waits = WaitStats()
         self.cold_by_object = np.zeros(n)
+        self.wait_hours_by_object = np.zeros(n)
+        self.max_wait_by_object = np.zeros(n)
 
     # ------------------------------------------------------------------ setup
 
@@ -344,6 +346,8 @@ class _Engine:
             if measured:
                 self.waits.add(wait, ca, self.weight[arch])
                 self.cold_by_object[arch] += ca * self.weight[arch] * (wait > 0)
+                self.wait_hours_by_object[arch] += wait * ca * self.weight[arch]
+                self.max_wait_by_object[arch] = np.maximum(self.max_wait_by_object[arch], wait)
 
         online = ids[~archived]
         if len(online):
@@ -357,6 +361,8 @@ class _Engine:
             if measured:
                 self.waits.add(wait, co, self.weight[online])
                 self.cold_by_object[online] += co * self.weight[online] * (wait > 0)
+                self.wait_hours_by_object[online] += wait * co * self.weight[online]
+                self.max_wait_by_object[online] = np.maximum(self.max_wait_by_object[online], wait)
 
         if self.egress:
             self.ledger.charge("egress", day, ids, c * self.size_gb[ids] * self.egress)
@@ -396,6 +402,8 @@ class _Engine:
             measure_from=self.config.measure_from,
             per_object_measured=self.ledger.per_object_measured,
             cold_by_object=self.cold_by_object,
+            wait_hours_by_object=self.wait_hours_by_object,
+            max_wait_by_object=self.max_wait_by_object,
         )
 
 

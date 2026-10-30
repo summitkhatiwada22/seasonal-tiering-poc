@@ -30,7 +30,7 @@ from typing import Any
 
 import numpy as np
 
-from sat.policies.policies import Policy, _sim_config, _small_rule
+from sat.policies.policies import Policy, _check_speed, _sim_config, _small_rule
 from sat.policies.rules import check_aws_plan
 from sat.policies.scenario import BoolArray, FloatArray, IntArray, Scenario
 from sat.sim import ITConfig, Plan, SimResult, simulate
@@ -53,7 +53,7 @@ class _Costs:
     up_cost: FloatArray  # leaving this class upwards
 
 
-def _costs(scn: Scenario, classes: tuple[str, ...]) -> _Costs:
+def _costs(scn: Scenario, classes: tuple[str, ...], speed: str = "standard") -> _Costs:
     sheet, rules = scn.sheet, rules_for(scn.sheet)
     size_gb = scn.sizes / BYTES_PER_GB
     first = scn.sheet.tier_order[0]
@@ -82,8 +82,8 @@ def _costs(scn: Scenario, classes: tuple[str, ...]) -> _Costs:
         min_days[k] = tier_field(sheet, t, "min_storage_days")
         down_fee[k] = tier_field(sheet, t, rules.down_fee_field) / 1000
         if archive[k]:
-            restore_fee = tier_field(sheet, t, rules.restore_fee_by_speed["standard"]) / 1000
-            restore_gb = tier_field(sheet, t, rules.retrieval_by_speed["standard"])
+            restore_fee = tier_field(sheet, t, rules.restore_fee_by_speed[speed]) / 1000
+            restore_gb = tier_field(sheet, t, rules.retrieval_by_speed[speed])
             first_read = tier_field(sheet, first, rules.read_field) / 1000
             per_read[k] = first_read
             per_read_day[k] = restore_fee + size_gb * restore_gb + size_gb * copy_price / 30
@@ -131,12 +131,14 @@ class Planner(Policy):
     classes: tuple[str, ...]
     horizon: int = 90
     lead: int = 7
+    speed: str = "standard"  # speed of the restore behind a move up out of an archive class
 
     def __post_init__(self) -> None:
         if self.kind not in {"seasonal", "reactive", "oracle"}:
             raise ValueError(f"unknown kind {self.kind!r}")
         if not 1 <= self.horizon <= 364 or not 1 <= self.lead <= 363:
             raise ValueError("horizon must be 1..364 days and lead 1..363")
+        _check_speed(self.speed)
 
     @property
     def family(self) -> str:
@@ -144,13 +146,22 @@ class Planner(Policy):
 
     @property
     def name(self) -> str:
-        return f"{self.kind}-planner:{'/'.join(self.classes)}:h{self.horizon}:lead{self.lead}"
+        suffix = ":bulk" if self.speed == "bulk" else ""
+        name = f"{self.kind}-planner:{'/'.join(self.classes)}:h{self.horizon}:lead{self.lead}"
+        return name + suffix
 
     def params(self) -> dict[str, Any]:
-        return {"classes": list(self.classes), "horizon": self.horizon, "lead": self.lead}
+        out: dict[str, Any] = {
+            "classes": list(self.classes),
+            "horizon": self.horizon,
+            "lead": self.lead,
+        }
+        if self.speed != "standard":
+            out["speed"] = self.speed
+        return out
 
     def tiers(self, scn: Scenario) -> IntArray:
-        costs = _costs(scn, self.classes)
+        costs = _costs(scn, self.classes, self.speed)
         reads, read_days, near = _forecast(scn, self.kind, self.horizon, self.lead)
         index = np.array([scn.tier_index(t) for t in self.classes])
         if (np.diff(index) <= 0).any():
@@ -191,8 +202,9 @@ class Planner(Policy):
         plan = Plan(self.tiers(scn))
         if scn.sheet.cloud == "aws":
             check_aws_plan(scn, plan)
+        config = _sim_config(scn, up_move_speed=self.speed)
         result = simulate(
-            scn.sheet, scn.inventory(), scn.window_reads(), plan, scn.window_start, _sim_config(scn)
+            scn.sheet, scn.inventory(), scn.window_reads(), plan, scn.window_start, config
         )
         scn.observation_charge(result, per_object_day=scn.sheet.cloud == "azure")
         return result

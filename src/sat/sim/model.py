@@ -184,7 +184,9 @@ class SimResult:
     """The bill (USD) by category, by day and by object row, plus the waits.
 
     ``per_object_measured`` and ``cold_by_object`` cover only days from ``measure_from`` on: each
-    object row's cost and its reads that waited (weighted by the row's count)."""
+    object row's cost and its reads that waited (weighted by the row's count).
+    ``wait_hours_by_object`` adds up the hours those reads waited (every read that day counted, as
+    ``hours_all_reads``) and ``max_wait_by_object`` is each row's longest wait."""
 
     cloud: str
     costs: dict[str, float]
@@ -194,6 +196,8 @@ class SimResult:
     measure_from: int = 0
     per_object_measured: FloatArray | None = None
     cold_by_object: FloatArray | None = None
+    wait_hours_by_object: FloatArray | None = None  # measured hours waited, summed over reads
+    max_wait_by_object: FloatArray | None = None  # longest measured wait (hours), per object row
 
     @property
     def total(self) -> float:
@@ -263,4 +267,6 @@ def merge_results(parts: Sequence[SimResult]) -> SimResult:
         measure_from=first.measure_from,
         per_object_measured=joined("per_object_measured"),
         cold_by_object=joined("cold_by_object"),
+        wait_hours_by_object=joined("wait_hours_by_object"),
+        max_wait_by_object=joined("max_wait_by_object"),
     )

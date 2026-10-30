@@ -216,6 +216,60 @@ M = [
         "GAP_TO_PASS = 0.05",
         "GAP_TO_PASS = 0.04",
         "pass threshold below 5%",
+    ),  # ---- Round two: gate R1 (docs/R1_PROTOCOL.md)
+    (
+        "experiments/r1.py",
+        'hist = load_run(dataset, year - 1, "actual")',
+        'hist = load_run(dataset, year, "actual")',
+        "chooser sees the scored year",
+    ),
+    (
+        "experiments/r1.py",
+        "REPLICATE_OFFSET = 100",
+        "REPLICATE_OFFSET = 0",
+        "ceiling chooses on the scored draw",
+    ),
+    (
+        "experiments/r1.py",
+        'limit = min(cap, rival["cold_rate"]) if rule == "matched" else cap',
+        "limit = cap",
+        "R1 ours may wait more than rival",
+    ),
+    (
+        "experiments/r1.py",
+        'OURS = ("seasonal", "chooser")',
+        'OURS = ("seasonal", "chooser", "ceiling")',
+        "ceiling counted as ours",
+    ),
+    (
+        "experiments/r1.py",
+        "if len(pair_lines) == len(PAIRS) and all(test(x) for x in pair_lines):",
+        "if any(test(x) for x in pair_lines):",
+        "R1 passes on one rolling year",
+    ),
+    (
+        "experiments/r1.py",
+        "end = (date(year, 12, 31) - f.start).days + 1",
+        "end = (date(year + 1, 12, 31) - f.start).days + 1",
+        "rolling year sees the next year",
+    ),
+    (
+        "experiments/chooser.py",
+        "cost=float(cost[choice, cols].sum()) + switch_cost,",
+        "cost=float(cost[choice, cols].sum()),",
+        "switches free",
+    ),
+    (
+        "experiments/chooser.py",
+        "choice: IntArray = np.where(better & has_history, best, prior).astype(np.int64)",
+        "choice: IntArray = np.where(better, best, prior).astype(np.int64)",
+        "files without history chosen on zeros",
+    ),
+    (
+        "sim/engine.py",
+        "self.wait_hours_by_object[arch] += wait * ca * self.weight[arch]",
+        "self.wait_hours_by_object[arch] += wait * self.weight[arch]",
+        "per-file wait hours miss read counts",
     ),
 ]
 # Never write or reuse compiled caches. A planted bug of the same byte size, restored within the same
@@ -254,6 +308,7 @@ for fname, old, new, label in M:
                 "tests/test_policies.py",
                 "tests/test_data_phase4.py",
                 "tests/test_selection.py",
+                "tests/test_round2.py",
             ],
             cwd=root,
             capture_output=True,

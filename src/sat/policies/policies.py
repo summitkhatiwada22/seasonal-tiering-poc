@@ -40,12 +40,24 @@ AUTO_UP_EVERY = 30  # Azure: enableAutoTierToHotFromCool moves a blob "only one 
 RIVAL_FAMILIES = ("lifecycle", "managed", "access-lifecycle")
 
 
-def _sim_config(scn: Scenario, keep_days: int = 1) -> SimConfig:
+SPEEDS = ("standard", "bulk")  # AWS restore speeds a policy may choose (round two, D-045)
+
+
+def _sim_config(
+    scn: Scenario, keep_days: int = 1, up_move_speed: str = "standard", on_demand: str = "standard"
+) -> SimConfig:
     return SimConfig(
         restore_time=scn.restore_time,
         measure_from=scn.measure_from,
         on_demand_keep_days=keep_days,
+        up_move_speed=up_move_speed,
+        on_demand_speed=on_demand,
     )
+
+
+def _check_speed(speed: str) -> None:
+    if speed not in SPEEDS:
+        raise ValueError(f"unknown restore speed {speed!r}")
 
 
 def _small_rule(scn: Scenario, tier: IntArray) -> IntArray:
@@ -85,6 +97,10 @@ class Policy:
 class Lifecycle(Policy):
     target: str  # class reached after ``after_days`` (the first class = keep everything there)
     after_days: int = 30
+    on_demand: str = "standard"  # speed of the restore a read of an archived object triggers
+
+    def __post_init__(self) -> None:
+        _check_speed(self.on_demand)
 
     @property
     def family(self) -> str:
@@ -95,10 +111,14 @@ class Lifecycle(Policy):
         first = _first_class(self.cloud)
         if self.target == first:
             return f"all-{first}"
-        return f"lifecycle:{self.target}@{self.after_days}d"
+        suffix = ":bulk-restores" if self.on_demand == "bulk" else ""
+        return f"lifecycle:{self.target}@{self.after_days}d{suffix}"
 
     def params(self) -> dict[str, Any]:
-        return {"target": self.target, "after_days": self.after_days}
+        out: dict[str, Any] = {"target": self.target, "after_days": self.after_days}
+        if self.on_demand != "standard":
+            out["on_demand"] = self.on_demand
+        return out
 
     def tiers(self, scn: Scenario) -> IntArray:
         age = (scn.sim_start + np.arange(scn.n_days))[None, :] - scn.created[:, None]
@@ -111,8 +131,9 @@ class Lifecycle(Policy):
         plan = Plan(self.tiers(scn))
         if scn.sheet.cloud == "aws":
             check_aws_plan(scn, plan)
+        config = _sim_config(scn, on_demand=self.on_demand)
         return simulate(
-            scn.sheet, scn.inventory(), scn.window_reads(), plan, scn.window_start, _sim_config(scn)
+            scn.sheet, scn.inventory(), scn.window_reads(), plan, scn.window_start, config
         )
 
 
@@ -253,12 +274,14 @@ class TwoTier(Policy):
     mode: str = "move"  # "move" or "copy" (copy: keep archived, pre-warm with restored copies)
     lead: int = 7  # days ahead a predicted read makes the object warm
     recency: int = 30  # days after a read the object stays warm
+    speed: str = "standard"  # speed of planned restores and of moves up out of an archive class
 
     def __post_init__(self) -> None:
         if self.kind not in {"seasonal", "reactive", "oracle"}:
             raise ValueError(f"unknown kind {self.kind!r}")
         if self.mode not in {"move", "copy"}:
             raise ValueError(f"unknown mode {self.mode!r}")
+        _check_speed(self.speed)
         if not 1 <= self.lead <= MAX_AHEAD or not 0 <= self.recency <= 365:
             raise ValueError("lead must be 1..363 and recency 0..365")
 
@@ -269,18 +292,22 @@ class TwoTier(Policy):
     @property
     def name(self) -> str:
         tiers = f"{self.cold}+copies" if self.mode == "copy" else f"{self.warm}/{self.cold}"
+        suffix = ":bulk" if self.speed == "bulk" else ""
         if self.kind == "reactive":
-            return f"reactive:{tiers}:recent{self.recency}"
-        return f"{self.kind}:{tiers}:lead{self.lead}:recent{self.recency}"
+            return f"reactive:{tiers}:recent{self.recency}{suffix}"
+        return f"{self.kind}:{tiers}:lead{self.lead}:recent{self.recency}{suffix}"
 
     def params(self) -> dict[str, Any]:
-        return {
+        out: dict[str, Any] = {
             "warm": self.warm,
             "cold": self.cold,
             "mode": self.mode,
             "lead": self.lead,
             "recency": self.recency,
         }
+        if self.speed != "standard":
+            out["speed"] = self.speed
+        return out
 
     def signals(self, scn: Scenario) -> tuple[BoolArray, BoolArray, BoolArray]:
         """(predicted, recent, quiet) for each object and window day.
@@ -338,7 +365,7 @@ class TwoTier(Policy):
         for obj, first, last in runs(predicted & archived[:, None]):
             first = max(first, int(created[obj]))
             if first <= last:
-                orders.append(Restore(obj, first, last - first + 1))
+                orders.append(Restore(obj, first, last - first + 1, self.speed))
         return orders
 
     def run(self, scn: Scenario) -> SimResult:
@@ -352,7 +379,7 @@ class TwoTier(Policy):
             config = _sim_config(scn, keep_days=max(1, self.recency))
         else:
             plan = Plan(self.tiers(scn, signals))
-            config = _sim_config(scn)
+            config = _sim_config(scn, up_move_speed=self.speed)
         if scn.sheet.cloud == "aws":
             check_aws_plan(scn, plan)
         result = simulate(

@@ -140,6 +140,8 @@ def simulate_intelligent_tiering(
     ledger = _Ledger(n_days, n, weight, measure_from)
     waits = WaitStats()
     cold_by_object = np.zeros(n)
+    wait_hours_by_object = np.zeros(n)
+    max_wait_by_object = np.zeros(n)
     all_ids = np.arange(n)
     warm_by_day = None
     if prewarm is not None:
@@ -179,6 +181,8 @@ def simulate_intelligent_tiering(
                 waits.reads += float((c * weight[ids]).sum())
                 waits.add(hours, c, weight[ids])  # restores are free (I3)
                 cold_by_object[ids] += c * weight[ids] * (hours > 0)
+                wait_hours_by_object[ids] += hours * c * weight[ids]
+                max_wait_by_object[ids] = np.maximum(max_wait_by_object[ids], hours)
             last[ids] = day
 
         new = np.flatnonzero(created == day) if day > 0 else np.zeros(0, dtype=np.int64)
@@ -198,6 +202,8 @@ def simulate_intelligent_tiering(
         measure_from=measure_from,
         per_object_measured=ledger.per_object_measured,
         cold_by_object=cold_by_object,
+        wait_hours_by_object=wait_hours_by_object,
+        max_wait_by_object=max_wait_by_object,
     )
 
 
@@ -273,4 +279,6 @@ def simulate_autoclass(
         measure_from=measure_from,
         per_object_measured=ledger.per_object_measured,
         cold_by_object=cold_by_object,
+        wait_hours_by_object=np.zeros(n),
+        max_wait_by_object=np.zeros(n),
     )

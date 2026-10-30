@@ -134,3 +134,65 @@ def ours(cloud: str, kind: str) -> list[Policy]:
 
 def policy_grid(cloud: str) -> list[Policy]:
     return rivals(cloud) + ours(cloud, "seasonal") + ours(cloud, "reactive") + ours(cloud, "oracle")
+
+
+# ------------------------------------------------------------------------------ round two (R1)
+# Fixed in docs/R1_PROTOCOL.md before any rolling-year run of these settings (D-045). The E1 grid
+# above is unchanged, so every E1 number can still be rebuilt.
+
+BULK_ON_DEMAND = [  # rival: a lifecycle rule whose on-demand restores use AWS bulk speed
+    (target, after) for target in ARCHIVE_CLASSES["aws"] for after in LIFECYCLE_AFTER
+]
+
+
+def _bulk_variants(kind: str) -> list[Policy]:
+    """Ours and the reactive reference with planned restores (copy mode) and moves up out of an
+    archive class at AWS bulk speed. Leads of 7 and 30 days cover the 48-hour bulk restore time."""
+    out: list[Policy] = []
+    for classes in PLANNER_CLASSES["aws"]:
+        if not _has_archive("aws", classes):
+            continue
+        leads = LEADS if kind == "seasonal" else (1,)
+        for horizon in HORIZONS:
+            for lead in leads:
+                out.append(Planner("aws", kind, classes, horizon, lead, "bulk"))
+    for cold in ARCHIVE_CLASSES["aws"]:
+        if kind == "seasonal":
+            for lead in LEADS:
+                for recency in RECENCIES:
+                    out.append(
+                        TwoTier("aws", "seasonal", "standard", cold, "copy", lead, recency, "bulk")
+                    )
+        else:
+            for recency in RECENCIES:
+                out.append(TwoTier("aws", "reactive", "standard", cold, "copy", 1, recency, "bulk"))
+    return out
+
+
+def round2_grid(cloud: str) -> list[Policy]:
+    """Rivals (plus bulk on-demand restores), ours and the reactive reference, each with bulk
+    variants. The oracle references are not run in round two; the forecastable ceiling replaces
+    them (docs/R1_PROTOCOL.md)."""
+    if cloud != "aws":
+        raise ValueError("round two R1 runs on AWS only")
+    out = rivals(cloud)
+    out += [Lifecycle(cloud, t, a, "bulk") for t, a in BULK_ON_DEMAND]
+    for kind in ("seasonal", "reactive"):
+        out += ours(cloud, kind) + _bulk_variants(kind)
+    return out
+
+
+def can_wait(pol: Policy) -> bool:
+    """Whether a read can ever wait under this policy (it uses a class that needs a restore)."""
+    archive = set(ARCHIVE_CLASSES.get(pol.cloud, []))
+    if isinstance(pol, Lifecycle):
+        return pol.target in archive
+    if isinstance(pol, IntelligentTiering):
+        return bool(pol.archive_days or pol.deep_archive_days)
+    if isinstance(pol, ITPrewarm):
+        return True
+    if isinstance(pol, TwoTier):
+        return pol.cold in archive or pol.warm in archive
+    if isinstance(pol, Planner):
+        return any(c in archive for c in pol.classes)
+    return True
