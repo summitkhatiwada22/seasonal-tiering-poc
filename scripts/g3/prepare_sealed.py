@@ -118,4 +118,4 @@ with (out / "sealed_files.csv").open("w", newline="") as f:
     w = csv.DictWriter(f, fieldnames=list(rows[0]))
     w.writeheader()
     w.writerows(rows)
-print(open(out / "sealed_files.csv").read())
+print((out / "sealed_files.csv").read_text())
