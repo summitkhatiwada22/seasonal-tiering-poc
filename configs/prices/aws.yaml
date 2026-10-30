@@ -31,6 +31,11 @@
 # rate): see tests/test_prices.py. Screenshots in docs/evidence/. Request fees were not entered,
 # so per-request prices are still unconfirmed.
 #
+# Owner's calculator reading 2026-10-30, Deep Archive (100,000 GB stored, 16 MB average object,
+# 1,000 GB Standard retrieval, no requests): total $120.32 = 99.00 storage (0.00099) + 20.00
+# retrieval (0.02 per GB) + about 1.32 for 40 KB per object overhead. Reproduced in
+# tests/test_prices.py. Bulk retrieval (0.0025) and request fees were not entered.
+#
 # as_of is the date this sheet was compiled. The sources are secondary articles
 # dated 2026-03 to 2026-05, NOT AWS's own price page.
 

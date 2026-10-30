@@ -168,3 +168,19 @@ def test_aws_glacier_flexible_matches_owner_calculator_2026_10_30() -> None:
         + retrieved_gb * aws.get("glacier_flexible", "retrieval_usd_per_gb")
     )
     assert round(total, 2) == 46.18
+
+
+def test_aws_deep_archive_matches_owner_calculator_2026_10_30() -> None:
+    """100,000 GB in 16 MB objects plus 1,000 GB standard retrieval came to $120.32 a month."""
+    aws = load_all(PRICES_DIR)["aws"]
+    objects = 100_000 * 1024 / 16
+    overhead_kb = aws.get("deep_archive", "per_object_overhead_kb")
+    assert overhead_kb == 40
+    deep = aws.get("deep_archive", "storage_usd_per_gb_month")
+    total = (
+        100_000 * deep
+        + objects * (overhead_kb - 8) / 1024 / 1024 * deep
+        + objects * 8 / 1024 / 1024 * aws.get("standard", "storage_usd_per_gb_month")
+        + 1_000 * aws.get("deep_archive", "retrieval_usd_per_gb")
+    )
+    assert round(total, 2) == 120.32
