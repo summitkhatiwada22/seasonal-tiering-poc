@@ -12,7 +12,7 @@ Stopping early is a valid outcome. If a stop point below fails, we stop and writ
 | 2 | Ingestion pipelines | **Done 2026-10-29.** All five datasets pass the quality report. See [PHASE2_REPORT.md](PHASE2_REPORT.md) | Quality report passes on every dataset |
 | 3 | Cost and latency simulator | **Done 2026-10-30, Gate G2 passed.** 24/24 hand calculations, 4/4 AWS calculator readings, 22/22 planted bugs caught. See [PHASE3_REPORT.md](PHASE3_REPORT.md) | **Gate G2:** simulator matches hand calculations and the AWS pricing calculator |
 | 4 | Baseline policies, plus seasonal-naive | **Done 2026-10-30. E1: continue by the pre-set rule, narrowly.** Passes only on Azure LRS (no managed tiering there); loses to S3 Intelligent-Tiering and Autoclass everywhere. See [PHASE4_REPORT.md](PHASE4_REPORT.md) | **Early check E1** (below) |
-| 5 | Prove the lever, then build the forecast (replaces "Forecast policy", D-036) | **Plan approved 2026-10-30, not started.** Stages 5a (2-6 Nov) and 5b (9-20 Nov). See [PHASE5_PLAN.md](PHASE5_PLAN.md) | **Gate R1 (Fri 6 Nov):** if it fails, the build stops and the paper begins (D-038). **Gate R2 (Fri 20 Nov)** |
+| 5 | Prove the lever, then build the forecast (replaces "Forecast policy", D-036) | **Stage 5a done 2026-10-30. Gate R1 failed narrowly; by D-038 stage 5b was not built.** The per-file chooser is 28-48% cheaper than Intelligent-Tiering on Wikipedia and 40-43% on npm at up to 1% waiting, but passes both rolling years only on npm. See [PHASE5_REPORT.md](PHASE5_REPORT.md) | **Gate R1 (Fri 6 Nov):** if it fails, the build stops and the paper begins (D-038). **Gate R2 (Fri 20 Nov)** |
 | 6 | Freeze and sealed test (stage 5c, 23 Nov to 4 Dec) | Not started | **Gate G3:** go, pivot or stop. The owner creates the freeze tag on GitHub |
 | 7 | Robustness | Runs inside the stage 5c pre-registered run (D-043) | H5, H6 and H9 recorded |
 | 8 | Compression track | Not started (runs only after G3). Research done 2026-10-30, see [PHASE5_PLAN.md](PHASE5_PLAN.md) | H8 recorded |
@@ -38,8 +38,8 @@ After E1 the owner approved a new Phase 5 ([PHASE5_PLAN.md](PHASE5_PLAN.md), dec
 
 | Gate | Date | Result |
 | --- | --- | --- |
-| R1 | Fri 6 Nov | Not run |
-| R2 | Fri 20 Nov | Not run |
+| R1 | Fri 6 Nov (run 30 Oct) | **Failed.** Condition 1 holds on D3 only (D1 missed one rolling year by 0.006 points of waited reads); condition 2 holds on D1 and D3 |
+| R2 | Fri 20 Nov | Measured on the R1 runs, not decided: moot after R1 (and degenerate at no waiting, see the report) |
 | G3 | Fri 4 Dec | Not run |
 
 ## Changes from the original plan

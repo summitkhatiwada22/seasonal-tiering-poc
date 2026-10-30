@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-30",
+  "python": "3.12.3",
+  "zstandard": "0.25.0",
+  "packages": 193,
+  "tarballs": 1135,
+  "failures": [],
+  "published_tgz_bytes": 108077181,
+  "raw_tar_bytes": 414634496,
+  "per_tarball_bytes": {
+    "published": 108077181,
+    "raw": 414634496,
+    "gzip-9": 107152302,
+    "zstd-3": 94140914,
+    "zstd-19": 76532425,
+    "xz-9": 71920040
+  },
+  "per_tarball_vs_published": {
+    "gzip-9": 0.9914424211342078,
+    "zstd-3": 0.8710526415377173,
+    "zstd-19": 0.7081275093583353,
+    "xz-9": 0.6654507393193388
+  },
+  "solid_by_package_vs_published": {
+    "zstd19_long": 0.2379640990080968,
+    "xz9": 0.2138387010667867
+  },
+  "whole_file_dedup_share_of_file_bytes": 0.21812383908633545,
+  "dictionary": {
+    "test_tarballs": 96,
+    "published_bytes": 4807721,
+    "zstd19_bytes": 2688626,
+    "zstd19_dict_bytes": 2712780,
+    "dict_vs_plain": 1.008983770892642,
+    "dict_vs_published": 0.5642548725269207
+  },
+  "speed_mb_per_s": {
+    "gzip-9": {
+      "compress": 21.518778412901792,
+      "decompress": 486.28149613065506
+    },
+    "zstd-3": {
+      "compress": 222.8958792140009,
+      "decompress": 798.5064662806723
+    },
+    "zstd-19": {
+      "compress": 2.8113053304530644,
+      "decompress": 723.3224121799338
+    },
+    "xz-9": {
+      "compress": 2.2745402732441473,
+      "decompress": 73.44619746764828
+    }
+  }
+}

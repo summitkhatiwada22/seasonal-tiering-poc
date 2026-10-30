@@ -166,3 +166,12 @@ The rule says continue, and the rule stands. The narrow reading above suggests P
 Google is not worth pursuing: Autoclass is within a few percent of a perfect forecast. The waiting-time benefit on AWS is real but small, and could be reported as a secondary result.
 
 Writing up E1 as it stands is also a defensible choice. The owner decides.
+
+## Addendum, 2026-10-30: the "oracle is never beaten" check (audit before round two)
+
+The plan's Phase 4 list asked to check that the oracle is never beaten. From `reports/e1/central/*_results.csv`:
+
+* **At no waiting (L0) it holds everywhere:** on every dataset and cloud, in 2022 and 2023, the cheapest oracle setting costs no more than the cheapest seasonal one.
+* **At up to 1% waiting (L1) it fails on AWS for D3 and for the synthetic control:** for example D3 in 2023, `seasonal:deep_archive+copies:lead30:recent90` costs 0.423 USD (0.30% of reads wait) against the best oracle at 0.558 USD (no waits). The oracle references were built with lead 1 and recency 0, the shapes that never wait. They are a ceiling for this policy shape with a perfect forecast, not for the waiting-tolerant settings (restored copies kept 30 or 90 days) that the seasonal grid also contains.
+
+Consequence: the "Perfect forecast" column above understates the room at L1 on AWS. It was a reference only, so the E1 verdict does not change. Round two replaces the oracle with the forecastable ceiling, which chooses from the same menu as ours (docs/R1_PROTOCOL.md).

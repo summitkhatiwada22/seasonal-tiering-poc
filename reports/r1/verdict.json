@@ -1,0 +1,24 @@
+{
+  "condition_1": {
+    "D1": false,
+    "D3": true,
+    "D4": false
+  },
+  "condition_2": {
+    "D1": true,
+    "D3": true,
+    "D4": false
+  },
+  "R1": false,
+  "R2_by_dataset": {
+    "D1": true,
+    "D3": true,
+    "D4": true
+  },
+  "R2": true,
+  "datasets": [
+    "D1",
+    "D3",
+    "D4"
+  ]
+}

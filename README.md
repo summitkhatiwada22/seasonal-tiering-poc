@@ -13,8 +13,8 @@ Run `make status` any time, or read [docs/PROGRESS.md](docs/PROGRESS.md). That f
 | Current phase | See `docs/PROGRESS.md` |
 | Time cap | 6 weeks from 2026-10-29 (until 2026-12-10) |
 | Done so far | Phases 0 to 4: foundations, data and licence checks, five real datasets downloaded and quality-checked ([Phase 2](docs/PHASE2_REPORT.md)), the cost and waiting-time simulator ([Phase 3](docs/PHASE3_REPORT.md)), and the baseline policies with early check E1 ([Phase 4](docs/PHASE4_REPORT.md)) |
-| Next | Round two (approved 2026-10-30, [docs/PHASE5_PLAN.md](docs/PHASE5_PLAN.md)): stage 5a proves the restore-speed lever and the decision rule by gate R1 on Fri 6 Nov. If R1 fails, the build stops and the paper begins |
-| Result so far | Early check E1 (2023 validation year): **continue** by the pre-set rule, but narrowly. Seasonal-naive beats the best rival only on Azure LRS, where no managed tiering is offered; it loses to S3 Intelligent-Tiering and Google Autoclass everywhere. The sealed test years are untouched |
+| Next | Gate R1 failed narrowly on 2026-10-30 ([docs/PHASE5_REPORT.md](docs/PHASE5_REPORT.md)). By the stop rule the build has stopped. The owner chooses: write the paper now, or freeze the per-file chooser as it is and run the sealed test once as a documented deviation |
+| Result so far | E1 (2023): continue, narrowly. Round two (2021-2022 rolling years, AWS): seasonal forecasting does not beat S3 Intelligent-Tiering, and with no waiting nothing does. A per-file choice of policy is 28-48% cheaper on Wikipedia and 40-43% on npm when up to 1% of reads may wait (some up to 48 hours), but not on the library data after 2020. On Azure, smart tier beats every fixed policy. The sealed test years are untouched |
 
 ## How this PoC stays honest
 

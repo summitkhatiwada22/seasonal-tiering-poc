@@ -1,0 +1,43 @@
+policy,family,rival,params,cost,reads,cold_reads,cold_rate,wait_hours_all,wait_hours_first,wait_p99_hours,wait_max_hours,dataset,year,draw
+all-hot,lifecycle,true,"{""after_days"": 30, ""target"": ""hot""}",52.042829201597925,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+lifecycle:cool@30d,lifecycle,true,"{""after_days"": 30, ""target"": ""cool""}",147.49431640477565,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+lifecycle:cool@90d,lifecycle,true,"{""after_days"": 90, ""target"": ""cool""}",141.80532850169487,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+lifecycle:cold@30d,lifecycle,true,"{""after_days"": 30, ""target"": ""cold""}",371.69255716431087,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+lifecycle:cold@90d,lifecycle,true,"{""after_days"": 90, ""target"": ""cold""}",354.03270662947074,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+azure-last-access:cool@30d,access-lifecycle,true,"{""archive"": null, ""cold"": null, ""cool"": 30}",36.76431115178763,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+"azure-last-access:cool@30d,cold@90d",access-lifecycle,true,"{""archive"": null, ""cold"": 90, ""cool"": 30}",125.69258130698792,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+"azure-last-access:cool@90d,cold@180d",access-lifecycle,true,"{""archive"": null, ""cold"": 180, ""cool"": 90}",87.08467071588883,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+smart-tier,managed,true,{},20.193323398744724,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+seasonal-planner:hot/cool/cold:h30:lead1,seasonal,false,"{""classes"": [""hot"", ""cool"", ""cold""], ""horizon"": 30, ""lead"": 1}",34.61903115169087,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+reactive-planner:hot/cool/cold:h30:lead1,reactive,false,"{""classes"": [""hot"", ""cool"", ""cold""], ""horizon"": 30, ""lead"": 1}",32.910481292161904,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+seasonal-planner:hot/cool/cold:h90:lead1,seasonal,false,"{""classes"": [""hot"", ""cool"", ""cold""], ""horizon"": 90, ""lead"": 1}",34.09578727442822,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+reactive-planner:hot/cool/cold:h90:lead1,reactive,false,"{""classes"": [""hot"", ""cool"", ""cold""], ""horizon"": 90, ""lead"": 1}",32.3320110294589,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+seasonal-planner:hot/cool/cold:h180:lead1,seasonal,false,"{""classes"": [""hot"", ""cool"", ""cold""], ""horizon"": 180, ""lead"": 1}",33.3138943597388,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+reactive-planner:hot/cool/cold:h180:lead1,reactive,false,"{""classes"": [""hot"", ""cool"", ""cold""], ""horizon"": 180, ""lead"": 1}",32.488702076665156,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+seasonal:hot/cool:lead7:recent7,seasonal,false,"{""cold"": ""cool"", ""lead"": 7, ""mode"": ""move"", ""recency"": 7, ""warm"": ""hot""}",39.71944857313945,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+seasonal:hot/cool:lead30:recent7,seasonal,false,"{""cold"": ""cool"", ""lead"": 30, ""mode"": ""move"", ""recency"": 7, ""warm"": ""hot""}",40.24826883376662,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+reactive:hot/cool:recent7,reactive,false,"{""cold"": ""cool"", ""lead"": 1, ""mode"": ""move"", ""recency"": 7, ""warm"": ""hot""}",40.17968006143915,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+seasonal:hot/cool:lead7:recent30,seasonal,false,"{""cold"": ""cool"", ""lead"": 7, ""mode"": ""move"", ""recency"": 30, ""warm"": ""hot""}",38.32230999120619,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+seasonal:hot/cool:lead30:recent30,seasonal,false,"{""cold"": ""cool"", ""lead"": 30, ""mode"": ""move"", ""recency"": 30, ""warm"": ""hot""}",38.808417545573114,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+reactive:hot/cool:recent30,reactive,false,"{""cold"": ""cool"", ""lead"": 1, ""mode"": ""move"", ""recency"": 30, ""warm"": ""hot""}",37.121960800954426,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+seasonal:hot/cool:lead7:recent90,seasonal,false,"{""cold"": ""cool"", ""lead"": 7, ""mode"": ""move"", ""recency"": 90, ""warm"": ""hot""}",38.219628071450664,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+seasonal:hot/cool:lead30:recent90,seasonal,false,"{""cold"": ""cool"", ""lead"": 30, ""mode"": ""move"", ""recency"": 90, ""warm"": ""hot""}",38.66014675922013,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+reactive:hot/cool:recent90,reactive,false,"{""cold"": ""cool"", ""lead"": 1, ""mode"": ""move"", ""recency"": 90, ""warm"": ""hot""}",37.06358689782617,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+seasonal:hot/cold:lead7:recent7,seasonal,false,"{""cold"": ""cold"", ""lead"": 7, ""mode"": ""move"", ""recency"": 7, ""warm"": ""hot""}",30.82154077040644,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+seasonal:hot/cold:lead30:recent7,seasonal,false,"{""cold"": ""cold"", ""lead"": 30, ""mode"": ""move"", ""recency"": 7, ""warm"": ""hot""}",31.401951176216944,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+reactive:hot/cold:recent7,reactive,false,"{""cold"": ""cold"", ""lead"": 1, ""mode"": ""move"", ""recency"": 7, ""warm"": ""hot""}",36.96930898387754,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+seasonal:hot/cold:lead7:recent30,seasonal,false,"{""cold"": ""cold"", ""lead"": 7, ""mode"": ""move"", ""recency"": 30, ""warm"": ""hot""}",28.4223178804121,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+seasonal:hot/cold:lead30:recent30,seasonal,false,"{""cold"": ""cold"", ""lead"": 30, ""mode"": ""move"", ""recency"": 30, ""warm"": ""hot""}",29.01269578470613,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+reactive:hot/cold:recent30,reactive,false,"{""cold"": ""cold"", ""lead"": 1, ""mode"": ""move"", ""recency"": 30, ""warm"": ""hot""}",28.430451187513466,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+seasonal:hot/cold:lead7:recent90,seasonal,false,"{""cold"": ""cold"", ""lead"": 7, ""mode"": ""move"", ""recency"": 90, ""warm"": ""hot""}",28.2486981742788,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+seasonal:hot/cold:lead30:recent90,seasonal,false,"{""cold"": ""cold"", ""lead"": 30, ""mode"": ""move"", ""recency"": 90, ""warm"": ""hot""}",28.794667868355305,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+reactive:hot/cold:recent90,reactive,false,"{""cold"": ""cold"", ""lead"": 1, ""mode"": ""move"", ""recency"": 90, ""warm"": ""hot""}",26.571943795073683,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+seasonal:cool/cold:lead7:recent7,seasonal,false,"{""cold"": ""cold"", ""lead"": 7, ""mode"": ""move"", ""recency"": 7, ""warm"": ""cool""}",143.54478512732803,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+seasonal:cool/cold:lead30:recent7,seasonal,false,"{""cold"": ""cold"", ""lead"": 30, ""mode"": ""move"", ""recency"": 7, ""warm"": ""cool""}",143.79220714173047,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+reactive:cool/cold:recent7,reactive,false,"{""cold"": ""cold"", ""lead"": 1, ""mode"": ""move"", ""recency"": 7, ""warm"": ""cool""}",147.14681650360293,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+seasonal:cool/cold:lead7:recent30,seasonal,false,"{""cold"": ""cold"", ""lead"": 7, ""mode"": ""move"", ""recency"": 30, ""warm"": ""cool""}",143.00884847111513,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+seasonal:cool/cold:lead30:recent30,seasonal,false,"{""cold"": ""cold"", ""lead"": 30, ""mode"": ""move"", ""recency"": 30, ""warm"": ""cool""}",143.27010390528193,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+reactive:cool/cold:recent30,reactive,false,"{""cold"": ""cold"", ""lead"": 1, ""mode"": ""move"", ""recency"": 30, ""warm"": ""cool""}",144.02117402955884,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+seasonal:cool/cold:lead7:recent90,seasonal,false,"{""cold"": ""cold"", ""lead"": 7, ""mode"": ""move"", ""recency"": 90, ""warm"": ""cool""}",142.1579821506282,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+seasonal:cool/cold:lead30:recent90,seasonal,false,"{""cold"": ""cold"", ""lead"": 30, ""mode"": ""move"", ""recency"": 90, ""warm"": ""cool""}",142.40555959584253,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
+reactive:cool/cold:recent90,reactive,false,"{""cold"": ""cold"", ""lead"": 1, ""mode"": ""move"", ""recency"": 90, ""warm"": ""cool""}",141.262193624396,699994.0,0.0,0.0,0.0,0.0,0.0,0.0,D4,2022,actual
