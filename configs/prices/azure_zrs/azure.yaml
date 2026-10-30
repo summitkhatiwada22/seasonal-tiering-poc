@@ -1,0 +1,69 @@
+# Azure Blob Storage price sheet (East US 2, ZRS, flat namespace, general-purpose v2). All prices in USD.
+# Round two (D-041, D-049): the sheet Azure smart tier needs. Smart tier is available only on
+# zone-redundant accounts (ZRS, GZRS, RA-GZRS), so the Phase 4 LRS sheet could not price it.
+#
+# status: sourced -> the value appears in an official Microsoft source listed under _sources.
+#
+# VERIFICATION (2026-10-30). Prices were read from Microsoft's Azure Retail Prices API in the
+# built-in browser (product "General Block Blob v2", region eastus2, pay-as-you-go, skuName
+# "Hot ZRS", "Cool ZRS", "Cold ZRS"; and product "Blob Features", sku "Smart Tier ZRS"). The rows are
+# copied in docs/evidence/official-prices-azure-zrs-2026-10-30.md. The API quotes operations per
+# 10,000; this sheet stores per 1,000 (divide by 10).
+#
+# There is no archive tier: "The archive tier isn't supported for ZRS, GZRS, or RA-GZRS accounts"
+# (Microsoft Learn, access tiers overview). So no read ever waits on this sheet.
+#
+# Smart tier rules (Microsoft Learn, "Smart tier"): new data in hot; not accessed for 30 days -> cool;
+# 60 more days -> cold; Get Blob or Put Blob moves the object to hot immediately; no charges for
+# tier transitions, early deletion or data retrieval; access operations billed at hot rates;
+# objects under 128 KiB stay in hot with no monitoring fee; a monthly monitoring operation for each
+# object over 128 KiB.
+
+_sources:
+  azure_retail_api_zrs: &azure_retail_api_zrs "https://prices.azure.com/api/retail/prices?$filter=serviceName eq 'Storage' and armRegionName eq 'eastus2' and productName eq 'General Block Blob v2' and priceType eq 'Consumption' and contains(skuName,'ZRS')"  # read 2026-10-30
+  azure_retail_api_smart: &azure_retail_api_smart "https://prices.azure.com/api/retail/prices?$filter=serviceName eq 'Storage' and armRegionName eq 'eastus2' and contains(meterName,'Smart')"  # read 2026-10-30
+  azure_access_tiers: &azure_access_tiers https://learn.microsoft.com/en-us/azure/storage/blobs/access-tiers-overview  # read 2026-10-30
+  azure_smart_tier: &azure_smart_tier https://learn.microsoft.com/en-us/azure/storage/blobs/access-tiers-smart  # read 2026-10-30
+
+cloud: azure
+region: East US 2, ZRS, flat namespace
+currency: USD
+as_of: 2026-10-30
+
+tier_order: [hot, cool, cold]
+
+tiers:
+  hot:
+    storage_usd_per_gb_month: {value: 0.023, status: sourced, source: *azure_retail_api_zrs}    # "Hot ZRS Data Stored", first 50 TB
+    retrieval_usd_per_gb: {value: 0.0, status: sourced, source: *azure_retail_api_zrs}        # no retrieval meter for Hot
+    min_storage_days: {value: 0, status: sourced, source: *azure_access_tiers}
+    min_billable_object_kb: {value: 0, status: sourced, source: *azure_access_tiers}
+    per_object_overhead_kb: {value: 0, status: sourced, source: *azure_access_tiers}
+    restore_hours: {value: 0, status: sourced, source: *azure_access_tiers}
+    put_per_1000: {value: 0.00625, status: sourced, source: *azure_retail_api_zrs}            # $0.0625 per 10,000 writes
+    get_per_1000: {value: 0.0004, status: sourced, source: *azure_retail_api_zrs}             # $0.004 per 10,000 reads
+  cool:
+    storage_usd_per_gb_month: {value: 0.0125, status: sourced, source: *azure_retail_api_zrs}
+    retrieval_usd_per_gb: {value: 0.01, status: sourced, source: *azure_retail_api_zrs}
+    min_storage_days: {value: 30, status: sourced, source: *azure_access_tiers}
+    min_billable_object_kb: {value: 0, status: sourced, source: *azure_access_tiers}
+    per_object_overhead_kb: {value: 0, status: sourced, source: *azure_access_tiers}
+    restore_hours: {value: 0, status: sourced, source: *azure_access_tiers}
+    put_per_1000: {value: 0.01, status: sourced, source: *azure_retail_api_zrs}               # $0.10 per 10,000
+    get_per_1000: {value: 0.001, status: sourced, source: *azure_retail_api_zrs}              # $0.01 per 10,000
+  cold:
+    storage_usd_per_gb_month: {value: 0.004, status: sourced, source: *azure_retail_api_zrs}
+    retrieval_usd_per_gb: {value: 0.03, status: sourced, source: *azure_retail_api_zrs}
+    min_storage_days: {value: 90, status: sourced, source: *azure_access_tiers}
+    min_billable_object_kb: {value: 0, status: sourced, source: *azure_access_tiers}
+    per_object_overhead_kb: {value: 0, status: sourced, source: *azure_access_tiers}
+    restore_hours: {value: 0, status: sourced, source: *azure_access_tiers}
+    put_per_1000: {value: 0.02, status: sourced, source: *azure_retail_api_zrs}               # $0.20 per 10,000
+    get_per_1000: {value: 0.01, status: sourced, source: *azure_retail_api_zrs}               # $0.10 per 10,000
+
+extras:
+  other_operations_per_1000: {value: 0.0004, status: sourced, source: *azure_retail_api_zrs}  # "All Other Operations", Hot ZRS
+  smart_tier_monitoring_per_1000_objects: {value: 0.004, status: sourced, source: *azure_retail_api_smart}  # $0.04 per 10,000 objects a month
+  smart_tier_min_object_kb: {value: 128, status: sourced, source: *azure_smart_tier}
+  smart_tier_days_to_cool: {value: 30, status: sourced, source: *azure_smart_tier}
+  smart_tier_days_to_cold: {value: 90, status: sourced, source: *azure_smart_tier}             # 30 + "60 more days"

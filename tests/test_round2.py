@@ -355,3 +355,60 @@ def test_actual_draw_is_the_e1_central_draw_and_the_replicate_is_not() -> None:
     assert np.array_equal(actual.sizes, central.sizes)
     assert not np.array_equal(replicate.reads, actual.reads)
     assert np.array_equal(replicate.created, actual.created)
+
+
+# ------------------------------------------------------------------ Azure ZRS and smart tier
+
+ZRS = load_all(Path(__file__).resolve().parents[1] / "configs" / "prices" / "azure_zrs")["azure"]
+
+
+def test_zrs_sheet_is_fully_sourced_and_has_no_archive() -> None:
+    assert ZRS.unverified() == []
+    assert ZRS.tier_order == ("hot", "cool", "cold")
+    assert ZRS.get("hot", "storage_usd_per_gb_month") == 0.023
+
+
+def test_smart_tier_hand_case() -> None:
+    """A 1 GiB object, idle for years, read once on day 100 of a 200-day window. Before the read
+    it is cold (90 or more idle days); the read day and the 30 days without access after it are
+    hot, then 60 days cool (30 to 89 idle days), then cold. Storage uses the sheet's daily factor.
+    Reads cost the hot rate; transitions, retrieval and early deletion are free."""
+    from sat.policies import SmartTier
+    from sat.sim.rules import daily_storage_factor, rules_for
+
+    reads = np.zeros((1, 1200))
+    reads[0, 1100] = 1
+    scn = Scenario(
+        "t", ZRS, np.array([GIB]), reads.astype(np.int64), np.array([0]), HIST, 1000, 200, 0
+    )
+    res = SmartTier("azure").run(scn)
+    factor = daily_storage_factor(rules_for(ZRS), scn.window_start, 200)
+    tiers = np.array([0.004] * 100 + [0.023] * 31 + [0.0125] * 60 + [0.004] * 9)
+    assert res.costs["storage"] == pytest.approx(float((tiers * factor).sum()))
+    assert res.costs["read_requests"] == pytest.approx(0.004 / 10_000)
+    assert res.costs["retrieval"] == 0 and res.costs["transition"] == 0
+    assert res.costs["early_delete"] == 0 and res.waits.cold_reads == 0
+    assert res.costs["monitoring"] == pytest.approx(200 * 0.04 / 10_000 / 30)
+
+
+def test_smart_tier_small_objects_stay_hot_without_a_fee() -> None:
+    from sat.policies import SmartTier
+
+    reads = np.zeros((1, 1200), dtype=np.int64)
+    scn = Scenario("t", ZRS, np.array([1000]), reads, np.array([0]), HIST, 1000, 200, 0)
+    res = SmartTier("azure").run(scn)
+    assert res.costs["monitoring"] == 0
+    assert res.costs["storage"] > 0
+
+
+def test_zrs_grid_runs_without_an_archive_tier() -> None:
+    from sat.policies.grid import zrs_grid
+
+    reads = (np.random.default_rng(1).random((3, 900)) < 0.02).astype(np.int64)
+    scn = Scenario("t", ZRS, np.full(3, GIB), reads, np.zeros(3, dtype=np.int64), HIST, 400, 500, 0)
+    names = set()
+    for pol in zrs_grid():
+        res = pol.run(scn)
+        assert res.waits.cold_reads == 0
+        names.add(pol.name)
+    assert "smart-tier" in names and len(names) == len(zrs_grid())

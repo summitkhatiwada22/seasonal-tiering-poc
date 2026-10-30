@@ -18,6 +18,7 @@ from sat.policies.policies import (
     IntelligentTiering,
     Lifecycle,
     Policy,
+    SmartTier,
     TwoTier,
 )
 
@@ -196,3 +197,31 @@ def can_wait(pol: Policy) -> bool:
     if isinstance(pol, Planner):
         return any(c in archive for c in pol.classes)
     return True
+
+
+# ------------------------------------------------------------------------------ Azure ZRS (D-049)
+ZRS_CLASSES = ("hot", "cool", "cold")
+ZRS_PAIRS = [("hot", "cool"), ("hot", "cold"), ("cool", "cold")]
+
+
+def zrs_grid() -> list[Policy]:
+    """Azure zone-redundant sheet (no archive tier): rivals including smart tier, ours and the
+    reactive reference, built the same way as the E1 Azure grid minus the archive tier."""
+    cloud = "azure"
+    out: list[Policy] = [Lifecycle(cloud, "hot")]
+    out += [Lifecycle(cloud, t, a) for t in ("cool", "cold") for a in LIFECYCLE_AFTER]
+    out += [
+        AzureLastAccess(cloud, 30),
+        AzureLastAccess(cloud, 30, cold_days=90),
+        AzureLastAccess(cloud, 90, cold_days=180),
+        SmartTier(cloud),
+    ]
+    for horizon in HORIZONS:
+        out.append(Planner(cloud, "seasonal", ZRS_CLASSES, horizon, 1))
+        out.append(Planner(cloud, "reactive", ZRS_CLASSES, horizon, 1))
+    for warm, cold in ZRS_PAIRS:
+        for recency in RECENCIES:
+            for lead in LEADS:
+                out.append(TwoTier(cloud, "seasonal", warm, cold, "move", lead, recency))
+            out.append(TwoTier(cloud, "reactive", warm, cold, "move", 1, recency))
+    return out

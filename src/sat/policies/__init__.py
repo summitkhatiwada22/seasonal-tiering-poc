@@ -9,6 +9,7 @@ from sat.policies.policies import (
     IntelligentTiering,
     Lifecycle,
     Policy,
+    SmartTier,
     TwoTier,
 )
 from sat.policies.rules import PlanRuleError, check_aws_plan
@@ -18,6 +19,7 @@ __all__ = [
     "RIVAL_FAMILIES",
     "Autoclass",
     "AzureLastAccess",
+    "SmartTier",
     "ITPrewarm",
     "IntelligentTiering",
     "Lifecycle",

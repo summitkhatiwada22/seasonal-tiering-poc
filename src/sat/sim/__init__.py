@@ -1,7 +1,12 @@
 """Phase 3: cost and waiting-time simulator. Rules: docs/SIM_RULES.md."""
 
 from sat.sim.engine import simulate, simulate_chunked
-from sat.sim.managed import ITConfig, simulate_autoclass, simulate_intelligent_tiering
+from sat.sim.managed import (
+    ITConfig,
+    simulate_autoclass,
+    simulate_intelligent_tiering,
+    simulate_smart_tier,
+)
 from sat.sim.model import (
     COST_CATEGORIES,
     Inventory,
@@ -25,6 +30,7 @@ __all__ = [
     "merge_results",
     "simulate",
     "simulate_autoclass",
+    "simulate_smart_tier",
     "simulate_chunked",
     "simulate_intelligent_tiering",
 ]

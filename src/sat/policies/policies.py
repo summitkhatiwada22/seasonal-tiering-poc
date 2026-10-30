@@ -33,7 +33,7 @@ import numpy as np
 from sat.policies.rules import check_aws_plan
 from sat.policies.scenario import MAX_AHEAD, BoolArray, IntArray, Scenario, runs
 from sat.sim import ITConfig, Plan, Restore, SimConfig, SimResult, simulate
-from sat.sim.managed import simulate_autoclass, simulate_intelligent_tiering
+from sat.sim.managed import simulate_autoclass, simulate_intelligent_tiering, simulate_smart_tier
 
 AUTO_UP_EVERY = 30  # Azure: enableAutoTierToHotFromCool moves a blob "only one time in 30 days"
 
@@ -226,7 +226,11 @@ class AzureLastAccess(Policy):
 
     def tiers(self, scn: Scenario) -> IntArray:
         hot, cool = scn.tier_index("hot"), scn.tier_index("cool")
-        cold, arch = scn.tier_index("cold"), scn.tier_index("archive")
+        cold = scn.tier_index("cold")
+        # the zone-redundant sheet has no archive tier; -1 never matches a class
+        arch = scn.tier_index("archive") if "archive" in scn.sheet.tier_order else -1
+        if self.archive_days is not None and arch < 0:
+            raise ValueError("this Azure sheet has no archive tier")
         read = scn.reads[:, : scn.end] > 0
         n = scn.n_objects
         cur = np.full(n, hot, dtype=np.int64)
@@ -261,6 +265,30 @@ class AzureLastAccess(Policy):
         )
         scn.observation_charge(result, per_object_day=True)
         return result
+
+
+@dataclass(frozen=True)
+class SmartTier(Policy):
+    """Azure smart tier (zone-redundant accounts only): Azure's own reactive tiering (D-049)."""
+
+    @property
+    def family(self) -> str:
+        return "managed"
+
+    @property
+    def name(self) -> str:
+        return "smart-tier"
+
+    def run(self, scn: Scenario) -> SimResult:
+        self._check(scn)
+        return simulate_smart_tier(
+            scn.sheet,
+            scn.inventory(),
+            scn.window_reads(),
+            scn.window_start,
+            initial_idle_days=scn.initial_idle_days(),
+            measure_from=scn.measure_from,
+        )
 
 
 # ------------------------------------------------------------------------------ ours

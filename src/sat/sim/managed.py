@@ -282,3 +282,79 @@ def simulate_autoclass(
         wait_hours_by_object=np.zeros(n),
         max_wait_by_object=np.zeros(n),
     )
+
+
+def simulate_smart_tier(
+    sheet: PriceSheet,
+    inventory: Inventory,
+    reads: npt.ArrayLike,
+    start: date,
+    initial_idle_days: npt.ArrayLike | int = 0,
+    measure_from: int = 0,
+) -> SimResult:
+    """Bill Azure smart tier (round two, D-049; rules in the ZRS sheet's header).
+
+    Each day an eligible object (over 128 KiB) sits in hot, cool (30 idle days) or cold (90). A read
+    (Get Blob) moves it to hot at once and is billed at the hot read rate; transitions, early
+    deletion and retrieval are free. Storage of a read day is billed at hot. The monthly monitoring
+    fee per eligible object is spread over days like Autoclass's (A8). New objects are written to
+    hot (Put Blob at hot rates). Nothing ever waits: there is no archive tier.
+    """
+    if sheet.cloud != "azure" or "archive" in sheet.tier_order:
+        raise ValueError("smart tier needs the Azure zone-redundant (ZRS) price sheet")
+    x = {k: p.value for k, p in sheet.extras.items()}
+    prep = _prepare(inventory, reads, initial_idle_days)
+    sizes, weight, created, reads_by_day, last = (
+        prep.sizes,
+        prep.weight,
+        prep.created,
+        prep.reads_by_day,
+        prep.last.copy(),
+    )
+    n, n_days = len(sizes), reads_by_day.shape[0]
+    factor = daily_storage_factor(rules_for(sheet), start, n_days)
+    names = ["hot", "cool", "cold"]
+    price = np.array([sheet.get(t, "storage_usd_per_gb_month") for t in names])
+    read_fee = sheet.get("hot", "get_per_1000") / 1000
+    write_fee = sheet.get("hot", "put_per_1000") / 1000
+    fee_per_day = x["smart_tier_monitoring_per_1000_objects"] / 1000 / 30
+    eligible = sizes >= x["smart_tier_min_object_kb"] * BYTES_PER_KB  # "at least 128 KiB" tiers
+    monitored = sizes > x["smart_tier_min_object_kb"] * BYTES_PER_KB  # fee "for each object over"
+    size_gb = sizes / BYTES_PER_GB
+
+    ledger = _Ledger(n_days, n, weight, measure_from)
+    waits = WaitStats()
+    all_ids = np.arange(n)
+    for day in range(n_days):
+        idle = day - last - 1
+        tier = np.zeros(n, dtype=np.int64)
+        tier[idle >= x["smart_tier_days_to_cool"]] = 1
+        tier[idle >= x["smart_tier_days_to_cold"]] = 2
+        counts = reads_by_day[day]
+        ids = np.flatnonzero(counts)
+        if len(ids):
+            c = counts[ids]
+            if day >= measure_from:
+                waits.reads += float((c * weight[ids]).sum())
+            ledger.charge("read_requests", day, ids, c * read_fee)
+            last[ids] = day
+            tier[ids] = 0  # moved to hot immediately
+        tier[~eligible] = 0
+        new = np.flatnonzero(created == day) if day > 0 else np.zeros(0, dtype=np.int64)
+        ledger.charge("write_requests", day, new, np.full(len(new), write_fee))
+        ids = all_ids[created <= day]
+        ledger.charge("storage", day, ids, size_gb[ids] * price[tier[ids]] * factor[day])
+        ledger.charge("monitoring", day, ids, np.where(monitored[ids], fee_per_day, 0.0))
+
+    return SimResult(
+        cloud="azure-smart-tier",
+        costs={c: float(v.sum()) for c, v in ledger.daily.items()},
+        daily=ledger.daily,
+        per_object=ledger.per_object,
+        waits=waits,
+        measure_from=measure_from,
+        per_object_measured=ledger.per_object_measured,
+        cold_by_object=np.zeros(n),
+        wait_hours_by_object=np.zeros(n),
+        max_wait_by_object=np.zeros(n),
+    )

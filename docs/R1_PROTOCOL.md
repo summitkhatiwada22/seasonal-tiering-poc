@@ -82,3 +82,12 @@ uv run python -m sat.experiments.r1 score
 ## 10. Not part of R1
 
 Azure (the zone-redundant price sheet and smart tier, D-041) and Google are not part of this gate. No Azure number is shown before the smart-tier rival exists.
+
+## Addendum A: Azure on the zone-redundant sheet (written 2026-10-30, before its real-data runs)
+
+Azure smart tier (generally available since 2026-04-14) works only on zone-redundant accounts, so a second Azure price sheet was added: East US 2, ZRS, read from the Azure Retail Prices API (`configs/prices/azure_zrs/azure.yaml`, evidence in `docs/evidence/official-prices-azure-zrs-2026-10-30.md`). ZRS has no archive tier, so nothing ever waits on it. Decision D-049.
+
+* **Smart tier** (`simulate_smart_tier`): hot; cool after 30 idle days; cold after 90; a read moves the object to hot at once, billed at the hot read rate; no transition, early-deletion or retrieval fees; objects under 128 KiB stay hot; a monitoring fee of 0.04 USD per 10,000 objects over 128 KiB a month, spread over days as for Autoclass (A8).
+* **Grid** (`zrs_grid`, 42 policies): rivals = all-hot, lifecycle to cool or cold after 30 or 90 days, three last-access rules without archive, and smart tier; ours = the planner over hot/cool/cold (three horizons) and the warm/cold rule on hot/cool, hot/cold and cool/cold (two leads, three recencies); the reactive reference the same with the forecast off.
+* **Chooser:** default smart tier, mu 0 (nothing waits), margins 0, 0.1 and 0.25, the same switch-charge rule priced on the ZRS sheet. No forecastable ceiling for Azure.
+* **Years, pick rule and lines:** as sections 2 and 5. Reported in `reports/r1/zrs/`. **Not part of gate R1.** The Phase 4 Azure LRS results stay as they are, labelled as measured against a weak rival.
