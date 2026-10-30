@@ -1,0 +1,231 @@
+{
+  "rehearsal": true,
+  "scenarios": {
+    "base": {
+      "datasets": [
+        "D1",
+        "D3",
+        "D4"
+      ],
+      "H1": {
+        "D1": false,
+        "D3": true,
+        "D4": false
+      },
+      "H2": {
+        "D1": false,
+        "D3": true,
+        "D4": false
+      },
+      "H3_capture": {
+        "D1_2021": 0.9431501897696555,
+        "D1_2022": 0.49957802616717173,
+        "D3_2021": 0.9082170471795545,
+        "D3_2022": 0.8512633268825677,
+        "D4_2022": -3.3205915033208973
+      },
+      "H4_naive_gap": {
+        "D1_2021_L0": 0.17614775335351818,
+        "D1_2021_L1": 0.5123841676373391,
+        "D1_2022_L0": 0.16290372920854546,
+        "D1_2022_L1": 0.3068838887064038,
+        "D3_2021_L0": 0.24259801595481023,
+        "D3_2021_L1": 0.41182894493977795,
+        "D3_2022_L0": 0.11185340765861551,
+        "D3_2022_L1": 0.4703415693793287,
+        "D4_2021_L0": 0.3241370442536753,
+        "D4_2021_L1": -0.2002817723264514,
+        "D4_2022_L0": 0.2855566675312199,
+        "D4_2022_L1": 0.0
+      },
+      "H6": {
+        "D1_2021": {
+          "core_hours": 0.09175352493921916,
+          "saved_usd": 16.989470935298385,
+          "ratio": 0.00021602444311220146,
+          "ratio_at_10x": 0.002160244431122015
+        },
+        "D1_2022": {
+          "core_hours": 0.11368292364809249,
+          "saved_usd": 9.899155962051598,
+          "ratio": 0.00045936410774371404,
+          "ratio_at_10x": 0.004593641077437141
+        },
+        "D3_2021": {
+          "core_hours": 0.008622619377242194,
+          "saved_usd": 0.17948541455997197,
+          "ratio": 0.0019216312140753016,
+          "ratio_at_10x": 0.019216312140753016
+        },
+        "D3_2022": {
+          "core_hours": 0.008324340449439156,
+          "saved_usd": 0.2017701378914229,
+          "ratio": 0.0016502621322326049,
+          "ratio_at_10x": 0.016502621322326046
+        },
+        "D4_2021": {
+          "core_hours": 0.054099837210443286,
+          "saved_usd": -5.337192921071626,
+          "ratio": null,
+          "ratio_at_10x": null
+        },
+        "D4_2022": {
+          "core_hours": 0.06442820178137885,
+          "saved_usd": -2.5570290780015874,
+          "ratio": null,
+          "ratio_at_10x": null
+        }
+      },
+      "azure_zrs": [
+        {
+          "dataset": "D1",
+          "pick_year": 2020,
+          "rival": "smart-tier",
+          "ours_policy": "chooser:all:mu0:m0.1",
+          "ours_gap": 0.00022060297758386138
+        },
+        {
+          "dataset": "D1",
+          "pick_year": 2021,
+          "rival": "smart-tier",
+          "ours_policy": "chooser:all:mu0:m0",
+          "ours_gap": 0.00028967898200737974
+        },
+        {
+          "dataset": "D3",
+          "pick_year": 2020,
+          "rival": "smart-tier",
+          "ours_policy": "chooser:all:mu0:m0",
+          "ours_gap": 0.0014139915783772938
+        },
+        {
+          "dataset": "D3",
+          "pick_year": 2021,
+          "rival": "smart-tier",
+          "ours_policy": "chooser:all:mu0:m0",
+          "ours_gap": 0.0016287082212488313
+        },
+        {
+          "dataset": "D4",
+          "pick_year": 2020,
+          "rival": "smart-tier",
+          "ours_policy": "chooser:all:mu0:m0.1",
+          "ours_gap": 3.6268815713613733e-05
+        },
+        {
+          "dataset": "D4",
+          "pick_year": 2021,
+          "rival": "smart-tier",
+          "ours_policy": "chooser:all:mu0:m0.1",
+          "ours_gap": 0.00037778274259381295
+        }
+      ]
+    },
+    "storage-x0.5": {
+      "datasets": [
+        "D3"
+      ],
+      "H1": {
+        "D3": true
+      },
+      "H2": {
+        "D3": true
+      }
+    },
+    "storage-x1.5": {
+      "datasets": [
+        "D3"
+      ],
+      "H1": {
+        "D3": false
+      },
+      "H2": {
+        "D3": false
+      }
+    },
+    "fees-x0.5": {
+      "datasets": [
+        "D3"
+      ],
+      "H1": {
+        "D3": false
+      },
+      "H2": {
+        "D3": false
+      }
+    },
+    "fees-x1.5": {
+      "datasets": [
+        "D3"
+      ],
+      "H1": {
+        "D3": true
+      },
+      "H2": {
+        "D3": true
+      }
+    },
+    "restore-low": {
+      "datasets": [
+        "D3"
+      ],
+      "H1": {
+        "D3": true
+      },
+      "H2": {
+        "D3": true
+      }
+    },
+    "reads-low": {
+      "datasets": [
+        "D3"
+      ],
+      "H1": {
+        "D3": false
+      },
+      "H2": {
+        "D3": false
+      }
+    },
+    "reads-high": {
+      "datasets": [
+        "D3"
+      ],
+      "H1": {
+        "D3": false
+      },
+      "H2": {
+        "D3": false
+      }
+    },
+    "size-low": {
+      "datasets": [
+        "D3"
+      ],
+      "H1": {
+        "D3": false
+      },
+      "H2": {
+        "D3": true
+      }
+    },
+    "size-high": {
+      "datasets": [
+        "D3"
+      ],
+      "H1": {
+        "D3": true
+      },
+      "H2": {
+        "D3": false
+      }
+    }
+  },
+  "H1": false,
+  "H2": false,
+  "H5": false,
+  "H5_held_in": [],
+  "H6": false,
+  "H7": true,
+  "H9": null
+}

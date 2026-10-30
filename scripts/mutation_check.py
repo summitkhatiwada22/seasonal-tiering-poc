@@ -243,7 +243,7 @@ M = [
     ),
     (
         "experiments/r1.py",
-        "if len(pair_lines) == len(PAIRS) and all(test(x) for x in pair_lines):",
+        "if len(pair_lines) == len(STUDY.pairs) and all(test(x) for x in pair_lines):",
         "if any(test(x) for x in pair_lines):",
         "R1 passes on one rolling year",
     ),
@@ -264,6 +264,20 @@ M = [
         "choice: IntArray = np.where(better & has_history, best, prior).astype(np.int64)",
         "choice: IntArray = np.where(better, best, prior).astype(np.int64)",
         "files without history chosen on zeros",
+    ),
+    # ---- Gate G3 (docs/PREREGISTRATION.md)
+    (
+        "experiments/g3.py",
+        'and x.get("ours_gap_ci_low", -1.0) > 0',
+        "and True",
+        "H1 ignores the interval",
+    ),
+    ("experiments/g3.py", "H2_SHARE = 0.5", "H2_SHARE = 1.0", "H2 does not halve waits"),
+    (
+        "data/sealed.py",
+        "    if not on_origin == local == head:",
+        "    if not on_origin == local:",
+        "sealed years unlock off the freeze commit",
     ),
     (
         "sim/engine.py",

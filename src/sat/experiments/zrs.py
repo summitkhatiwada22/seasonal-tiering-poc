@@ -29,7 +29,6 @@ from sat.policies.grid import zrs_grid
 from sat.prices import PriceSheet, load_all
 
 SHEET: PriceSheet = load_all(REPO / "configs" / "prices" / "azure_zrs")["azure"]
-REPORTS = r1.REPORTS / "zrs"
 DEFAULT = "smart-tier"
 SETTINGS = tuple(ch.Setting("all", 0.0, m) for m in ch.MARGINS)
 
@@ -66,17 +65,17 @@ def run_one(dataset: str, year: int) -> str:
         if res.per_object_measured is None:
             raise ValueError(f"{pol.name}: no per-file cost")
         cost.append(res.per_object_measured)
-    (REPORTS / "runs").mkdir(parents=True, exist_ok=True)
-    r1.WORK.mkdir(parents=True, exist_ok=True)
+    (r1.STUDY.reports / "zrs" / "runs").mkdir(parents=True, exist_ok=True)
+    r1.STUDY.work.mkdir(parents=True, exist_ok=True)
     frame = pl.DataFrame(rows).with_columns(
         pl.lit(dataset).alias("dataset"), pl.lit(year).alias("year"), pl.lit("actual").alias("draw")
     )
     frame.drop([c for c in frame.columns if c.startswith("cost_")] + ["seconds"]).write_csv(
-        REPORTS / "runs" / f"{_stem(dataset, year)}.csv"
+        r1.STUDY.reports / "zrs" / "runs" / f"{_stem(dataset, year)}.csv"
     )
-    frame.write_parquet(r1.WORK / f"{_stem(dataset, year)}.parquet")
+    frame.write_parquet(r1.STUDY.work / f"{_stem(dataset, year)}.parquet")
     np.savez_compressed(
-        r1.WORK / f"{_stem(dataset, year)}.npz",
+        r1.STUDY.work / f"{_stem(dataset, year)}.npz",
         names=np.array([r["policy"] for r in rows]),
         idx=keep,
         sizes=scn.sizes,
@@ -85,14 +84,18 @@ def run_one(dataset: str, year: int) -> str:
     return _stem(dataset, year)
 
 
-@cache
 def _load(dataset: str, year: int) -> dict[str, Any]:
-    z = np.load(r1.WORK / f"{_stem(dataset, year)}.npz")
+    return _load_at(r1.STUDY.work, dataset, year)
+
+
+@cache
+def _load_at(work: Any, dataset: str, year: int) -> dict[str, Any]:
+    z = np.load(work / f"{_stem(dataset, year)}.npz")
     return {k: z[k] for k in z.files}
 
 
 def chooser_rows(dataset: str) -> pl.DataFrame:
-    years = sorted({y for pair in r1.PAIRS for y in pair})
+    years = r1.STUDY.years
     rows = []
     for setting in SETTINGS:
         prev: tuple[np.ndarray, np.ndarray] | None = None
@@ -135,12 +138,12 @@ def chooser_rows(dataset: str) -> pl.DataFrame:
 
 
 def score(datasets: list[str]) -> list[dict[str, Any]]:
-    years = sorted({y for pair in r1.PAIRS for y in pair})
+    years = r1.STUDY.years
     numeric = ["cost", "reads", "cold_reads", "cold_rate", "wait_hours_all", "wait_max_hours"]
     parts = [chooser_rows(d) for d in datasets]
     for d in datasets:
         for y in years:
-            frame = pl.read_parquet(r1.WORK / f"{_stem(d, y)}.parquet")
+            frame = pl.read_parquet(r1.STUDY.work / f"{_stem(d, y)}.parquet")
             parts.append(
                 frame.select("dataset", "year", "draw", "policy", "family", "rival", *numeric)
             )
@@ -151,10 +154,12 @@ def score(datasets: list[str]) -> list[dict[str, Any]]:
         for p in parts
     ]
     table = pl.concat(parts, how="diagonal")
-    REPORTS.mkdir(parents=True, exist_ok=True)
-    table.sort("dataset", "year", "family", "policy").write_csv(REPORTS / "table.csv")
+    (r1.STUDY.reports / "zrs").mkdir(parents=True, exist_ok=True)
+    table.sort("dataset", "year", "family", "policy").write_csv(
+        r1.STUDY.reports / "zrs" / "table.csv"
+    )
     lines = [x for x in r1.lines(table) if x["rule"] == "matched" and x["level"] == "L0"]
-    pl.DataFrame(lines).write_csv(REPORTS / "lines.csv")
+    pl.DataFrame(lines).write_csv(r1.STUDY.reports / "zrs" / "lines.csv")
     return lines
 
 

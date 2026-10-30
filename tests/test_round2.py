@@ -200,8 +200,8 @@ def test_replicate_draw_differs_from_the_actual_draw() -> None:
 def _line(dataset: str, pair: int, level: str, **kw: Any) -> dict[str, Any]:
     line: dict[str, Any] = {
         "dataset": dataset,
-        "pick_year": r1.PAIRS[pair][0],
-        "score_year": r1.PAIRS[pair][1],
+        "pick_year": r1.R1.pairs[pair][0],
+        "score_year": r1.R1.pairs[pair][1],
         "level": level,
         "rule": "matched",
         "ours_policy": "x",
@@ -299,12 +299,11 @@ def test_lines_pick_on_the_pick_year_and_score_on_the_next() -> None:
             },
         ]
     table = pl.DataFrame(rows)
-    saved = r1.PAIRS
-    r1.PAIRS = ((2020, 2021),)  # type: ignore[assignment]
+    r1.use(r1.Study("test", 2022, ((2020, 2021),)))
     try:
         out = r1.lines(table)
     finally:
-        r1.PAIRS = saved
+        r1.use(r1.R1)
     matched = [x for x in out if x["rule"] == "matched" and x["level"] == "L1"]
     assert len(matched) == 1
     assert matched[0]["ours_policy"] == "ours"  # "waits" breaks the rival's 0% wait
@@ -412,3 +411,155 @@ def test_zrs_grid_runs_without_an_archive_tier() -> None:
         assert res.waits.cold_reads == 0
         names.add(pol.name)
     assert "smart-tier" in names and len(names) == len(zrs_grid())
+
+
+# ------------------------------------------------------------------ the sealed-year unlock
+
+
+def _git(repo: Path, *args: str) -> str:
+    import subprocess
+
+    done = subprocess.run(["git", *args], cwd=repo, capture_output=True, text=True, check=True)
+    return done.stdout.strip()
+
+
+@pytest.fixture
+def frozen_repo(tmp_path: Path) -> Path:
+    """A clone whose origin (a local bare repository) holds two commits and the freeze tag on
+    the first."""
+    origin, work = tmp_path / "origin.git", tmp_path / "work"
+    _git(tmp_path, "init", "-q", "--bare", str(origin))
+    _git(tmp_path, "init", "-q", str(work))
+    for k, v in (("user.email", "t@example.com"), ("user.name", "t")):
+        _git(work, "config", k, v)
+    _git(work, "remote", "add", "origin", str(origin))
+    (work / "a.txt").write_text("1")
+    _git(work, "add", "a.txt")
+    _git(work, "commit", "-q", "-m", "one")
+    _git(work, "tag", "freeze-g3")
+    (work / "a.txt").write_text("2")
+    _git(work, "commit", "-q", "-am", "two")
+    _git(work, "push", "-q", "origin", "HEAD:refs/heads/main", "refs/tags/freeze-g3")
+    return work
+
+
+def test_sealed_years_stay_locked_without_the_freeze() -> None:
+    from sat.data.sealed import SealedYearError, check_year
+
+    with pytest.raises(SealedYearError):
+        check_year(2024, 2025)
+
+
+def test_unlock_refuses_when_head_is_not_the_freeze_commit(frozen_repo: Path) -> None:
+    from sat.data.sealed import SealedYearError, unlock_sealed
+
+    with pytest.raises(SealedYearError, match="must be the freeze commit"):
+        unlock_sealed(frozen_repo)
+
+
+def test_unlock_refuses_a_changed_tracked_file(frozen_repo: Path) -> None:
+    from sat.data.sealed import SealedYearError, unlock_sealed
+
+    _git(frozen_repo, "checkout", "-q", "freeze-g3")
+    (frozen_repo / "a.txt").write_text("changed")
+    with pytest.raises(SealedYearError, match="differ"):
+        unlock_sealed(frozen_repo)
+
+
+def test_unlock_refuses_a_tag_missing_on_origin(frozen_repo: Path) -> None:
+    from sat.data.sealed import SealedYearError, unlock_sealed
+
+    _git(frozen_repo, "tag", "other")
+    with pytest.raises(SealedYearError, match="not on origin"):
+        unlock_sealed(frozen_repo, "other")
+
+
+def test_unlock_at_the_freeze_commit_opens_the_sealed_years(frozen_repo: Path) -> None:
+    from sat.data.sealed import check_year, relock, unlock_sealed
+
+    _git(frozen_repo, "checkout", "-q", "freeze-g3")
+    (frozen_repo / "output.csv").write_text("untracked outputs are allowed")
+    try:
+        assert unlock_sealed(frozen_repo) == _git(frozen_repo, "rev-parse", "HEAD")
+        check_year(2024, 2025)
+        check_year(2025, 2025)
+    finally:
+        relock()
+
+
+def test_price_scenarios_scale_only_their_fields() -> None:
+    base = PRICES["aws"]
+    low = r1.scaled(base, "storage-x0.5")
+    assert low.get("deep_archive", "storage_usd_per_gb_month") == pytest.approx(0.00099 / 2)
+    assert low.get("deep_archive", "retrieval_usd_per_gb") == base.get(
+        "deep_archive", "retrieval_usd_per_gb"
+    )
+    fees = r1.scaled(base, "fees-x1.5")
+    assert fees.get("standard", "put_per_1000") == pytest.approx(0.0075)
+    assert fees.get("glacier_instant", "retrieval_usd_per_gb") == pytest.approx(0.045)
+    assert fees.get("standard", "storage_usd_per_gb_month") == 0.023
+    assert fees.get("deep_archive", "min_storage_days") == 180
+    it_storage = "intelligent_tiering_frequent_usd_per_gb_month"
+    assert low.extras[it_storage].value == pytest.approx(0.023 / 2)
+
+
+# ------------------------------------------------------------------ the sealed test's rules
+
+
+def _g3_line(dataset: str, pair: int, **kw: Any) -> dict[str, Any]:
+    pick, score = r1.R1.pairs[pair]
+    line: dict[str, Any] = {
+        "dataset": dataset,
+        "pick_year": pick,
+        "score_year": score,
+        "level": "L1",
+        "rule": "matched",
+        "rival": "riv",
+        "rival_cost": 10.0,
+        "rival_cold_rate": 0.002,
+        "ours_policy": "x",
+        "ours_cost": 9.0,
+        "ours_gap": 0.10,
+        "ours_wait_ok": True,
+        "ours_cold_rate": 0.0009,
+        "ours_gap_ci_low": 0.02,
+    }
+    line.update(kw)
+    return line
+
+
+def test_bootstrap_interval_of_the_gap() -> None:
+    from sat.experiments import g3
+
+    rival = np.random.default_rng(0).random(500) + 0.5
+    lo, hi = g3.gap_interval(0.9 * rival, rival)
+    assert lo == pytest.approx(0.1) and hi == pytest.approx(0.1)
+    noisy = rival * np.random.default_rng(1).uniform(0.7, 1.3, 500)
+    lo, hi = g3.gap_interval(noisy, rival)
+    assert lo < 0 < hi
+
+
+def test_h1_needs_the_interval_above_zero_in_both_years() -> None:
+    from sat.experiments import g3
+
+    good = [_g3_line(d, p) for d in ("D1", "D3") for p in (0, 1)]
+    assert g3._count(g3.h1(good))
+    weak = good[:3] + [_g3_line("D3", 1, ours_gap_ci_low=-0.01)]
+    assert not g3._count(g3.h1(weak))
+
+
+def test_h2_needs_half_the_waits_at_no_more_cost() -> None:
+    from sat.experiments import g3
+
+    good = [_g3_line(d, p) for d in ("D1", "D3") for p in (0, 1)]
+    assert g3._count(g3.h2(good))
+    more_waits = good[:3] + [_g3_line("D3", 1, ours_cold_rate=0.0011)]
+    assert not g3._count(g3.h2(more_waits))
+    dearer = good[:3] + [_g3_line("D3", 1, ours_cost=10.5)]
+    assert not g3._count(g3.h2(dearer))
+    no_rival_waits = [
+        _g3_line(d, p, rival_cold_rate=0.0, ours_cold_rate=0.0)
+        for d in ("D1", "D3")
+        for p in (0, 1)
+    ]
+    assert not g3._count(g3.h2(no_rival_waits))

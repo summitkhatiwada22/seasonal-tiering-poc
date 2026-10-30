@@ -26,3 +26,5 @@ data/e1/
 
 # Round two per-file arrays (large; rebuilt by python -m sat.experiments.r1 run)
 data/r1/
+data/g3/
+data/g3-rehearsal/

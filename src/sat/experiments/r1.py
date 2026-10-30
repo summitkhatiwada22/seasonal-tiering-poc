@@ -21,7 +21,7 @@ import argparse
 import json
 import time
 from concurrent.futures import ProcessPoolExecutor
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date
 from functools import cache
 from pathlib import Path
@@ -35,19 +35,17 @@ from sat.data.mapping import READ_SEED, default_scales, to_reads
 from sat.data.sealed import TUNING_YEAR
 from sat.data.sizes import draw_u, sizes_for
 from sat.experiments import chooser as ch
-from sat.experiments.e1 import DATASET_CODE, PRICES, REPO, _demand, _row
+from sat.experiments.e1 import DATASET_CODE, PRICES, REPO, SETTINGS, _demand, _row
 from sat.policies import Scenario
 from sat.policies.grid import can_wait, round2_grid
+from sat.prices import Priced, PriceSheet
 from sat.synth import SynthConfig, generate
 
-REPORTS = REPO / "reports" / "r1"
-WORK = REPO / "data" / "r1"
 CLOUD = "aws"
 REAL = ("D1", "D3", "D4")
 DEV = "D7"  # synthetic, for development only; never part of the verdict
-DATA_MAX_YEAR = TUNING_YEAR  # 2022: nothing later is ever loaded here
 REPLICATE_OFFSET = 100
-PAIRS = ((2020, 2021), (2021, 2022))  # (pick year, score year)
+PRICE_SCENARIOS = ("base", "storage-x0.5", "storage-x1.5", "fees-x0.5", "fees-x1.5")
 LEVELS = {"L0": 0.0, "L1": 0.01}
 GAP_METHOD = 0.05  # R1 condition 1
 GAP_CEILING = 0.10  # R1 condition 2
@@ -57,6 +55,74 @@ OURS = ("seasonal", "chooser")  # families that count as "a method" of ours
 
 IntArray = npt.NDArray[np.int64]
 FloatArray = npt.NDArray[np.float64]
+
+
+@dataclass(frozen=True)
+class Study:
+    """Which years, data limit, setting and prices a run uses, and where its files go.
+
+    Gate R1 is ``R1`` (data up to 2022). The sealed test (docs/PREREGISTRATION.md) uses the same
+    code with data up to 2025, after the sealed years are unlocked from the freeze tag.
+    """
+
+    name: str  # results in reports/<name>/, per-file arrays in data/<name>/
+    max_year: int
+    pairs: tuple[tuple[int, int], ...]  # (pick year, score year)
+    setting: str = "central"  # an E1 setting: sizes, read scale and restore times
+    prices: str = "base"  # one of PRICE_SCENARIOS
+
+    def __post_init__(self) -> None:
+        if self.setting not in SETTINGS or self.prices not in PRICE_SCENARIOS:
+            raise ValueError(f"unknown setting {self.setting!r} or prices {self.prices!r}")
+
+    @property
+    def reports(self) -> Path:
+        return REPO / "reports" / self.name
+
+    @property
+    def work(self) -> Path:
+        return REPO / "data" / self.name
+
+    @property
+    def years(self) -> list[int]:
+        return sorted({y for pair in self.pairs for y in pair})
+
+
+R1 = Study("r1", TUNING_YEAR, ((2020, 2021), (2021, 2022)))
+STUDY: Study = R1
+
+
+def use(study: Study) -> None:
+    """Select the study every function below works on (set before any process pool starts)."""
+    global STUDY
+    STUDY = study
+
+
+def scaled(sheet: PriceSheet, prices: str) -> PriceSheet:
+    """The price sheet with storage prices (every ``*_per_gb_month`` field) or fees (every
+    per-1,000 request field and per-GB retrieval or restore field) multiplied by 0.5 or 1.5."""
+    if prices == "base":
+        return sheet
+    kind, factor = prices.split("-x")
+    k = float(factor)
+
+    def hit(name: str) -> bool:
+        if kind == "storage":
+            return name.endswith("per_gb_month")
+        return "per_1000" in name or name.endswith("per_gb")
+
+    def scale(fields: dict[str, Priced]) -> dict[str, Priced]:
+        return {n: replace(p, value=p.value * k) if hit(n) else p for n, p in fields.items()}
+
+    return replace(
+        sheet,
+        tiers={t: scale(f) for t, f in sheet.tiers.items()},
+        extras=scale(sheet.extras),
+    )
+
+
+def sheet() -> PriceSheet:
+    return scaled(PRICES[CLOUD], STUDY.prices)
 
 
 # ---------------------------------------------------------------------------- data
@@ -70,18 +136,22 @@ class Files:
     sizes: IntArray
 
 
-@cache
 def files(dataset: str, draw: str) -> Files:
+    return _files(dataset, draw, STUDY.max_year, STUDY.setting)
+
+
+@cache
+def _files(dataset: str, draw: str, max_year: int, setting: str) -> Files:
     if draw not in {"actual", "replicate"}:
         raise ValueError(draw)
     if dataset == DEV:
         if draw == "replicate":  # development stand-in: the generator has no rate to redraw from
-            base = files(dataset, "actual")
+            base = _files(dataset, "actual", max_year, setting)
             rng = np.random.default_rng(REPLICATE_OFFSET)
             return Files(base.start, rng.poisson(base.reads), base.created, base.sizes)
         start = date(2018, 1, 1)
         cfg = SynthConfig(
-            n_objects=3_000, start=start, n_days=(date(DATA_MAX_YEAR, 12, 31) - start).days + 1
+            n_objects=3_000, start=start, n_days=(date(max_year, 12, 31) - start).days + 1
         )
         data = generate(cfg)
         objs = data.objects
@@ -94,16 +164,17 @@ def files(dataset: str, draw: str) -> Files:
             objs["created_day"].to_numpy().astype(np.int64),
             objs["size_bytes"].to_numpy().astype(np.int64),
         )
-    demand = _demand(dataset, DATA_MAX_YEAR)
-    seed = READ_SEED + (REPLICATE_OFFSET if draw == "replicate" else 0)
-    reads = to_reads(demand, default_scales(demand, "central"), "central", seed=seed)
-    sizes = sizes_for(draw_u(len(demand.names), DATASET_CODE[dataset]), "central")
+    opts = SETTINGS[setting]
+    demand = _demand(dataset, max_year)
+    seed = READ_SEED + int(opts["seed"]) - 1 + (REPLICATE_OFFSET if draw == "replicate" else 0)
+    reads = to_reads(demand, default_scales(demand, opts["reads"]), opts["reads"], seed=seed)
+    sizes = sizes_for(draw_u(len(demand.names), DATASET_CODE[dataset]), opts["size"])
     return Files(demand.start, reads, demand.first_demand_day(), sizes)
 
 
 def scenario(dataset: str, year: int, draw: str) -> tuple[Scenario, IntArray]:
     """Year ``year`` measured, ``year - 1`` warm-up; reads cut at the end of ``year``."""
-    if not 2017 <= year <= DATA_MAX_YEAR:
+    if not 2017 <= year <= STUDY.max_year:
         raise ValueError(f"year {year} is outside the rolling years")
     f = files(dataset, draw)
     sim_start = (date(year - 1, 1, 1) - f.start).days
@@ -112,7 +183,7 @@ def scenario(dataset: str, year: int, draw: str) -> tuple[Scenario, IntArray]:
     keep = np.flatnonzero(f.created < end)
     scn = Scenario(
         dataset,
-        PRICES[CLOUD],
+        sheet(),
         f.sizes[keep],
         f.reads[keep, :end],
         f.created[keep],
@@ -120,6 +191,7 @@ def scenario(dataset: str, year: int, draw: str) -> tuple[Scenario, IntArray]:
         sim_start,
         end - sim_start,
         measure,
+        restore_time=SETTINGS[STUDY.setting]["restore"],
     )
     return scn, keep.astype(np.int64)
 
@@ -148,15 +220,15 @@ def run_one(dataset: str, year: int, draw: str) -> Path:
             if values is None:
                 raise ValueError(f"{pol.name}: the simulator returned no per-file {key}")
             arrays[key].append(values)
-    (REPORTS / "runs").mkdir(parents=True, exist_ok=True)
-    WORK.mkdir(parents=True, exist_ok=True)
+    (STUDY.reports / "runs").mkdir(parents=True, exist_ok=True)
+    STUDY.work.mkdir(parents=True, exist_ok=True)
     meta = {"dataset": dataset, "year": year, "draw": draw}
     frame = pl.DataFrame(rows).with_columns(*[pl.lit(v).alias(k) for k, v in meta.items()])
-    out = REPORTS / "runs" / f"{_stem(dataset, year, draw)}.csv"
+    out = STUDY.reports / "runs" / f"{_stem(dataset, year, draw)}.csv"
     frame.drop([c for c in frame.columns if c.startswith("cost_")] + ["seconds"]).write_csv(out)
-    frame.write_parquet(WORK / f"{_stem(dataset, year, draw)}.parquet")
+    frame.write_parquet(STUDY.work / f"{_stem(dataset, year, draw)}.parquet")
     np.savez_compressed(
-        WORK / f"{_stem(dataset, year, draw)}.npz",
+        STUDY.work / f"{_stem(dataset, year, draw)}.npz",
         names=np.array([r["policy"] for r in rows]),
         idx=keep,
         sizes=scn.sizes.astype(np.int64),
@@ -192,10 +264,14 @@ class Run:
     can_wait: npt.NDArray[np.bool_]
 
 
-@cache
 def load_run(dataset: str, year: int, draw: str) -> Run:
-    z = np.load(WORK / f"{_stem(dataset, year, draw)}.npz")
-    rows = pl.read_parquet(WORK / f"{_stem(dataset, year, draw)}.parquet")
+    return _load_run(STUDY.work, dataset, year, draw)
+
+
+@cache
+def _load_run(work: Path, dataset: str, year: int, draw: str) -> Run:
+    z = np.load(work / f"{_stem(dataset, year, draw)}.npz")
+    rows = pl.read_parquet(work / f"{_stem(dataset, year, draw)}.parquet")
     names = [str(n) for n in z["names"]]
     if rows["policy"].to_list() != names:
         raise ValueError("rows and arrays disagree")
@@ -245,31 +321,43 @@ def chooser_choices(
         allowed = ~target.can_wait
     if prior is None:
         prior = np.full(len(target.idx), default, dtype=np.int64)
-    switch = ch.switch_charge(PRICES[CLOUD], target.sizes)
+    switch = ch.switch_charge(sheet(), target.sizes)
     choice = ch.choose(cost, cold, allowed, prior, has, switch, setting)
     return choice, prior
 
 
-def chooser_rows(dataset: str) -> pl.DataFrame:
+def chooser_chain(
+    dataset: str, kind: str, setting: ch.Setting
+) -> dict[int, tuple[IntArray, IntArray]]:
+    """(choice, prior) per file for every year of the study, the chooser following its own
+    choice of the year before; the first year starts from the default policy."""
+    out: dict[int, tuple[IntArray, IntArray]] = {}
+    prev: tuple[IntArray, IntArray] | None = None  # (idx, choice) of the year before
+    for year in STUDY.years:
+        target = load_run(dataset, year, "actual")
+        prior = None
+        if prev is not None:
+            prior = np.full(len(target.idx), target.names.index(ch.DEFAULT_POLICY))
+            pos = np.searchsorted(target.idx, prev[0])
+            prior[pos] = prev[1]
+            prior = prior.astype(np.int64)
+        choice, prior_used = chooser_choices(dataset, year, kind, setting, prior)
+        out[year] = (choice, prior_used)
+        prev = (target.idx, choice)
+    return out
+
+
+def chooser_rows(dataset: str, ceiling: bool = True) -> pl.DataFrame:
     """One row per (year, family, setting): the chooser and the ceiling, scored on actual draws.
 
     The chooser for year Y follows its own choice for Y-1 (prior); the first year it is run
     starts from the default policy, which bills every file that leaves the default a switch."""
-    years = sorted({y for pair in PAIRS for y in pair})
     rows = []
-    for kind in ("chooser", "ceiling"):
+    for kind in ("chooser", "ceiling") if ceiling else ("chooser",):
         for setting in ch.SETTINGS:
-            prev: tuple[IntArray, IntArray] | None = None  # (idx, choice) of the year before
-            for year in years:
+            for year, (choice, prior_used) in chooser_chain(dataset, kind, setting).items():
                 target = load_run(dataset, year, "actual")
-                prior = None
-                if prev is not None:
-                    prior = np.full(len(target.idx), target.names.index(ch.DEFAULT_POLICY))
-                    pos = np.searchsorted(target.idx, prev[0])
-                    prior[pos] = prev[1]
-                    prior = prior.astype(np.int64)
-                choice, prior_used = chooser_choices(dataset, year, kind, setting, prior)
-                switch = ch.switch_charge(PRICES[CLOUD], target.sizes)
+                switch = ch.switch_charge(sheet(), target.sizes)
                 o = ch.outcome(
                     target.cost,
                     target.cold,
@@ -298,15 +386,30 @@ def chooser_rows(dataset: str) -> pl.DataFrame:
                         "switch_cost": o.switch_cost,
                     }
                 )
-                prev = (target.idx, choice)
     return pl.DataFrame(rows)
+
+
+def per_file_cost(dataset: str, year: int, policy: str) -> FloatArray:
+    """Each file's measured cost in ``year`` under a policy or a chooser setting (with its
+    switch charges), in the order of that year's files."""
+    run = load_run(dataset, year, "actual")
+    kind, _, rest = policy.partition(":")
+    if kind in {"chooser", "ceiling"}:
+        setting = next(s for s in ch.SETTINGS if s.name == rest)
+        choice, prior = chooser_chain(dataset, kind, setting)[year]
+        switch = ch.switch_charge(sheet(), run.sizes)
+        cols = np.arange(len(run.idx))
+        out: FloatArray = run.cost[choice, cols] + switch * (choice != prior)
+        return out
+    row: FloatArray = run.cost[run.names.index(policy)]
+    return row
 
 
 # ---------------------------------------------------------------------------- picking and verdict
 
 
 def policy_rows(dataset: str, year: int) -> pl.DataFrame:
-    frame = pl.read_parquet(WORK / f"{_stem(dataset, year, 'actual')}.parquet")
+    frame = pl.read_parquet(STUDY.work / f"{_stem(dataset, year, 'actual')}.parquet")
     return frame.select(
         "dataset",
         "year",
@@ -339,7 +442,7 @@ def lines(table: pl.DataFrame) -> list[dict[str, Any]]:
     """Every (dataset, pair, level, rule) line of the R1 and R2 tables."""
     out = []
     for dataset in sorted(set(table["dataset"].to_list())):
-        for pick_year, score_year in PAIRS:
+        for pick_year, score_year in STUDY.pairs:
             pick = table.filter((pl.col("dataset") == dataset) & (pl.col("year") == pick_year))
             score = table.filter((pl.col("dataset") == dataset) & (pl.col("year") == score_year))
             for level, cap in LEVELS.items():
@@ -401,7 +504,7 @@ def verdict(all_lines: list[dict[str, Any]]) -> dict[str, Any]:
     def holds(dataset: str, test: Any) -> bool:
         for level in LEVELS:
             pair_lines = [x for x in matched if x["dataset"] == dataset and x["level"] == level]
-            if len(pair_lines) == len(PAIRS) and all(test(x) for x in pair_lines):
+            if len(pair_lines) == len(STUDY.pairs) and all(test(x) for x in pair_lines):
                 return True
         return False
 
@@ -418,12 +521,12 @@ def verdict(all_lines: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def score(datasets: list[str]) -> dict[str, Any]:
-    years = sorted({y for pair in PAIRS for y in pair})
+def table(datasets: list[str], ceiling: bool = True) -> pl.DataFrame:
+    """Every policy row and every chooser (and ceiling) row of the study's years."""
     parts = []
     for d in datasets:
-        parts.append(chooser_rows(d))
-        parts += [policy_rows(d, y) for y in years]
+        parts.append(chooser_rows(d, ceiling))
+        parts += [policy_rows(d, y) for y in STUDY.years]
     numeric = ["cost", "reads", "cold_reads", "cold_rate", "wait_hours_all", "wait_max_hours"]
     parts = [
         p.with_columns(
@@ -431,14 +534,18 @@ def score(datasets: list[str]) -> dict[str, Any]:
         )
         for p in parts
     ]
-    table = pl.concat(parts, how="diagonal")
-    REPORTS.mkdir(parents=True, exist_ok=True)
-    table.sort("dataset", "year", "family", "policy").write_csv(REPORTS / "table.csv")
-    all_lines = lines(table)
-    pl.DataFrame(all_lines).write_csv(REPORTS / "lines.csv")
+    return pl.concat(parts, how="diagonal")
+
+
+def score(datasets: list[str]) -> dict[str, Any]:
+    full = table(datasets)
+    STUDY.reports.mkdir(parents=True, exist_ok=True)
+    full.sort("dataset", "year", "family", "policy").write_csv(STUDY.reports / "table.csv")
+    all_lines = lines(full)
+    pl.DataFrame(all_lines).write_csv(STUDY.reports / "lines.csv")
     result = verdict(all_lines)
     result["datasets"] = datasets
-    (REPORTS / "verdict.json").write_text(json.dumps(result, indent=2) + "\n")
+    (STUDY.reports / "verdict.json").write_text(json.dumps(result, indent=2) + "\n")
     return result
 
 
