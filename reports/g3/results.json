@@ -119,6 +119,159 @@
           "ours_gap": 0.0009005432092711319
         }
       ]
+    },
+    "storage-x0.5": {
+      "datasets": [
+        "D1",
+        "D3",
+        "D4"
+      ],
+      "H1": {
+        "D1": true,
+        "D3": true,
+        "D4": false
+      },
+      "H2": {
+        "D1": false,
+        "D3": true,
+        "D4": false
+      }
+    },
+    "storage-x1.5": {
+      "datasets": [
+        "D1",
+        "D3",
+        "D4"
+      ],
+      "H1": {
+        "D1": false,
+        "D3": false,
+        "D4": false
+      },
+      "H2": {
+        "D1": false,
+        "D3": false,
+        "D4": false
+      }
+    },
+    "fees-x0.5": {
+      "datasets": [
+        "D1",
+        "D3",
+        "D4"
+      ],
+      "H1": {
+        "D1": false,
+        "D3": false,
+        "D4": false
+      },
+      "H2": {
+        "D1": false,
+        "D3": false,
+        "D4": false
+      }
+    },
+    "fees-x1.5": {
+      "datasets": [
+        "D1",
+        "D3",
+        "D4"
+      ],
+      "H1": {
+        "D1": true,
+        "D3": true,
+        "D4": false
+      },
+      "H2": {
+        "D1": false,
+        "D3": false,
+        "D4": false
+      }
+    },
+    "restore-low": {
+      "datasets": [
+        "D1",
+        "D3",
+        "D4"
+      ],
+      "H1": {
+        "D1": false,
+        "D3": false,
+        "D4": false
+      },
+      "H2": {
+        "D1": false,
+        "D3": false,
+        "D4": false
+      }
+    },
+    "reads-low": {
+      "datasets": [
+        "D1",
+        "D3",
+        "D4"
+      ],
+      "H1": {
+        "D1": false,
+        "D3": false,
+        "D4": false
+      },
+      "H2": {
+        "D1": false,
+        "D3": false,
+        "D4": false
+      }
+    },
+    "reads-high": {
+      "datasets": [
+        "D1",
+        "D3",
+        "D4"
+      ],
+      "H1": {
+        "D1": false,
+        "D3": false,
+        "D4": false
+      },
+      "H2": {
+        "D1": false,
+        "D3": false,
+        "D4": false
+      }
+    },
+    "size-low": {
+      "datasets": [
+        "D1",
+        "D3",
+        "D4"
+      ],
+      "H1": {
+        "D1": false,
+        "D3": false,
+        "D4": false
+      },
+      "H2": {
+        "D1": true,
+        "D3": true,
+        "D4": false
+      }
+    },
+    "size-high": {
+      "datasets": [
+        "D1",
+        "D3",
+        "D4"
+      ],
+      "H1": {
+        "D1": false,
+        "D3": false,
+        "D4": false
+      },
+      "H2": {
+        "D1": false,
+        "D3": false,
+        "D4": false
+      }
     }
   },
   "H1": false,
