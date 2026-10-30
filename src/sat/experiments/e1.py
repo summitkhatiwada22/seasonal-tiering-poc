@@ -206,7 +206,11 @@ def run(period: str, setting: str, datasets: Iterable[str], workers: int) -> Non
     only: list[str] | None = None
     jobs = [(d, c) for d in datasets for c in CLOUDS]
     picks_file = REPORTS / PICKS_FROM.get(setting, setting) / "picks.json"
-    if setting in PICKS_FROM:
+    # Validation runs score the picks only, except at the central setting, where every policy is
+    # run because the hindsight bound and the perfect-forecast line need them (protocol section 5).
+    if setting in PICKS_FROM or (period == "eval" and setting != "central"):
+        if not picks_file.exists():
+            raise FileNotFoundError(f"{picks_file}: pick on 2022 (and commit) before validating")
         picks = json.loads(picks_file.read_text())
         only = sorted({p["policy"] for p in picks["picks"]})
     with ProcessPoolExecutor(max_workers=workers) as pool:

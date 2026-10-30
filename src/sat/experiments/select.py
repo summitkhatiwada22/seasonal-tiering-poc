@@ -51,8 +51,15 @@ def pick(tune: pl.DataFrame) -> list[dict[str, Any]]:
     return picks
 
 
+def _table(frame: pl.DataFrame, path: Path) -> None:
+    """Every run's measured cost and waits as CSV (committed; the parquet files are not)."""
+    keep = [c for c in frame.columns if not c.startswith("cost_") and c != "seconds"]
+    frame.select(keep).sort("dataset", "cloud", "family", "policy").write_csv(path)
+
+
 def write_picks(setting: str) -> Path:
     tune = results(setting, "tune")
+    _table(tune, REPORTS / setting / "tune_results.csv")
     out = REPORTS / setting / "picks.json"
     payload = {
         "setting": setting,
@@ -109,6 +116,7 @@ def verdict(setting: str) -> dict[str, Any]:
     picks_setting = PICKS_FROM.get(setting, setting)
     picks = json.loads((REPORTS / picks_setting / "picks.json").read_text())["picks"]
     ev = results(setting, "eval")
+    _table(ev, REPORTS / setting / "eval_results.csv")
     lines = []
     for (dataset, cloud, level), group in _group(picks).items():
         part = ev.filter((pl.col("dataset") == dataset) & (pl.col("cloud") == cloud))
@@ -136,7 +144,7 @@ def verdict(setting: str) -> dict[str, Any]:
         )
         if "seasonal" in group and "reactive" in group:
             line["seasonal_vs_reactive"] = 1 - line["seasonal_cost"] / line["reactive_cost"]
-        if setting not in PICKS_FROM:
+        if setting == "central":
             arrays = _npz(setting, dataset, cloud)
             reads = arrays["reads"]
             max_cold = min(LEVELS[level], rival["cold_rate"]) * float(reads.sum())
@@ -160,7 +168,7 @@ def verdict(setting: str) -> dict[str, Any]:
         "rule": "docs/E1_PROTOCOL.md section 5",
         "real_datasets_passing": passing,
         "decision": "CONTINUE" if passing else "STOP AND RETHINK",
-        "hindsight_bound_reaches_5pct_somewhere": any_bound if setting not in PICKS_FROM else None,
+        "hindsight_bound_reaches_5pct_somewhere": any_bound if setting == "central" else None,
         "lines": lines,
     }
     (REPORTS / setting / "verdict.json").write_text(json.dumps(out, indent=2, default=float))

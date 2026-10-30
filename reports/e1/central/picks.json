@@ -1,0 +1,816 @@
+{
+  "setting": "central",
+  "rule": "docs/E1_PROTOCOL.md section 4",
+  "picks": [
+    {
+      "dataset": "D1",
+      "cloud": "aws",
+      "level": "L0",
+      "role": "rival",
+      "policy": "intelligent-tiering",
+      "tune_cost": 36.548879295286326,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D1",
+      "cloud": "aws",
+      "level": "L0",
+      "role": "seasonal",
+      "policy": "seasonal-planner:standard/standard_ia/glacier_instant:h180:lead1",
+      "tune_cost": 43.6615005592251,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D1",
+      "cloud": "aws",
+      "level": "L0",
+      "role": "reactive",
+      "policy": "reactive-planner:standard/standard_ia/glacier_instant:h180:lead1",
+      "tune_cost": 45.5236955906296,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D1",
+      "cloud": "aws",
+      "level": "L1",
+      "role": "rival",
+      "policy": "intelligent-tiering:archive@90d:deep@180d",
+      "tune_cost": 35.922546481491054,
+      "tune_cold_rate": 0.0024518190687612233
+    },
+    {
+      "dataset": "D1",
+      "cloud": "aws",
+      "level": "L1",
+      "role": "seasonal",
+      "policy": "seasonal-it-prewarm:archive@90d:deep@180d:lead7",
+      "tune_cost": 37.545499369320304,
+      "tune_cold_rate": 0.0013253585585076048
+    },
+    {
+      "dataset": "D1",
+      "cloud": "aws",
+      "level": "L1",
+      "role": "reactive",
+      "policy": "reactive-planner:standard/standard_ia/glacier_instant:h180:lead1",
+      "tune_cost": 45.5236955906296,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D1",
+      "cloud": "azure",
+      "level": "L0",
+      "role": "rival",
+      "policy": "all-hot",
+      "tune_cost": 37.889992294460015,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D1",
+      "cloud": "azure",
+      "level": "L0",
+      "role": "seasonal",
+      "policy": "seasonal-planner:hot/cool/cold:h180:lead1",
+      "tune_cost": 35.836099207900034,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D1",
+      "cloud": "azure",
+      "level": "L0",
+      "role": "reactive",
+      "policy": "reactive:hot/cool:recent90",
+      "tune_cost": 37.21862071331145,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D1",
+      "cloud": "azure",
+      "level": "L1",
+      "role": "rival",
+      "policy": "all-hot",
+      "tune_cost": 37.889992294460015,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D1",
+      "cloud": "azure",
+      "level": "L1",
+      "role": "seasonal",
+      "policy": "seasonal-planner:hot/cool/cold:h180:lead1",
+      "tune_cost": 35.836099207900034,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D1",
+      "cloud": "azure",
+      "level": "L1",
+      "role": "reactive",
+      "policy": "reactive:hot/cool:recent90",
+      "tune_cost": 37.21862071331145,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D1",
+      "cloud": "gcs",
+      "level": "L0",
+      "role": "rival",
+      "policy": "autoclass:archive",
+      "tune_cost": 31.420030386257846,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D1",
+      "cloud": "gcs",
+      "level": "L0",
+      "role": "seasonal",
+      "policy": "seasonal-planner:standard/nearline/coldline:h180:lead1",
+      "tune_cost": 36.90216600243198,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D1",
+      "cloud": "gcs",
+      "level": "L0",
+      "role": "reactive",
+      "policy": "reactive-planner:standard/nearline/coldline:h180:lead1",
+      "tune_cost": 37.78174317973348,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D1",
+      "cloud": "gcs",
+      "level": "L1",
+      "role": "rival",
+      "policy": "autoclass:archive",
+      "tune_cost": 31.420030386257846,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D1",
+      "cloud": "gcs",
+      "level": "L1",
+      "role": "seasonal",
+      "policy": "seasonal-planner:standard/nearline/coldline:h180:lead1",
+      "tune_cost": 36.90216600243198,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D1",
+      "cloud": "gcs",
+      "level": "L1",
+      "role": "reactive",
+      "policy": "reactive-planner:standard/nearline/coldline:h180:lead1",
+      "tune_cost": 37.78174317973348,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D3",
+      "cloud": "aws",
+      "level": "L0",
+      "role": "rival",
+      "policy": "intelligent-tiering",
+      "tune_cost": 0.47944504055906817,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D3",
+      "cloud": "aws",
+      "level": "L0",
+      "role": "seasonal",
+      "policy": "seasonal-planner:standard/standard_ia/glacier_instant:h180:lead1",
+      "tune_cost": 0.5398264708702244,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D3",
+      "cloud": "aws",
+      "level": "L0",
+      "role": "reactive",
+      "policy": "reactive-planner:standard/standard_ia/glacier_instant:h180:lead1",
+      "tune_cost": 0.5796212538392658,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D3",
+      "cloud": "aws",
+      "level": "L1",
+      "role": "rival",
+      "policy": "intelligent-tiering:archive@90d:deep@180d",
+      "tune_cost": 0.465374442587788,
+      "tune_cold_rate": 0.0015342705952343676
+    },
+    {
+      "dataset": "D3",
+      "cloud": "aws",
+      "level": "L1",
+      "role": "seasonal",
+      "policy": "seasonal-it-prewarm:archive@90d:deep@180d:lead7",
+      "tune_cost": 0.4976873574682174,
+      "tune_cold_rate": 0.001221154147227354
+    },
+    {
+      "dataset": "D3",
+      "cloud": "aws",
+      "level": "L1",
+      "role": "reactive",
+      "policy": "reactive-planner:standard/standard_ia/glacier_instant:h180:lead1",
+      "tune_cost": 0.5796212538392658,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D3",
+      "cloud": "azure",
+      "level": "L0",
+      "role": "rival",
+      "policy": "all-hot",
+      "tune_cost": 0.503691575523952,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D3",
+      "cloud": "azure",
+      "level": "L0",
+      "role": "seasonal",
+      "policy": "seasonal-planner:hot/cool/cold:h180:lead1",
+      "tune_cost": 0.4519375347071084,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D3",
+      "cloud": "azure",
+      "level": "L0",
+      "role": "reactive",
+      "policy": "reactive:hot/cool:recent90",
+      "tune_cost": 0.48480537987739236,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D3",
+      "cloud": "azure",
+      "level": "L1",
+      "role": "rival",
+      "policy": "all-hot",
+      "tune_cost": 0.503691575523952,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D3",
+      "cloud": "azure",
+      "level": "L1",
+      "role": "seasonal",
+      "policy": "seasonal-planner:hot/cool/cold:h180:lead1",
+      "tune_cost": 0.4519375347071084,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D3",
+      "cloud": "azure",
+      "level": "L1",
+      "role": "reactive",
+      "policy": "reactive:hot/cool:recent90",
+      "tune_cost": 0.48480537987739236,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D3",
+      "cloud": "gcs",
+      "level": "L0",
+      "role": "rival",
+      "policy": "autoclass:archive",
+      "tune_cost": 0.41330005602844483,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D3",
+      "cloud": "gcs",
+      "level": "L0",
+      "role": "seasonal",
+      "policy": "seasonal-planner:standard/nearline/coldline:h90:lead1",
+      "tune_cost": 0.48310293322949605,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D3",
+      "cloud": "gcs",
+      "level": "L0",
+      "role": "reactive",
+      "policy": "reactive-planner:standard/nearline/coldline:h180:lead1",
+      "tune_cost": 0.4884384078885214,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D3",
+      "cloud": "gcs",
+      "level": "L1",
+      "role": "rival",
+      "policy": "autoclass:archive",
+      "tune_cost": 0.41330005602844483,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D3",
+      "cloud": "gcs",
+      "level": "L1",
+      "role": "seasonal",
+      "policy": "seasonal-planner:standard/nearline/coldline:h90:lead1",
+      "tune_cost": 0.48310293322949605,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D3",
+      "cloud": "gcs",
+      "level": "L1",
+      "role": "reactive",
+      "policy": "reactive-planner:standard/nearline/coldline:h180:lead1",
+      "tune_cost": 0.4884384078885214,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D4",
+      "cloud": "aws",
+      "level": "L0",
+      "role": "rival",
+      "policy": "intelligent-tiering",
+      "tune_cost": 20.053669855718258,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D4",
+      "cloud": "aws",
+      "level": "L0",
+      "role": "seasonal",
+      "policy": "seasonal:standard/glacier_instant:lead7:recent90",
+      "tune_cost": 28.068943951680858,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D4",
+      "cloud": "aws",
+      "level": "L0",
+      "role": "reactive",
+      "policy": "reactive:standard/glacier_instant:recent90",
+      "tune_cost": 26.391764911957758,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D4",
+      "cloud": "aws",
+      "level": "L1",
+      "role": "rival",
+      "policy": "intelligent-tiering:archive@90d:deep@180d",
+      "tune_cost": 15.60693739463511,
+      "tune_cold_rate": 0.001912873538916048
+    },
+    {
+      "dataset": "D4",
+      "cloud": "aws",
+      "level": "L1",
+      "role": "seasonal",
+      "policy": "seasonal-it-prewarm:archive@90d:deep@180d:lead7",
+      "tune_cost": 18.163966472636698,
+      "tune_cold_rate": 0.001160009942942368
+    },
+    {
+      "dataset": "D4",
+      "cloud": "aws",
+      "level": "L1",
+      "role": "reactive",
+      "policy": "reactive-planner:standard/glacier_instant/deep_archive:h180:lead7",
+      "tune_cost": 25.574300924717793,
+      "tune_cold_rate": 0.0018485872736052024
+    },
+    {
+      "dataset": "D4",
+      "cloud": "azure",
+      "level": "L0",
+      "role": "rival",
+      "policy": "azure-last-access:cool@30d",
+      "tune_cost": 30.036234323545038,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D4",
+      "cloud": "azure",
+      "level": "L0",
+      "role": "seasonal",
+      "policy": "seasonal:hot/cold:lead7:recent90",
+      "tune_cost": 24.186031308231637,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D4",
+      "cloud": "azure",
+      "level": "L0",
+      "role": "reactive",
+      "policy": "reactive:hot/cold:recent90",
+      "tune_cost": 22.910710778521743,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D4",
+      "cloud": "azure",
+      "level": "L1",
+      "role": "rival",
+      "policy": "azure-last-access:cool@30d",
+      "tune_cost": 30.036234323545038,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D4",
+      "cloud": "azure",
+      "level": "L1",
+      "role": "seasonal",
+      "policy": "seasonal:hot/cold:lead7:recent90",
+      "tune_cost": 24.186031308231637,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D4",
+      "cloud": "azure",
+      "level": "L1",
+      "role": "reactive",
+      "policy": "reactive:hot/cold:recent90",
+      "tune_cost": 22.910710778521743,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D4",
+      "cloud": "gcs",
+      "level": "L0",
+      "role": "rival",
+      "policy": "autoclass:archive",
+      "tune_cost": 14.654102641202298,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D4",
+      "cloud": "gcs",
+      "level": "L0",
+      "role": "seasonal",
+      "policy": "seasonal:standard/coldline:lead7:recent30",
+      "tune_cost": 24.030103208323712,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D4",
+      "cloud": "gcs",
+      "level": "L0",
+      "role": "reactive",
+      "policy": "reactive:standard/coldline:recent90",
+      "tune_cost": 22.817504415143066,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D4",
+      "cloud": "gcs",
+      "level": "L1",
+      "role": "rival",
+      "policy": "autoclass:archive",
+      "tune_cost": 14.654102641202298,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D4",
+      "cloud": "gcs",
+      "level": "L1",
+      "role": "seasonal",
+      "policy": "seasonal:standard/coldline:lead7:recent30",
+      "tune_cost": 24.030103208323712,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D4",
+      "cloud": "gcs",
+      "level": "L1",
+      "role": "reactive",
+      "policy": "reactive:standard/coldline:recent90",
+      "tune_cost": 22.817504415143066,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "aws",
+      "level": "L0",
+      "role": "rival",
+      "policy": "intelligent-tiering",
+      "tune_cost": 3.3989458312314316,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "aws",
+      "level": "L0",
+      "role": "seasonal",
+      "policy": "seasonal-planner:standard/standard_ia/glacier_instant:h180:lead1",
+      "tune_cost": 4.094279882606809,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "aws",
+      "level": "L0",
+      "role": "reactive",
+      "policy": "reactive:standard/standard_ia:recent90",
+      "tune_cost": 4.0821778639661765,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "aws",
+      "level": "L1",
+      "role": "rival",
+      "policy": "intelligent-tiering:archive@90d:deep@180d",
+      "tune_cost": 3.3374194423848307,
+      "tune_cold_rate": 0.006650003843129919
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "aws",
+      "level": "L1",
+      "role": "seasonal",
+      "policy": "seasonal-it-prewarm:archive@90d:deep@180d:lead7",
+      "tune_cost": 3.528207327097333,
+      "tune_cold_rate": 0.004682136113475125
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "aws",
+      "level": "L1",
+      "role": "reactive",
+      "policy": "reactive-planner:standard/standard_ia/glacier_instant/glacier_flexible/deep_archive:h180:lead30",
+      "tune_cost": 3.8050149800964195,
+      "tune_cold_rate": 0.0033680634977668175
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "azure",
+      "level": "L0",
+      "role": "rival",
+      "policy": "all-hot",
+      "tune_cost": 3.373677943845448,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "azure",
+      "level": "L0",
+      "role": "seasonal",
+      "policy": "seasonal:hot/cool:lead7:recent90",
+      "tune_cost": 3.6928842961604817,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "azure",
+      "level": "L0",
+      "role": "reactive",
+      "policy": "reactive:hot/cool:recent90",
+      "tune_cost": 3.6121433314952847,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "azure",
+      "level": "L1",
+      "role": "rival",
+      "policy": "all-hot",
+      "tune_cost": 3.373677943845448,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "azure",
+      "level": "L1",
+      "role": "seasonal",
+      "policy": "seasonal:hot/cool:lead7:recent90",
+      "tune_cost": 3.6928842961604817,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "azure",
+      "level": "L1",
+      "role": "reactive",
+      "policy": "reactive:hot/cool:recent90",
+      "tune_cost": 3.6121433314952847,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "gcs",
+      "level": "L0",
+      "role": "rival",
+      "policy": "autoclass:archive",
+      "tune_cost": 3.0215408009546483,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "gcs",
+      "level": "L0",
+      "role": "seasonal",
+      "policy": "seasonal-planner:standard/nearline/coldline:h180:lead1",
+      "tune_cost": 3.5758817985804847,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "gcs",
+      "level": "L0",
+      "role": "reactive",
+      "policy": "reactive-planner:standard/nearline/coldline:h180:lead1",
+      "tune_cost": 3.5874068835701105,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "gcs",
+      "level": "L1",
+      "role": "rival",
+      "policy": "autoclass:archive",
+      "tune_cost": 3.0215408009546483,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "gcs",
+      "level": "L1",
+      "role": "seasonal",
+      "policy": "seasonal-planner:standard/nearline/coldline:h180:lead1",
+      "tune_cost": 3.5758817985804847,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7-control",
+      "cloud": "gcs",
+      "level": "L1",
+      "role": "reactive",
+      "policy": "reactive-planner:standard/nearline/coldline:h180:lead1",
+      "tune_cost": 3.5874068835701105,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7",
+      "cloud": "aws",
+      "level": "L0",
+      "role": "rival",
+      "policy": "intelligent-tiering",
+      "tune_cost": 3.360934512622372,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7",
+      "cloud": "aws",
+      "level": "L0",
+      "role": "seasonal",
+      "policy": "seasonal-planner:standard/standard_ia/glacier_instant:h180:lead1",
+      "tune_cost": 3.9680719049272253,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7",
+      "cloud": "aws",
+      "level": "L0",
+      "role": "reactive",
+      "policy": "reactive:standard/standard_ia:recent90",
+      "tune_cost": 4.062718212634829,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7",
+      "cloud": "aws",
+      "level": "L1",
+      "role": "rival",
+      "policy": "intelligent-tiering:archive@90d:deep@180d",
+      "tune_cost": 3.301451176772788,
+      "tune_cold_rate": 0.006210230762318795
+    },
+    {
+      "dataset": "D7",
+      "cloud": "aws",
+      "level": "L1",
+      "role": "seasonal",
+      "policy": "seasonal-it-prewarm:archive@90d:deep@180d:lead7",
+      "tune_cost": 3.4849676884610106,
+      "tune_cold_rate": 0.0041713408595945006
+    },
+    {
+      "dataset": "D7",
+      "cloud": "aws",
+      "level": "L1",
+      "role": "reactive",
+      "policy": "reactive-planner:standard/standard_ia/glacier_instant/glacier_flexible/deep_archive:h180:lead30",
+      "tune_cost": 3.8386896320235304,
+      "tune_cold_rate": 0.0033376284959180515
+    },
+    {
+      "dataset": "D7",
+      "cloud": "azure",
+      "level": "L0",
+      "role": "rival",
+      "policy": "all-hot",
+      "tune_cost": 3.373541943845448,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7",
+      "cloud": "azure",
+      "level": "L0",
+      "role": "seasonal",
+      "policy": "seasonal-planner:hot/cool/cold:h180:lead1",
+      "tune_cost": 3.558766176305778,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7",
+      "cloud": "azure",
+      "level": "L0",
+      "role": "reactive",
+      "policy": "reactive:hot/cool:recent90",
+      "tune_cost": 3.5563778168432756,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7",
+      "cloud": "azure",
+      "level": "L1",
+      "role": "rival",
+      "policy": "all-hot",
+      "tune_cost": 3.373541943845448,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7",
+      "cloud": "azure",
+      "level": "L1",
+      "role": "seasonal",
+      "policy": "seasonal-planner:hot/cool/cold:h180:lead1",
+      "tune_cost": 3.558766176305778,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7",
+      "cloud": "azure",
+      "level": "L1",
+      "role": "reactive",
+      "policy": "reactive:hot/cool:recent90",
+      "tune_cost": 3.5563778168432756,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7",
+      "cloud": "gcs",
+      "level": "L0",
+      "role": "rival",
+      "policy": "autoclass:archive",
+      "tune_cost": 2.98726556869141,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7",
+      "cloud": "gcs",
+      "level": "L0",
+      "role": "seasonal",
+      "policy": "seasonal-planner:standard/nearline/coldline:h180:lead1",
+      "tune_cost": 3.4578427468936397,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7",
+      "cloud": "gcs",
+      "level": "L0",
+      "role": "reactive",
+      "policy": "reactive-planner:standard/nearline/coldline:h180:lead1",
+      "tune_cost": 3.5265687376484522,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7",
+      "cloud": "gcs",
+      "level": "L1",
+      "role": "rival",
+      "policy": "autoclass:archive",
+      "tune_cost": 2.98726556869141,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7",
+      "cloud": "gcs",
+      "level": "L1",
+      "role": "seasonal",
+      "policy": "seasonal-planner:standard/nearline/coldline:h180:lead1",
+      "tune_cost": 3.4578427468936397,
+      "tune_cold_rate": 0.0
+    },
+    {
+      "dataset": "D7",
+      "cloud": "gcs",
+      "level": "L1",
+      "role": "reactive",
+      "policy": "reactive-planner:standard/nearline/coldline:h180:lead1",
+      "tune_cost": 3.5265687376484522,
+      "tune_cold_rate": 0.0
+    }
+  ]
+}

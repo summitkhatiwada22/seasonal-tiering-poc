@@ -1,6 +1,6 @@
 # ruff: noqa: E501
-"""Gate G2 check of the checks: plant one deliberate bug at a time in the simulator and confirm the
-simulator tests fail. Every planted bug must be caught. Run: ``uv run python scripts/mutation_check.py``.
+"""Check of the checks: plant one deliberate bug at a time in the simulator (Gate G2) and in the Phase 4
+data, policy and E1 code, and confirm the tests fail. Every planted bug must be caught. Run: ``uv run python scripts/mutation_check.py``.
 
 The source file is always restored, even if a test run crashes, and no compiled cache is kept.
 """
@@ -14,121 +14,211 @@ import sys
 root = pathlib.Path(__file__).resolve().parents[1]
 M = [
     (
-        "engine.py",
+        "sim/engine.py",
         "np.ceil((ready + 24.0 * keep) / 24.0 - 1e-9) * 24.0",
         "(ready + 24.0 * keep)",
         "copy expiry not rounded to midnight",
     ),
     (
-        "engine.py",
+        "sim/engine.py",
         "remaining * self.price[src] * self.early_gb[src, ids] * leave_factor",
         "remaining * self.price[src] * self.early_gb[src, ids] / 30",
         "early deletion always /30",
     ),
     (
-        "engine.py",
+        "sim/engine.py",
         "keeps_clock = down and self.rules.lifecycle_keeps_clock",
         "keeps_clock = False",
         "Google lifecycle resets clock",
     ),
     (
-        "engine.py",
+        "sim/engine.py",
         'fee = self.up_fee[dst] if self.rules.up_fee_on == "dest" else self.up_fee[src]',
         "fee = self.up_fee[dst]",
         "Azure up-move fee on destination",
     ),
     (
-        "engine.py",
+        "sim/engine.py",
         'self.ledger.charge("retrieval", day, ids, self.size_gb[ids] * self.retrieval[src])',
         "pass",
         "no retrieval on up-move",
     ),
     (
-        "engine.py",
+        "sim/engine.py",
         "wait = np.maximum(0.0, self.copy_ready[arch] - hour0)",
         "wait = np.zeros(len(arch))",
         "archived reads never wait",
     ),
     (
-        "engine.py",
+        "sim/engine.py",
         "none = self.copy_expire[arch] <= hour0",
         "none = self.copy_expire[arch] < hour0",
         "copy usable at its expiry hour",
     ),
     (
-        "engine.py",
+        "sim/engine.py",
         "billable_gb = np.maximum(self.sizes[None, :], min_bytes[:, None]) / BYTES_PER_GB",
         "billable_gb = np.repeat(self.sizes[None, :], len(names), axis=0) / BYTES_PER_GB",
         "no minimum billable size",
     ),
-    ("engine.py", "at_tier_kb = kb - other_kb", "at_tier_kb = kb", "overhead fully at tier rate"),
-    ("engine.py", "if self.copy_write_fee:", "if False:", "Azure copy write not charged"),
     (
-        "engine.py",
+        "sim/engine.py",
+        "at_tier_kb = kb - other_kb",
+        "at_tier_kb = kb",
+        "overhead fully at tier rate",
+    ),
+    ("sim/engine.py", "if self.copy_write_fee:", "if False:", "Azure copy write not charged"),
+    (
+        "sim/engine.py",
         'self.ledger.charge("transition", day, ids, np.full(len(ids), self.down_fee[dst]))',
         'self.ledger.charge("transition", day, ids, np.full(len(ids), self.down_fee[src]))',
         "down fee on source",
     ),
     (
-        "engine.py",
+        "sim/engine.py",
         "fees = self.read_fee[self.cur[again]]",
         "fees = 0 * self.read_fee[self.cur[again]]",
         "reissue free on AWS",
     ),
-    ("rules.py", "BYTES_PER_GB = 2**30", "BYTES_PER_GB = 10**9", "decimal GB"),
+    ("sim/rules.py", "BYTES_PER_GB = 2**30", "BYTES_PER_GB = 10**9", "decimal GB"),
     (
-        "rules.py",
+        "sim/rules.py",
         "return np.full(n_days, 24 / 730)",
         "return np.full(n_days, 1 / 30)",
         "Google daily = /30",
     ),
     (
-        "rules.py",
+        "sim/rules.py",
         'return tier_field(sheet, tier, field + "_low", high)',
         "return high",
         "low restore ignored",
     ),
     (
-        "managed.py",
+        "sim/managed.py",
         "idle = day - last - 1\n        tier = np.zeros(n, dtype=np.int64)\n        tier[idle >= d_inf] = 1",
         "idle = day - last\n        tier = np.zeros(n, dtype=np.int64)\n        tier[idle >= d_inf] = 1",
         "IT idle off by one",
     ),
     (
-        "managed.py",
-        'tier[~eligible] = 0\n\n        counts = reads_by_day[day]\n        ids = np.flatnonzero(counts)\n        if len(ids):\n            c = counts[ids]\n            ledger.charge("read_requests", day, ids, c * get_fee)',
-        'counts = reads_by_day[day]\n        ids = np.flatnonzero(counts)\n        if len(ids):\n            c = counts[ids]\n            ledger.charge("read_requests", day, ids, c * get_fee)',
+        "sim/managed.py",
+        "        tier[~eligible] = 0\n\n        if warm_by_day is not None:",
+        "\n        if warm_by_day is not None:",
         "IT small objects tier",
     ),
     (
-        "managed.py",
+        "sim/managed.py",
         "charged_up = np.array([False, False, True, True])",
         "charged_up = np.array([False, True, True, True])",
         "Autoclass Nearline->Standard charged",
     ),
     (
-        "managed.py",
+        "sim/managed.py",
         'fee_per_day = x["autoclass_management_per_1000_objects"] / 1000 / 30',
         'fee_per_day = x["autoclass_management_per_1000_objects"] / 1000 / 31',
         "Autoclass fee /31",
     ),
     (
-        "engine.py",
+        "sim/engine.py",
         "ids = np.flatnonzero(self.created <= day)",
         "ids = np.arange(len(self.sizes))",
         "storage billed before creation",
     ),
     (
-        "engine.py",
+        "sim/engine.py",
         'self.ledger.charge("write_requests", day, ids, self.write_fee[self.cur[ids]])',
         "pass",
         "upload not charged",
     ),
     (
-        "engine.py",
+        "sim/engine.py",
         "moved = np.flatnonzero((new != self.cur) & (self.created < day))",
         "moved = np.flatnonzero(new != self.cur)",
         "moves charged before creation",
+    ),
+    # ---- Phase 4: data, policies and the E1 rules
+    (
+        "policies/scenario.py",
+        "MAX_AHEAD = LAG - 1",
+        "MAX_AHEAD = LAG",
+        "seasonal forecast sees today",
+    ),
+    (
+        "data/sealed.py",
+        "if year >= SEALED_FROM_YEAR:",
+        "if year > SEALED_FROM_YEAR:",
+        "2024 not sealed",
+    ),
+    (
+        "data/mapping.py",
+        "date(TUNING_YEAR, 12, 31)",
+        "date(TUNING_YEAR + 1, 12, 31)",
+        "read scale calibrated on 2023",
+    ),
+    (
+        "data/mapping.py",
+        "[seed, DATASET_CODE.get(demand.dataset, 0), year, SETTING_CODE[setting]]",
+        "[seed, DATASET_CODE.get(demand.dataset, 0), SETTING_CODE[setting]]",
+        "read draw not fixed per year",
+    ),
+    (
+        "policies/policies.py",
+        "recent = scn.read_within(-self.recency, -1)",
+        "recent = scn.read_within(-self.recency, 0)",
+        "warm/cold recency sees today",
+    ),
+    (
+        "policies/planner.py",
+        "            scn.reads_sum(-horizon, -1),",
+        "            scn.reads_sum(-horizon, 0),",
+        "reactive planner sees today",
+    ),
+    (
+        "policies/planner.py",
+        "return scn.last_year_within(1, self.lead)",
+        "return scn.read_within(1, self.lead)",
+        "IT pre-warm uses the true future",
+    ),
+    (
+        "policies/policies.py",
+        "        tier[scn.small()] = 0",
+        "        pass",
+        "small objects leave Standard",
+    ),
+    (
+        "policies/policies.py",
+        "AUTO_UP_EVERY = 30",
+        "AUTO_UP_EVERY = 1",
+        "Azure auto-return unlimited",
+    ),
+    (
+        "policies/scenario.py",
+        'fee = float(self.sheet.extras["other_operations_per_1000"].value) / 1000',
+        "fee = 0.0",
+        "Azure access tracking free",
+    ),
+    (
+        "sim/managed.py",
+        'ledger.charge("restore_requests", day, asked, np.full(len(asked), put_fee))',
+        'ledger.charge("restore_requests", day, asked, np.full(len(asked), 0.0))',
+        "forecast restores free",
+    ),
+    (
+        "experiments/select.py",
+        'limit = min(cap, rival["cold_rate"])',
+        "limit = cap",
+        "ours may wait more than rival",
+    ),
+    (
+        "experiments/select.py",
+        'line[f"{role}_wait_ok"] = row["cold_rate"] <= rival["cold_rate"] + TOL',
+        'line[f"{role}_wait_ok"] = True',
+        "2023 waiting check skipped",
+    ),
+    (
+        "experiments/select.py",
+        "GAP_TO_PASS = 0.05",
+        "GAP_TO_PASS = 0.04",
+        "pass threshold below 5%",
     ),
 ]
 # Never write or reuse compiled caches. A planted bug of the same byte size, restored within the same
@@ -144,10 +234,10 @@ def clear_caches() -> None:
 clear_caches()
 killed = 0
 for fname, old, new, label in M:
-    p = root / "src/sat/sim" / fname
+    p = root / "src/sat" / fname
     src = p.read_text()
-    if old not in src:
-        print(f"SKIP (pattern missing): {label}")
+    if src.count(old) != 1:
+        print(f"BROKEN (pattern must occur once): {label}")
         continue
     p.write_text(src.replace(old, new, 1))
     try:
@@ -163,6 +253,10 @@ for fname, old, new, label in M:
                 "tests/test_sim_hand.py",
                 "tests/test_sim_calculator.py",
                 "tests/test_sim_properties.py",
+                "tests/test_sim_window.py",
+                "tests/test_policies.py",
+                "tests/test_data_phase4.py",
+                "tests/test_selection.py",
             ],
             cwd=root,
             capture_output=True,

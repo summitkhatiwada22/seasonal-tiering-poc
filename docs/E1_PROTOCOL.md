@@ -104,7 +104,7 @@ There are 18 real-data lines (3 datasets × 3 clouds × 2 levels), so one pass c
 | `restore-low` | restore times at the lower end of each stated range | central picks, no re-picking |
 | `seed-2`, `seed-3` | another random draw of reads from the same demand | central picks, no re-picking |
 
-A central pass that disappears under `seed-2` or `seed-3` is called fragile in the report.
+Sensitivity runs on 2023 score the picks only; the hindsight bound and the perfect-forecast line are computed at the central setting. A central pass that disappears under `seed-2` or `seed-3` is called fragile in the report.
 
 ## 7. Commands
 
