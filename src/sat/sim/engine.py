@@ -24,6 +24,7 @@ from sat.sim.model import (
     SimConfig,
     SimResult,
     WaitStats,
+    merge_results,
 )
 from sat.sim.rules import (
     BYTES_PER_GB,
@@ -44,10 +45,14 @@ NO_HOUR = -np.inf
 class _Ledger:
     """Adds charges to the per-category daily totals and to each object row's total."""
 
-    def __init__(self, n_days: int, n_objects: int, weight: FloatArray) -> None:
+    def __init__(
+        self, n_days: int, n_objects: int, weight: FloatArray, measure_from: int = 0
+    ) -> None:
         self.daily = {c: np.zeros(n_days) for c in COST_CATEGORIES}
         self.per_object = np.zeros(n_objects)
+        self.per_object_measured = np.zeros(n_objects)
         self.weight = weight
+        self.measure_from = measure_from
 
     def charge(self, category: str, day: int, ids: npt.NDArray[np.int64], each: FloatArray) -> None:
         """``each`` is the charge for ONE object of each row in ``ids`` (rows are unique)."""
@@ -56,6 +61,8 @@ class _Ledger:
         amounts = np.broadcast_to(each, ids.shape) * self.weight[ids]
         self.daily[category][day] += float(amounts.sum())
         self.per_object[ids] += amounts
+        if day >= self.measure_from:
+            self.per_object_measured[ids] += amounts
 
 
 class _Engine:
@@ -106,8 +113,9 @@ class _Engine:
         self.copy_expire = np.full(n, NO_HOUR)
         self.restores = self._group_restores(plan.restores)
 
-        self.ledger = _Ledger(self.n_days, n, self.weight)
+        self.ledger = _Ledger(self.n_days, n, self.weight, config.measure_from)
         self.waits = WaitStats()
+        self.cold_by_object = np.zeros(n)
 
     # ------------------------------------------------------------------ setup
 
@@ -312,7 +320,9 @@ class _Engine:
             return
         hour0 = 24.0 * day
         c = counts[ids]
-        self.waits.reads += float((c * self.weight[ids]).sum())
+        measured = day >= self.config.measure_from
+        if measured:
+            self.waits.reads += float((c * self.weight[ids]).sum())
         tiers = self.cur[ids]
         archived = self.archive[tiers]
 
@@ -331,7 +341,9 @@ class _Engine:
             else:
                 fee = np.full(len(arch), self.read_fee[self.names.index(self.rules.copy_tier)])  # type: ignore[arg-type]
             self.ledger.charge("read_requests", day, arch, ca * fee)
-            self.waits.add(wait, ca, self.weight[arch])
+            if measured:
+                self.waits.add(wait, ca, self.weight[arch])
+                self.cold_by_object[arch] += ca * self.weight[arch] * (wait > 0)
 
         online = ids[~archived]
         if len(online):
@@ -342,7 +354,9 @@ class _Engine:
                 "retrieval", day, online, co * self.size_gb[online] * self.retrieval[t]
             )
             wait = np.maximum(0.0, self.readable_from[online] - hour0)
-            self.waits.add(wait, co, self.weight[online])
+            if measured:
+                self.waits.add(wait, co, self.weight[online])
+                self.cold_by_object[online] += co * self.weight[online] * (wait > 0)
 
         if self.egress:
             self.ledger.charge("egress", day, ids, c * self.size_gb[ids] * self.egress)
@@ -379,6 +393,9 @@ class _Engine:
             daily=self.ledger.daily,
             per_object=self.ledger.per_object,
             waits=self.waits,
+            measure_from=self.config.measure_from,
+            per_object_measured=self.ledger.per_object_measured,
+            cold_by_object=self.cold_by_object,
         )
 
 
@@ -392,3 +409,38 @@ def simulate(
 ) -> SimResult:
     """Bill and waits for ``plan`` over ``reads`` (shape objects x days), starting on ``start``."""
     return _Engine(sheet, inventory, reads, plan, start, config or SimConfig()).run()
+
+
+def simulate_chunked(
+    sheet: PriceSheet,
+    inventory: Inventory,
+    reads: npt.ArrayLike,
+    plan: Plan,
+    start: date,
+    config: SimConfig | None = None,
+    chunk_objects: int = 50_000,
+) -> SimResult:
+    """``simulate`` over groups of at most ``chunk_objects`` object rows, merged exactly.
+
+    Objects never interact, so the result equals one run over all objects; memory stays bounded
+    for large inventories (for example the synthetic L scale of 1 million objects)."""
+    if chunk_objects < 1:
+        raise ValueError("chunk_objects must be at least 1")
+    sizes, counts, created = inventory.sizes(), inventory.counts(), inventory.created()
+    reads_arr, tier = np.asarray(reads), np.asarray(plan.tier)
+    clock = np.broadcast_to(np.asarray(plan.initial_clock_days, dtype=np.float64), sizes.shape)
+    by_obj: dict[int, list[Restore]] = defaultdict(list)
+    for order in plan.restores:
+        by_obj[order.obj].append(order)
+    parts = []
+    for lo in range(0, len(sizes), chunk_objects):
+        hi = min(lo + chunk_objects, len(sizes))
+        restores = [
+            Restore(o.obj - lo, o.day, o.keep_days, o.speed)
+            for obj in range(lo, hi)
+            for o in by_obj.get(obj, [])
+        ]
+        part_inv = Inventory(sizes[lo:hi], counts[lo:hi], created[lo:hi])
+        part_plan = Plan(tier[lo:hi], restores, clock[lo:hi])
+        parts.append(simulate(sheet, part_inv, reads_arr[lo:hi], part_plan, start, config))
+    return merge_results(parts)

@@ -1,0 +1,44 @@
+{
+  "rule": "D-030",
+  "population_keys_2016_2022": 1316855,
+  "sample_size": 10000,
+  "seed": 20261030,
+  "key": [
+    "usageclass",
+    "checkouttype",
+    "materialtype",
+    "title",
+    "creator"
+  ],
+  "sample_by_usageclass": {
+    "Digital": 4883,
+    "Physical": 5117
+  },
+  "population_by_usageclass": {
+    "Digital": 653971,
+    "Physical": 662884
+  },
+  "sample_by_materialtype_top10": {
+    "BOOK": 3887,
+    "SONG": 1973,
+    "EBOOK": 1511,
+    "AUDIOBOOK": 972,
+    "SOUNDDISC": 672,
+    "VIDEODISC": 428,
+    "MUSIC": 288,
+    "MOVIE": 91,
+    "TELEVISION": 70,
+    "COMIC": 43
+  },
+  "sample_checkouts_by_year": {
+    "2016": 71727,
+    "2017": 78832,
+    "2018": 70528,
+    "2019": 72122,
+    "2020": 44988,
+    "2021": 55100,
+    "2022": 70695,
+    "2023": 55653
+  },
+  "rows": 150395
+}

@@ -126,3 +126,15 @@ The billing *rules* (proration, early deletion, restores, moves, the rivals) are
 - Azure, high-priority rehydration (https://learn.microsoft.com/en-us/azure/storage/blobs/archive-rehydrate-overview): "might complete in less than one hour for objects under 10 GB in size". Sheet: 1 hour.
 - Azure units (pricing page): "Azure Blob Storage usage is calculated in binary Gigabytes (GB), where 1 GB = 2^30 bytes."
 - AWS lower ends of restore ranges (retrieval-options page): Flexible standard 3 h, bulk 5 h, expedited 1 minute. Intelligent-Tiering Archive Access "can range from 3-5 hours"; Deep Archive Access "within 12 hours".
+
+## Phase 4 additions (read 2026-10-30): policy rules
+
+These decide which plans a customer could actually run, not prices. Used by `src/sat/policies/rules.py` and the Azure rival.
+
+- AWS lifecycle transitions (https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html): "Objects smaller than 128 KB will not transition by default to any storage class". "Starting September 2024, the default behavior prevents objects smaller than 128 KB from being transitioned to any storage class." "You can't create a single Lifecycle rule that transitions objects from one storage class to another before the minimum storage duration period has passed." Policies keep objects under 128 KB in Standard on AWS (D-033).
+- AWS lifecycle configuration elements (https://docs.aws.amazon.com/AmazonS3/latest/userguide/intro-lifecycle-rules.html): "By default, objects smaller than 128 KB will not be transitioned to any storage class, unless you specify a smaller minimum size (ObjectSizeGreaterThan)". We keep the default.
+- AWS managing Intelligent-Tiering (https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-managing.html): "When you restore an object from the Archive Access tier or Deep Archive Access tier, the object moves back into the Frequent Access tier. Afterwards, if the object isn't accessed for 30 consecutive days, it automatically moves into the Infrequent Access tier." Basis of the forecast-restore policy (D-034, assumption A11).
+- Azure lifecycle policy structure (https://learn.microsoft.com/en-us/azure/storage/blobs/lifecycle-management-policy-structure): `enableAutoTierToHotFromCool`: "If a blob is set to the cool tier, this action automatically moves that blob into the hot tier when the blob is accessed." "This action is available only when used with the daysAfterLastAccessTimeGreaterThan run condition." "This action moves blobs from cool to hot only one time in 30 days."
+- Azure lifecycle overview (https://learn.microsoft.com/en-us/azure/storage/blobs/lifecycle-management-overview): "Each last access time update is charged as an "other transaction" at most once every 24 hours per object even if it's accessed thousands of times in a day."
+- Azure Retail Prices API, product "General Block Blob v2", eastus2, meter "All Other Operations": `retailPrice` 0.004, `unitOfMeasure` "10K" (Hot tier). Sheet: `extras.other_operations_per_1000` = 0.0004.
+

@@ -96,8 +96,8 @@ M = [
     ),
     (
         "managed.py",
-        'tier[~eligible] = 0\n\n        counts = reads_by_day[day]\n        ids = np.flatnonzero(counts)\n        if len(ids):\n            c = counts[ids]\n            waits.reads += float((c * weight[ids]).sum())\n            ledger.charge("read_requests", day, ids, c * get_fee)',
-        'counts = reads_by_day[day]\n        ids = np.flatnonzero(counts)\n        if len(ids):\n            c = counts[ids]\n            waits.reads += float((c * weight[ids]).sum())\n            ledger.charge("read_requests", day, ids, c * get_fee)',
+        'tier[~eligible] = 0\n\n        counts = reads_by_day[day]\n        ids = np.flatnonzero(counts)\n        if len(ids):\n            c = counts[ids]\n            ledger.charge("read_requests", day, ids, c * get_fee)',
+        'counts = reads_by_day[day]\n        ids = np.flatnonzero(counts)\n        if len(ids):\n            c = counts[ids]\n            ledger.charge("read_requests", day, ids, c * get_fee)',
         "IT small objects tier",
     ),
     (

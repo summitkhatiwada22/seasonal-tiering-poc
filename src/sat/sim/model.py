@@ -105,12 +105,15 @@ class SimConfig:
     on_demand_keep_days: int = 1
     up_move_speed: str = "standard"  # speed of the restore behind a move up out of an archive class
     include_egress: bool = False
+    measure_from: int = 0  # reads and waits are counted from this day on (earlier days = warm-up)
 
     def __post_init__(self) -> None:
         if self.restore_time not in {"high", "low"}:
             raise ValueError("restore_time must be 'high' or 'low'")
         if self.on_demand_keep_days < 1:
             raise ValueError("on_demand_keep_days must be at least 1")
+        if self.measure_from < 0:
+            raise ValueError("measure_from must not be negative")
 
 
 @dataclass
@@ -145,6 +148,17 @@ class WaitStats:
             key = round(float(value), 6)
             self.histogram[key] = self.histogram.get(key, 0.0) + float((r[mask] * w[mask]).sum())
 
+    def merge(self, other: WaitStats) -> None:
+        """Add another set of waits (for example another chunk of objects) to this one."""
+        self.reads += other.reads
+        self.cold_reads += other.cold_reads
+        self.cold_object_days += other.cold_object_days
+        self.hours_all_reads += other.hours_all_reads
+        self.hours_first_read += other.hours_first_read
+        self.max_hours = max(self.max_hours, other.max_hours)
+        for hours, count in other.histogram.items():
+            self.histogram[hours] = self.histogram.get(hours, 0.0) + count
+
     def share_waited(self) -> float:
         return self.cold_reads / self.reads if self.reads else 0.0
 
@@ -167,17 +181,43 @@ class WaitStats:
 
 @dataclass
 class SimResult:
-    """The bill (USD) by category, by day and by object row, plus the waits."""
+    """The bill (USD) by category, by day and by object row, plus the waits.
+
+    ``per_object_measured`` and ``cold_by_object`` cover only days from ``measure_from`` on: each
+    object row's cost and its reads that waited (weighted by the row's count)."""
 
     cloud: str
     costs: dict[str, float]
     daily: dict[str, FloatArray]
     per_object: FloatArray
     waits: WaitStats
+    measure_from: int = 0
+    per_object_measured: FloatArray | None = None
+    cold_by_object: FloatArray | None = None
 
     @property
     def total(self) -> float:
         return float(sum(self.costs.values()))
+
+    def costs_from(self, day: int) -> dict[str, float]:
+        """Cost by category for days ``day`` onwards (drop a warm-up period)."""
+        return {c: float(v[day:].sum()) for c, v in self.daily.items()}
+
+    def total_from(self, day: int) -> float:
+        return float(sum(self.costs_from(day).values()))
+
+    def add_charge(self, category: str, by_object_day: FloatArray) -> None:
+        """Add a charge the simulator does not compute itself (for example a policy's own
+        monitoring cost), given per object row and day (already weighted by the row's count)."""
+        n_days = len(self.daily[category])
+        if by_object_day.shape != (len(self.per_object), n_days):
+            raise ValueError("charge must be an (object rows x days) array")
+        self.daily[category] = self.daily[category] + by_object_day.sum(axis=0)
+        self.per_object = self.per_object + by_object_day.sum(axis=1)
+        if self.per_object_measured is not None:
+            measured = by_object_day[:, self.measure_from :].sum(axis=1)
+            self.per_object_measured = self.per_object_measured + measured
+        self.costs[category] = float(self.daily[category].sum())
 
     def monthly(self, start_ordinal: int) -> dict[tuple[int, int], float]:
         """Total cost per calendar (year, month); ``start_ordinal`` = ``start.toordinal()``."""
@@ -190,3 +230,37 @@ class SimResult:
             key = (day.year, day.month)
             out[key] = out.get(key, 0.0) + float(value)
         return out
+
+
+def merge_results(parts: Sequence[SimResult]) -> SimResult:
+    """Combine runs over disjoint groups of objects (chunks) into one result.
+
+    Objects never interact in the simulator, so running chunks separately and merging is exact:
+    costs and daily totals add up, per-object rows are concatenated in order and waits merge.
+    """
+    if not parts:
+        raise ValueError("nothing to merge")
+    first = parts[0]
+    if any(p.cloud != first.cloud for p in parts):
+        raise ValueError("cannot merge results from different clouds")
+    if any(p.measure_from != first.measure_from for p in parts):
+        raise ValueError("cannot merge results with different measurement windows")
+    daily = {c: np.sum([p.daily[c] for p in parts], axis=0) for c in first.daily}
+    waits = WaitStats()
+    for p in parts:
+        waits.merge(p.waits)
+
+    def joined(name: str) -> FloatArray | None:
+        arrays = [getattr(p, name) for p in parts]
+        return None if any(a is None for a in arrays) else np.concatenate(arrays)
+
+    return SimResult(
+        cloud=first.cloud,
+        costs={c: float(v.sum()) for c, v in daily.items()},
+        daily=daily,
+        per_object=np.concatenate([p.per_object for p in parts]),
+        waits=waits,
+        measure_from=first.measure_from,
+        per_object_measured=joined("per_object_measured"),
+        cold_by_object=joined("cold_by_object"),
+    )

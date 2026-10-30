@@ -70,7 +70,18 @@ def simulate_intelligent_tiering(
     config: ITConfig | None = None,
     initial_idle_days: npt.ArrayLike | int = 0,
     restore_time: str = "high",
+    measure_from: int = 0,
+    prewarm: npt.ArrayLike | None = None,
 ) -> SimResult:
+    """Bill S3 Intelligent-Tiering over ``reads``.
+
+    ``prewarm`` (objects x days, optional) is a policy's request to restore an object ahead of
+    demand: if ``prewarm[i, d]`` and object i sits in the Archive Access or Deep Archive Access tier
+    at the start of day d, a standard restore is requested at 00:00. Per the AWS documentation the
+    object "moves back into the Frequent Access tier" once restored (readable after the restore
+    time), and its days without access count again from there. Standard restores have no retrieval
+    charge (I3); the request itself is billed as a POST at the Intelligent-Tiering PUT/COPY/POST
+    rate (assumption A11)."""
     if sheet.cloud != "aws":
         raise ValueError("S3 Intelligent-Tiering needs the AWS price sheet")
     cfg = config or ITConfig()
@@ -126,9 +137,17 @@ def simulate_intelligent_tiering(
     d_inf = x["intelligent_tiering_days_to_infrequent"]
     d_ai = x["intelligent_tiering_days_to_archive_instant"]
 
-    ledger = _Ledger(n_days, n, weight)
+    ledger = _Ledger(n_days, n, weight, measure_from)
     waits = WaitStats()
+    cold_by_object = np.zeros(n)
     all_ids = np.arange(n)
+    warm_by_day = None
+    if prewarm is not None:
+        warm_arr = np.asarray(prewarm, dtype=bool)
+        if warm_arr.shape != (n, n_days):
+            raise ValueError("prewarm must have shape (objects, days)")
+        warm_by_day = np.ascontiguousarray(warm_arr.T)
+    ready = np.full(n, -np.inf)  # hour a requested restore completes
     for day in range(n_days):
         idle = day - last - 1
         tier = np.zeros(n, dtype=np.int64)
@@ -140,13 +159,26 @@ def simulate_intelligent_tiering(
             tier[idle >= cfg.deep_archive_access_days] = 4
         tier[~eligible] = 0
 
+        if warm_by_day is not None:
+            asked = np.flatnonzero(warm_by_day[day] & (tier >= 3) & (created <= day))
+            if len(asked):
+                ready[asked] = 24.0 * day + restore_h[tier[asked]]
+                ledger.charge("restore_requests", day, asked, np.full(len(asked), put_fee))
+                last[asked] = day - 1  # back in Frequent Access from today
+                tier[asked] = 0
+
         counts = reads_by_day[day]
         ids = np.flatnonzero(counts)
         if len(ids):
             c = counts[ids]
-            waits.reads += float((c * weight[ids]).sum())
             ledger.charge("read_requests", day, ids, c * get_fee)
-            waits.add(restore_h[tier[ids]], c, weight[ids])  # restores are free (I3)
+            hours = np.where(
+                tier[ids] >= 3, restore_h[tier[ids]], np.maximum(0.0, ready[ids] - 24.0 * day)
+            )
+            if day >= measure_from:
+                waits.reads += float((c * weight[ids]).sum())
+                waits.add(hours, c, weight[ids])  # restores are free (I3)
+                cold_by_object[ids] += c * weight[ids] * (hours > 0)
             last[ids] = day
 
         new = np.flatnonzero(created == day) if day > 0 else np.zeros(0, dtype=np.int64)
@@ -163,6 +195,9 @@ def simulate_intelligent_tiering(
         daily=ledger.daily,
         per_object=ledger.per_object,
         waits=waits,
+        measure_from=measure_from,
+        per_object_measured=ledger.per_object_measured,
+        cold_by_object=cold_by_object,
     )
 
 
@@ -173,6 +208,7 @@ def simulate_autoclass(
     start: date,
     terminal: str = "nearline",
     initial_idle_days: npt.ArrayLike | int = 0,
+    measure_from: int = 0,
 ) -> SimResult:
     if sheet.cloud != "gcs":
         raise ValueError("Autoclass needs the Google Cloud price sheet")
@@ -199,8 +235,9 @@ def simulate_autoclass(
     eligible = sizes >= x["autoclass_min_object_kb"] * BYTES_PER_KB
     size_gb = sizes / BYTES_PER_GB
 
-    ledger = _Ledger(n_days, n, weight)
+    ledger = _Ledger(n_days, n, weight, measure_from)
     waits = WaitStats()
+    cold_by_object = np.zeros(n)
     all_ids = np.arange(n)
     for day in range(n_days):
         idle = day - last - 1
@@ -215,7 +252,8 @@ def simulate_autoclass(
         ids = np.flatnonzero(counts)
         if len(ids):
             c = counts[ids]
-            waits.reads += float((c * weight[ids]).sum())
+            if day >= measure_from:
+                waits.reads += float((c * weight[ids]).sum())
             ledger.charge("read_requests", day, ids, c * read_fee)
             ledger.charge("transition", day, ids, np.where(charged_up[tier[ids]], up_fee, 0.0))
             last[ids] = day
@@ -232,4 +270,7 @@ def simulate_autoclass(
         daily=ledger.daily,
         per_object=ledger.per_object,
         waits=waits,
+        measure_from=measure_from,
+        per_object_measured=ledger.per_object_measured,
+        cold_by_object=cold_by_object,
     )

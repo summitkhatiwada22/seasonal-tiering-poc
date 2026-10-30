@@ -33,6 +33,7 @@ _sources:
   azure_access_tiers: &azure_access_tiers https://learn.microsoft.com/en-us/azure/storage/blobs/access-tiers-overview  # read 2026-10-30
   azure_rehydrate: &azure_rehydrate https://learn.microsoft.com/en-us/azure/storage/blobs/archive-rehydrate-overview  # read 2026-10-30 (Phase 3)
   azure_plan_costs: &azure_plan_costs https://learn.microsoft.com/en-us/azure/storage/common/storage-plan-manage-costs  # read 2026-10-30 (Phase 3)
+  azure_other_ops_api: &azure_other_ops_api "https://prices.azure.com/api/retail/prices?$filter=serviceName eq 'Storage' and armRegionName eq 'eastus2' and productName eq 'General Block Blob v2' and priceType eq 'Consumption' and contains(meterName, 'Other')"  # read 2026-10-30 (Phase 4)
   owner_screenshots: &owner_screenshots https://github.com/summitkhatiwada22/seasonal-tiering-poc/tree/main/docs/evidence  # 2026-10-29, agree with the API
 
 cloud: azure
@@ -88,3 +89,9 @@ extras:
   egress_usd_per_gb_first_tier: {value: 0.087, status: sourced, source: *azure_bandwidth_api}
   hot_storage_from_50tb_usd_per_gb_month: {value: 0.017664, status: sourced, source: *azure_retail_api}
   hot_storage_from_500tb_usd_per_gb_month: {value: 0.016928, status: sourced, source: *azure_retail_api}
+  # Phase 4: last-access-time tracking. "Each last access time update is charged as an 'other
+  # transaction' at most once every 24 hours per object" (lifecycle overview,
+  # https://learn.microsoft.com/en-us/azure/storage/blobs/lifecycle-management-overview). The Retail
+  # Prices API lists the "All Other Operations" meter of this product at $0.004 per 10,000 for the Hot
+  # tier (every redundancy option it returned had the same price).
+  other_operations_per_1000: {value: 0.0004, status: sourced, source: *azure_other_ops_api}

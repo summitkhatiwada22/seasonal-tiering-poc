@@ -1,0 +1,2 @@
+801a77430b0831528fd534e378f33cb2d3601187b48d265b570e79a5bb4feaa1  d4_sample_keys.parquet
+299ceeeaf130c7fcf9714d4fd9b4dde9243cdbf06e6b2ab86c2104167f880c3c  d4_sample_monthly.parquet
