@@ -1,0 +1,10 @@
+device_path,workspace_path,bytes,sha256,device_mtime_utc,before_freeze_tag
+/Volumes/FLASH/seasonal-tiering-data/processed/D1/year=2024/views.parquet,data/processed/D1/year=2024/views.parquet,5777033,beb0b3a6d03edf3357d9512f1bca831bd205e056403667ce8dd2f0a488f744f5,2026-10-29T10:11:26.536000+00:00,True
+/Volumes/FLASH/seasonal-tiering-data/processed/D1/year=2025/views.parquet,data/processed/D1/year=2025/views.parquet,5756004,63199f489b8fa0b063d15938b14464ac5ad5a5e615c366b2e8249623183cb834,2026-10-29T10:11:39.194000+00:00,True
+/Volumes/FLASH/seasonal-tiering-data/processed/D3/year=2024/views.parquet,data/processed/D3/year=2024/views.parquet,361122,f97ec606c81cdf1f4f0ae647d87ba4ff17939c155d4fae660d5165025f104d42,2026-10-29T10:28:18.329000+00:00,True
+/Volumes/FLASH/seasonal-tiering-data/processed/D3/year=2025/views.parquet,data/processed/D3/year=2025/views.parquet,377493,a424bea2f4d5bbfff1b786c67bc18d22d1def0e03fea4e5a16ce6f83c5326914,2026-10-29T10:28:18.356000+00:00,True
+/Volumes/FLASH/seasonal-tiering-data/processed/D4/year=2023/checkouts.parquet,data/interim/D4_full/year=2023/checkouts.parquet,123641996,8712914fa7622e9eb596e28f37bdd4d725afc65504d9ea783a3c19a81030e9b8,2026-10-29T16:29:36.470000+00:00,True
+/Volumes/FLASH/seasonal-tiering-data/processed/D4/year=2024/checkouts.parquet,data/interim/D4_full/year=2024/checkouts.parquet,113494451,2a5b4476b9534cefac7fafb2b603c084aa8c2389ec6e120807a8d2f7c2376316,2026-10-29T16:30:06.896000+00:00,True
+/Volumes/FLASH/seasonal-tiering-data/processed/D4/year=2025/checkouts.parquet,data/interim/D4_full/year=2025/checkouts.parquet,126227013,576947c55c49858b72c38819cbc90ecf442068ea9ae337a7e3b12558ea8e4890,2026-10-29T16:30:42.434000+00:00,True
+derived from /Volumes/FLASH/seasonal-tiering-data/processed/D4/year=2024/checkouts.parquet (D-030 sample),data/processed/D4_sample/year=2024/monthly.parquet,26722,d575958c0b026aa9e41968d06726abf2a238bd30652f4ca37c5b3227f0633e05,,
+derived from /Volumes/FLASH/seasonal-tiering-data/processed/D4/year=2025/checkouts.parquet (D-030 sample),data/processed/D4_sample/year=2025/monthly.parquet,25816,48ded509afb05858efb59ac46d3974cac46f51f63433f078bac21e79421eebf3,,
