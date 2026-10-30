@@ -32,6 +32,8 @@ def test_sealed_years_are_refused() -> None:
     with pytest.raises(SealedYearError):
         check_year(2023, max_year=2022)  # the validation year is locked while tuning
     check_year(2023, max_year=2023)
+    with pytest.raises(SealedYearError):
+        check_year(2024, max_year=2024)  # even when asked for explicitly
 
 
 def test_partitions_never_open_a_sealed_folder(tmp_path: Path) -> None:
@@ -185,6 +187,24 @@ def test_calibration_ignores_the_validation_year() -> None:
     changed[:, -365:] *= 50  # 2023 changes must not move the scale
     full2 = Demand(full.dataset, full.names, full.start, changed, "daily", full.groups)
     np.testing.assert_allclose(default_scales(short, "central"), default_scales(full2, "central"))
+
+
+def test_reads_are_drawn_independently_each_year() -> None:
+    """Identical demand in two years must not give identical reads: if every year reused one
+    random stream, last year's noise would repeat and flatter the seasonal policy."""
+    n_days = (date(2018, 1, 1) - date(2016, 1, 1)).days
+    d = Demand(
+        "D1",
+        ("a", "b"),
+        date(2016, 1, 1),
+        np.full((2, n_days), 5.0),
+        "daily",
+        {"cohort_A": np.array([True, False]), "cohort_B": np.array([False, True])},
+    )
+    reads = to_reads(d, np.ones(2), "central")
+    y2016, y2017 = reads[:, :365], reads[:, 366 : 366 + 365]  # 2016 is a leap year
+    for row in range(2):  # per object: a reused stream repeats at least the first object exactly
+        assert not np.array_equal(y2016[row], y2017[row])
 
 
 def test_reads_of_a_year_do_not_depend_on_how_far_the_table_goes() -> None:

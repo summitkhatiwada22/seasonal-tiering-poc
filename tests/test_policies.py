@@ -216,10 +216,34 @@ def test_seasonal_copy_orders_use_only_the_past() -> None:
 
 
 def test_last_year_cannot_look_past_yesterday() -> None:
+    # literal numbers on purpose: comparing with the module's own constant would move with it
+    assert MAX_AHEAD == 363
     scn = _scn("aws", _random_history(4), 800, 365)
-    scn.last_year_within(0, MAX_AHEAD)
+    scn.last_year_within(0, 363)
+    scn.last_year_reads_sum(0, 363)
     with pytest.raises(ValueError):
-        scn.last_year_within(0, MAX_AHEAD + 1)
+        scn.last_year_within(0, 364)  # 364 days back from 364 days ahead is today
+    with pytest.raises(ValueError):
+        scn.last_year_reads_sum(0, 364)
+
+
+@pytest.mark.parametrize("kind", ["seasonal", "reactive"])
+@pytest.mark.parametrize("cut", [30, 200])
+def test_planner_decisions_do_not_see_todays_reads(kind: str, cut: int) -> None:
+    """A drastic change from day ``cut`` on (rarely read objects suddenly read 30 times a day)
+    must leave every decision up to and including day ``cut`` unchanged."""
+    reads = np.random.default_rng(11).poisson(0.01, (20, 1200)).astype(np.float64)
+    changed = reads.copy()
+    changed[:, 800 + cut :] = 30.0
+    for cloud, classes in (
+        ("azure", ("hot", "cool", "cold", "archive")),
+        ("aws", ("standard", "standard_ia", "glacier_instant")),
+    ):
+        pol = Planner(cloud, kind, classes, 30, 7)
+        a = pol.tiers(_scn(cloud, reads, 800, 365, sizes=[BIG] * 20))
+        b = pol.tiers(_scn(cloud, changed, 800, 365, sizes=[BIG] * 20))
+        np.testing.assert_array_equal(a[:, : cut + 1], b[:, : cut + 1])
+        assert (a[:, cut + 1 :] != b[:, cut + 1 :]).any()  # the change does matter afterwards
 
 
 # ------------------------------------------------------------------ AWS rules

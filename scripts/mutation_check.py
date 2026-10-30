@@ -142,12 +142,9 @@ M = [
         "MAX_AHEAD = LAG",
         "seasonal forecast sees today",
     ),
-    (
-        "data/sealed.py",
-        "if year >= SEALED_FROM_YEAR:",
-        "if year > SEALED_FROM_YEAR:",
-        "2024 not sealed",
-    ),
+    # Weakening only ``year >= SEALED_FROM_YEAR`` changes nothing (the max_year guard still refuses
+    # 2024), so this planted bug removes the lock on 2024 entirely.
+    ("data/sealed.py", "SEALED_FROM_YEAR = 2024", "SEALED_FROM_YEAR = 2025", "2024 not sealed"),
     (
         "data/mapping.py",
         "date(TUNING_YEAR, 12, 31)",

@@ -12,9 +12,9 @@ Run `make status` any time, or read [docs/PROGRESS.md](docs/PROGRESS.md). That f
 | --- | --- |
 | Current phase | See `docs/PROGRESS.md` |
 | Time cap | 6 weeks from 2026-10-29 (until 2026-12-10) |
-| Done so far | Phases 0 to 3: foundations, data and licence checks, five real datasets downloaded and quality-checked ([Phase 2 report](docs/PHASE2_REPORT.md)), and the cost and waiting-time simulator, checked against hand calculations and the AWS calculator ([Phase 3 report](docs/PHASE3_REPORT.md)) |
-| Next | Phase 4: baseline policies (all-Standard, lifecycle rules, Intelligent-Tiering, Autoclass) and the seasonal-naive policy, then early check E1 |
-| Result so far | None yet. No forecasting result exists; the sealed test years are untouched |
+| Done so far | Phases 0 to 4: foundations, data and licence checks, five real datasets downloaded and quality-checked ([Phase 2](docs/PHASE2_REPORT.md)), the cost and waiting-time simulator ([Phase 3](docs/PHASE3_REPORT.md)), and the baseline policies with early check E1 ([Phase 4](docs/PHASE4_REPORT.md)) |
+| Next | The owner decides between Phase 5 (a real forecast, scoped to AWS and Azure) and writing up E1 |
+| Result so far | Early check E1 (2023 validation year): **continue** by the pre-set rule, but narrowly. Seasonal-naive beats the best rival only on Azure LRS, where no managed tiering is offered; it loses to S3 Intelligent-Tiering and Google Autoclass everywhere. The sealed test years are untouched |
 
 ## How this PoC stays honest
 
@@ -36,6 +36,7 @@ make synth     # generate a small synthetic dataset
 make status    # which phase are we on?
 make data      # points to the real-data commands (Phase 2 runbook)
 make simulate  # smoke-test the cost and waiting-time simulator on synthetic data
+make e1        # early check E1: tune on 2022, pick, score on 2023 (about an hour on 2 cores)
 ```
 
 The real datasets are downloaded to a folder outside the repository by following [docs/RUNBOOK_PHASE2.md](docs/RUNBOOK_PHASE2.md).
@@ -47,8 +48,9 @@ The real datasets are downloaded to a folder outside the repository by following
 | `docs/PROGRESS.md` | Phase tracker and stop points |
 | `docs/DECISIONS.md` | Every choice that could change results, with the reason |
 | `docs/data_cards/` | One card per dataset: source, licence, caveats |
-| `docs/PHASE1_REPORT.md` to `docs/PHASE3_REPORT.md` | What each finished phase found |
+| `docs/PHASE1_REPORT.md` to `docs/PHASE4_REPORT.md` | What each finished phase found |
 | `docs/SIM_RULES.md`, `docs/HAND_CALCS.md` | How prices become a bill (with official quotes) and the hand calculations the simulator must match |
+| `docs/POLICIES.md`, `docs/E1_PROTOCOL.md` | Every storage policy compared, and the rules of early check E1 (fixed before the data was read) |
 | `docs/RUNBOOK_PHASE2.md` | Commands to download and check the real data |
 | `docs/evidence/` | Official price rows (text) and the owner's calculator screenshots |
 | `configs/prices/` | AWS, Google and Azure price sheets with sources |
@@ -57,10 +59,13 @@ The real datasets are downloaded to a folder outside the repository by following
 | `src/sat/prices.py` | Price sheet loader and validator |
 | `src/sat/ingest/` | Downloaders and checks for D1 to D5, checksums, quality report |
 | `src/sat/sim/` | Cost and waiting-time simulator, including the billing of S3 Intelligent-Tiering and Autoclass |
-| `scripts/` and `reports/` | Phase 1 and 2 source probes and their raw outputs; Phase 3 planted-bug check (`mutation_check.py`) and speed check (`bench_sim.py`) |
+| `src/sat/data/` | Loaders behind the sealed-year lock, demand-to-reads mapping, object sizes |
+| `src/sat/policies/`, `src/sat/experiments/` | The policies (rivals, ours, references) and the E1 runner |
+| `reports/e1/` | E1 picks, verdicts and every run's cost and waits (CSV) |
+| `scripts/` and `reports/` | Phase 1 and 2 source probes and their raw outputs; the planted-bug check (`mutation_check.py`) and speed check (`bench_sim.py`) |
 | `tests/` | Automated tests |
 | `data_records/` | Small records of the real data: checksums, article and package lists, flags, size summaries, quality report |
-| `data/` | Local data, git-ignored |
+| `data/` | Local data and per-object experiment arrays, git-ignored |
 
 ## Licence
 
