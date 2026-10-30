@@ -1,72 +1,76 @@
-# Google Cloud Storage price sheet (single region, US). All prices in USD.
+# Google Cloud Storage price sheet, us-central1 (Iowa), single region, flat namespace. All prices in USD.
 #
-# status: sourced     -> the value appears in a page listed under _sources.
-# status: unverified  -> written from memory; check against Google's own pricing page in Phase 1.
+# status: sourced     -> the value appears in an official Google source listed under _sources.
+# status: unverified  -> not yet checked against an official source (none left in this file).
 #
-# Phase 1 check (2026-10-29): storage, retrieval and minimum-duration values below were read from
-# Google's own page, us-central1 (Iowa) single region. Google lists storage per hour; monthly values
-# are hourly x 730 (Standard 0.0200, Nearline 0.0100, Coldline 0.0040, Archive 0.0012).
-# The official page also lists US multi-region at Standard 0.026, Nearline 0.015, Coldline 0.00875,
-# Archive 0.003. We model single region only (decision D-008). Values that Google's page does not
-# state in the extract (minimum object size, restore hours) stay 'unverified'.
+# VERIFICATION (2026-10-30). Every value below was read from Google's own pages in a real browser
+# (rows copied in docs/evidence/official-prices-2026-10-30.md):
+#   * Storage is listed per GiB-hour; monthly = hourly x 730: Standard 0.000027397 -> 0.0200,
+#     Nearline 0.000013699 -> 0.0100, Coldline 0.000005479 -> 0.0040, Archive 0.000001644 -> 0.0012.
+#   * Operations: the table "For buckets located in a single region", flat namespace.
+#   * Retrieval fees, minimum storage durations, internet egress and the Autoclass fee: pricing page.
+#   * "No minimum object size" and millisecond access for every class: storage-classes docs.
+#   * Autoclass rules (30 / 90 / 365 days, 128 KiB, no retrieval or early-deletion fees): Autoclass docs.
+# Units: Google prices storage, retrieval and egress per GiB (2^30 bytes).
+# These values are unchanged from the Phase 1 check of 2026-10-29; restore hours and minimum object
+# size, previously unverified, are now confirmed.
 
 _sources:
-  devto_2026: &devto_2026 https://dev.to/mr_manushukla/cloud-storage-pricing-in-2026-aws-s3-vs-azure-vs-gcp-compared-e54
-  finout: &finout https://finout.io/blog/cloud-storage-pricing-comparison
-  autoclass_docs: &autoclass_docs https://docs.cloud.google.com/storage/docs/autoclass
-  google_community: &google_community https://discuss.google.dev/t/gcp-costing-standard-even-though-buckets-default-class-is-archive/147848
-  gcs_official: &gcs_official https://cloud.google.com/storage/pricing  # fetched 2026-10-29, us-central1 (Iowa)
-  memory: &memory "memory: not yet checked against a source; verify in Phase 1"
+  gcs_pricing_page: &gcs_pricing_page https://cloud.google.com/storage/pricing  # read 2026-10-30, Iowa (us-central1)
+  gcs_storage_classes: &gcs_storage_classes https://docs.cloud.google.com/storage/docs/storage-classes  # read 2026-10-30
+  gcs_autoclass: &gcs_autoclass https://docs.cloud.google.com/storage/docs/autoclass  # read 2026-10-30
 
 cloud: gcs
-region: us (single region)
+region: us-central1 (Iowa), single region
 currency: USD
-as_of: 2026-10-29
+as_of: 2026-10-30
 
 tier_order: [standard, nearline, coldline, archive]
 
 tiers:
   standard:
-    storage_usd_per_gb_month: {value: 0.020, status: sourced, source: *gcs_official}
-    retrieval_usd_per_gb: {value: 0.0, status: sourced, source: *gcs_official}
-    min_storage_days: {value: 0, status: sourced, source: *gcs_official}
-    min_billable_object_kb: {value: 0, status: unverified, source: *memory}
-    per_object_overhead_kb: {value: 0, status: unverified, source: *memory}
-    restore_hours: {value: 0, status: unverified, source: *memory}
-    class_a_per_1000: {value: 0.005, status: sourced, source: *gcs_official}
-    class_b_per_1000: {value: 0.0004, status: sourced, source: *gcs_official}
+    storage_usd_per_gb_month: {value: 0.020, status: sourced, source: *gcs_pricing_page}
+    retrieval_usd_per_gb: {value: 0.0, status: sourced, source: *gcs_pricing_page}
+    min_storage_days: {value: 0, status: sourced, source: *gcs_pricing_page}
+    min_billable_object_kb: {value: 0, status: sourced, source: *gcs_storage_classes}   # "No minimum object size"
+    per_object_overhead_kb: {value: 0, status: sourced, source: *gcs_pricing_page}       # none listed
+    restore_hours: {value: 0, status: sourced, source: *gcs_storage_classes}             # milliseconds
+    class_a_per_1000: {value: 0.005, status: sourced, source: *gcs_pricing_page}
+    class_b_per_1000: {value: 0.0004, status: sourced, source: *gcs_pricing_page}
   nearline:
-    storage_usd_per_gb_month: {value: 0.010, status: sourced, source: *gcs_official}
-    retrieval_usd_per_gb: {value: 0.01, status: sourced, source: *gcs_official}
-    min_storage_days: {value: 30, status: sourced, source: *gcs_official}
-    min_billable_object_kb: {value: 0, status: unverified, source: *memory}
-    per_object_overhead_kb: {value: 0, status: unverified, source: *memory}
-    restore_hours: {value: 0, status: unverified, source: *memory}
-    class_a_per_1000: {value: 0.01, status: sourced, source: *gcs_official}
-    class_b_per_1000: {value: 0.001, status: sourced, source: *gcs_official}
+    storage_usd_per_gb_month: {value: 0.010, status: sourced, source: *gcs_pricing_page}
+    retrieval_usd_per_gb: {value: 0.01, status: sourced, source: *gcs_pricing_page}
+    min_storage_days: {value: 30, status: sourced, source: *gcs_pricing_page}
+    min_billable_object_kb: {value: 0, status: sourced, source: *gcs_storage_classes}
+    per_object_overhead_kb: {value: 0, status: sourced, source: *gcs_pricing_page}
+    restore_hours: {value: 0, status: sourced, source: *gcs_storage_classes}
+    class_a_per_1000: {value: 0.01, status: sourced, source: *gcs_pricing_page}
+    class_b_per_1000: {value: 0.001, status: sourced, source: *gcs_pricing_page}
   coldline:
-    storage_usd_per_gb_month: {value: 0.004, status: sourced, source: *gcs_official}
-    retrieval_usd_per_gb: {value: 0.02, status: sourced, source: *gcs_official}
-    min_storage_days: {value: 90, status: sourced, source: *gcs_official}
-    min_billable_object_kb: {value: 0, status: unverified, source: *memory}
-    per_object_overhead_kb: {value: 0, status: unverified, source: *memory}
-    restore_hours: {value: 0, status: unverified, source: *memory}
-    class_a_per_1000: {value: 0.02, status: sourced, source: *gcs_official}
-    class_b_per_1000: {value: 0.01, status: sourced, source: *gcs_official}
+    storage_usd_per_gb_month: {value: 0.004, status: sourced, source: *gcs_pricing_page}
+    retrieval_usd_per_gb: {value: 0.02, status: sourced, source: *gcs_pricing_page}
+    min_storage_days: {value: 90, status: sourced, source: *gcs_pricing_page}
+    min_billable_object_kb: {value: 0, status: sourced, source: *gcs_storage_classes}
+    per_object_overhead_kb: {value: 0, status: sourced, source: *gcs_pricing_page}
+    restore_hours: {value: 0, status: sourced, source: *gcs_storage_classes}
+    class_a_per_1000: {value: 0.02, status: sourced, source: *gcs_pricing_page}
+    class_b_per_1000: {value: 0.01, status: sourced, source: *gcs_pricing_page}
   archive:
-    storage_usd_per_gb_month: {value: 0.0012, status: sourced, source: *gcs_official}
-    retrieval_usd_per_gb: {value: 0.05, status: sourced, source: *gcs_official}
-    min_storage_days: {value: 365, status: sourced, source: *gcs_official}
-    min_billable_object_kb: {value: 0, status: unverified, source: *memory}
-    per_object_overhead_kb: {value: 0, status: unverified, source: *memory}
-    restore_hours: {value: 0, status: unverified, source: *memory}
-    class_a_per_1000: {value: 0.05, status: sourced, source: *gcs_official}
-    class_b_per_1000: {value: 0.05, status: sourced, source: *gcs_official}
+    storage_usd_per_gb_month: {value: 0.0012, status: sourced, source: *gcs_pricing_page}
+    retrieval_usd_per_gb: {value: 0.05, status: sourced, source: *gcs_pricing_page}
+    min_storage_days: {value: 365, status: sourced, source: *gcs_pricing_page}
+    min_billable_object_kb: {value: 0, status: sourced, source: *gcs_storage_classes}
+    per_object_overhead_kb: {value: 0, status: sourced, source: *gcs_pricing_page}
+    restore_hours: {value: 0, status: sourced, source: *gcs_storage_classes}             # "available within milliseconds"
+    class_a_per_1000: {value: 0.05, status: sourced, source: *gcs_pricing_page}
+    class_b_per_1000: {value: 0.05, status: sourced, source: *gcs_pricing_page}
 
 extras:
-  # Data transfer out, first 1 TB per month.
-  egress_usd_per_gb_first_tier: {value: 0.12, status: sourced, source: *devto_2026}
-  # Autoclass only moves objects of at least 128 KiB. Its fee rules and 30 / 90 / 365-day moves
-  # are in the Phase 4 policy code (source: autoclass_docs).
-  autoclass_min_object_kb: {value: 128, status: sourced, source: *gcs_official}
-  autoclass_management_per_1000_objects: {value: 0.0025, status: sourced, source: *gcs_official}
+  # Internet egress to worldwide destinations (excluding Asia and Australia), first 10 TiB per month.
+  egress_usd_per_gb_first_tier: {value: 0.12, status: sourced, source: *gcs_pricing_page}
+  # Autoclass, Google's reactive rival.
+  autoclass_management_per_1000_objects: {value: 0.0025, status: sourced, source: *gcs_pricing_page}  # per 30 days
+  autoclass_min_object_kb: {value: 128, status: sourced, source: *gcs_autoclass}  # smaller objects never move to colder classes
+  autoclass_days_to_nearline: {value: 30, status: sourced, source: *gcs_autoclass}
+  autoclass_days_to_coldline: {value: 90, status: sourced, source: *gcs_autoclass}     # only with Archive as terminal class
+  autoclass_days_to_archive: {value: 365, status: sourced, source: *gcs_autoclass}     # only with Archive as terminal class

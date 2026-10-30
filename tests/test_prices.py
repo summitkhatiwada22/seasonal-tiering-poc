@@ -69,18 +69,79 @@ def test_azure_matches_owner_screenshot_2026_10_29() -> None:
     assert azure.get("hot", "put_per_1000") == pytest.approx(0.005)
 
 
-def test_unverified_values_are_listed_so_nobody_forgets_them() -> None:
-    gcs = load_all(PRICES_DIR)["gcs"]
-    unverified = gcs.unverified()
-    # Storage, retrieval and minimum durations were verified against Google's page in Phase 1.
-    assert "standard.storage_usd_per_gb_month" not in unverified
-    assert "coldline.storage_usd_per_gb_month" not in unverified
-    # Facts the page extract did not state stay flagged until someone checks them.
-    assert "archive.restore_hours" in unverified
+def test_every_price_is_backed_by_an_official_source() -> None:
+    """Since 2026-10-30 every value in all three sheets comes from an official source."""
+    for sheet in load_all(PRICES_DIR).values():
+        assert sheet.unverified() == [], (sheet.cloud, sheet.unverified())
+
+
+def test_aws_matches_official_pricing_page_2026_10_30() -> None:
+    """Rows read from aws.amazon.com/s3/pricing, US East (N. Virginia), price data of 2026-10-15."""
+    aws = load_all(PRICES_DIR)["aws"]
+    expected = {
+        # tier: (storage, retrieval per GB, PUT per 1,000, GET per 1,000, min days, min KB)
+        "standard": (0.023, 0.0, 0.005, 0.0004, 0, 0),
+        "standard_ia": (0.0125, 0.01, 0.01, 0.001, 30, 128),
+        "glacier_instant": (0.004, 0.03, 0.02, 0.01, 90, 128),
+        "glacier_flexible": (0.0036, 0.01, 0.03, 0.0004, 90, 0),
+        "deep_archive": (0.00099, 0.02, 0.05, 0.0004, 180, 0),
+    }
+    fields = (
+        "storage_usd_per_gb_month",
+        "retrieval_usd_per_gb",
+        "put_per_1000",
+        "get_per_1000",
+        "min_storage_days",
+        "min_billable_object_kb",
+    )
+    for tier, values in expected.items():
+        for field, value in zip(fields, values, strict=True):
+            assert aws.get(tier, field) == pytest.approx(value), (tier, field)
+    assert aws.get("glacier_flexible", "restore_request_per_1000") == pytest.approx(0.05)
+    assert aws.get("deep_archive", "restore_request_per_1000") == pytest.approx(0.10)
+    assert aws.get("glacier_flexible", "retrieval_bulk_usd_per_gb") == 0.0  # bulk is free
+    assert aws.get("deep_archive", "retrieval_bulk_usd_per_gb") == pytest.approx(0.0025)
+    assert aws.get("deep_archive", "restore_request_bulk_per_1000") == pytest.approx(0.025)
+    for tier, fee in (("standard_ia", 0.01), ("glacier_instant", 0.02), ("glacier_flexible", 0.03)):
+        assert aws.get(tier, "transition_in_per_1000") == pytest.approx(fee), tier
+    assert aws.get("glacier_flexible", "restore_hours") == 5  # "3-5 hours", upper end (D-025)
+    assert aws.get("deep_archive", "restore_hours") == 12
+    assert aws.get("deep_archive", "bulk_restore_hours") == 48
+    assert aws.get("glacier_flexible", "per_object_overhead_kb") == 40
+    extras = aws.extras
+    assert extras["egress_usd_per_gb_first_tier"].value == pytest.approx(0.09)
+    assert extras["intelligent_tiering_monitoring_per_1000_objects"].value == pytest.approx(0.0025)
+    assert extras["intelligent_tiering_infrequent_usd_per_gb_month"].value == pytest.approx(0.0125)
+    assert extras["intelligent_tiering_archive_instant_usd_per_gb_month"].value == pytest.approx(
+        0.004
+    )
+    assert extras["intelligent_tiering_days_to_infrequent"].value == 30
+    assert extras["intelligent_tiering_days_to_archive_instant"].value == 90
+
+
+def test_azure_matches_official_retail_prices_api_2026_10_30() -> None:
+    """prices.azure.com, General Block Blob v2, eastus2, LRS. Operations there are per 10,000."""
+    azure = load_all(PRICES_DIR)["azure"]
+    per_10k = {  # tier: (write, read) per 10,000 operations, as the API lists them
+        "hot": (0.05, 0.004),
+        "cool": (0.10, 0.01),
+        "cold": (0.18, 0.10),
+        "archive": (0.10, 5.0),
+    }
+    for tier, (write, read) in per_10k.items():
+        assert azure.get(tier, "put_per_1000") == pytest.approx(write / 10), tier
+        assert azure.get(tier, "get_per_1000") == pytest.approx(read / 10), tier
+    for tier in ("cool", "cold", "archive"):
+        assert azure.get(tier, "min_billable_object_kb") == 0  # corrected from 128 (D-025)
+    assert azure.extras["egress_usd_per_gb_first_tier"].value == pytest.approx(0.087)
 
 
 def test_gcs_matches_google_official_page_checked_2026_10_29() -> None:
     gcs = load_all(PRICES_DIR)["gcs"]
+    for tier in gcs.tier_order:
+        assert gcs.get(tier, "restore_hours") == 0  # all classes answer in milliseconds
+        assert gcs.get(tier, "min_billable_object_kb") == 0
+    assert gcs.extras["autoclass_days_to_archive"].value == 365
     expected = {
         ("standard", "storage_usd_per_gb_month"): 0.020,
         ("nearline", "storage_usd_per_gb_month"): 0.010,

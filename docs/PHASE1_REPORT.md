@@ -62,3 +62,8 @@ None of this is legal advice. Before any investor material relies on D3 or D4, a
 | 2 | ~~Measure real file sizes and download speed~~ Done 2026-10-29: 0.65 MB/s, sizes in the data cards | Done | |
 | 3 | Seattle: get row count and test yearly chunks via the Socrata API | Phase 2 | D4 plan |
 | 4 | Read Common Crawl Terms of Use | Phase 8, before use | Compression track only |
+
+
+## Addendum 2026-10-30: prices verified from official sources
+
+Every price in `configs/prices/` was re-read from the providers' own pages and price data (AWS pricing page and S3 docs, Azure Retail Prices API and Microsoft Learn, Google Cloud pricing page and docs). No value is unverified any more. Two corrections were made (D-025). Evidence: `docs/evidence/official-prices-2026-10-30.md`.

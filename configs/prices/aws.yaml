@@ -1,134 +1,126 @@
-# AWS S3 price sheet (US East, N. Virginia). All prices in USD.
+# AWS S3 price sheet, US East (N. Virginia), us-east-1. All prices in USD.
 #
 # HOW TO READ THIS FILE
-#   status: sourced     -> the value appears in a page listed under _sources.
-#   status: unverified  -> written from memory; must be checked against AWS's own
-#                          pricing page in Phase 1 before any result is published.
+#   status: sourced     -> the value appears in an official AWS page or data file listed under _sources.
+#   status: unverified  -> not yet checked against an official source (none left in this file).
 # Every number the simulator uses comes from this file, never from code.
 #
-# Phase 1 check (2026-10-29): AWS's own page was fetched. Its price tables are drawn by script and
-# did not render here, so per-GB rates are STILL from secondary articles. The page's text did confirm
-# minimum storage durations (IA 30, Glacier IR/FR 90, Deep Archive 180 days), the 128 KB minimum
-# billable size, the 40 KB archive metadata overhead and Standard GET $0.0004 per 1,000.
-# Owner's AWS Pricing Calculator readings (2026-10-29, 10 GB per month, rounded to cents by the
-# calculator, data transfer switched on): Standard 0.02, Glacier Instant 0.04, Glacier Flexible 0.04,
-# Deep Archive 0.01. These agree with the sheet within rounding (0.023 / 0.004 / 0.0036 / 0.00099
-# per GB) but cannot confirm the third decimal. TO DO: re-read at 10,000 GB for exact figures.
+# VERIFICATION (2026-10-30). Every value below was read from AWS's own sources:
+#   * The official S3 pricing page, rendered in a real browser with Region = US East (N. Virginia).
+#     Its tables are filled from AWS's price data file (publication date 2026-10-15). The rows read
+#     are copied word for word in docs/evidence/official-prices-2026-10-30.md.
+#   * AWS S3 User Guide pages for restore times, storage-class minimums and Intelligent-Tiering rules.
+# The owner's AWS Pricing Calculator readings (2026-10-29 and 2026-10-30) agree with these values;
+# tests/test_prices.py reproduces each calculator total from this file.
 #
-# Cross-check 2026-10-29 (second attempt, still no official tables): two more secondary pages
-# (cloudforecast.io, nops.io) agree with the storage rates above ($0.023 / 0.0125 / 0.004 / 0.0036 /
-# 0.00099) and one lists lifecycle-transition fees of 0.01 / 0.02 / 0.03 / 0.05 per 1,000 for IA /
-# Glacier IR / Glacier FR / Deep Archive, matching the put_per_1000 values below. NOT confirmed:
-# per-GB retrieval and per-1,000 GET fees (the pages give none), and the separate per-1,000
-# Glacier retrieval-request fee (one page says 0.05 FR-standard, 0.10 Deep Archive; unverified and
-# not modelled). The official price tables are script-drawn and the pricing API is blocked here.
-# Resolve with the owner's calculator readings before Gate G2.
+# UNITS. AWS bills storage in binary gigabytes: 1 GB = 2^30 bytes (official page, "S3 Pricing
+# Details"). The simulator must convert bytes with 2^30, not 10^9.
 #
-# Owner's calculator reading 2026-10-30 (us-east-1, Glacier Flexible Retrieval, 10,000 GB stored,
-# 16 MB average object, 1,000 GB Standard retrieval, no requests entered, data transfer on):
-# total $46.18 per month. It reproduces to the cent from storage 0.0036, standard retrieval
-# 0.01 per GB and 40 KB overhead per object (32 KB at the Glacier rate, 8 KB at the Standard
-# rate): see tests/test_prices.py. Screenshots in docs/evidence/. Request fees were not entered,
-# so per-request prices are still unconfirmed.
-#
-# Owner's calculator reading 2026-10-30, Deep Archive (100,000 GB stored, 16 MB average object,
-# 1,000 GB Standard retrieval, no requests): total $120.32 = 99.00 storage (0.00099) + 20.00
-# retrieval (0.02 per GB) + about 1.32 for 40 KB per object overhead. Reproduced in
-# tests/test_prices.py. Bulk retrieval (0.0025) and request fees were not entered.
-#
-# Owner's calculator reading 2026-10-30, Standard (10,000 GB, no requests): total $230.70 =
-# 230.00 storage (0.023 per GB) + 0.70 for 1,000 GB returned by S3 Select (0.0007 per GB; not used
-# by this project). Standard has no retrieval fee, so the sheet's 0.0 retrieval is consistent.
-# Request fees were not entered.
-#
-# Owner's calculator reading 2026-10-30, Glacier Instant Retrieval (10,000 GB, 1,000 GB retrieved,
-# no requests): total $70.00 = 40.00 storage (0.004) + 30.00 retrieval (0.03 per GB). The
-# calculator showed no object-size or overhead line for this class. Request fees not entered.
-#
-# Owner's calculator reading 2026-10-30, Standard-IA (10,000 GB, no requests): total $135.00. The
-# 1,000 GB was typed into the S3 Select "data returned" box, not the retrieval box. 135.00 =
-# 125.00 storage (0.0125 per GB, so storage is consistent) + 10.00 for 1,000 GB at 0.01 per GB,
-# which equals the sheet's retrieval price but was not isolated. TO DO: repeat with the retrieval
-# box filled and Show Details open.
-#
-# STILL UNCONFIRMED after the calculator readings (2026-10-30): Standard-IA retrieval (see above), every
-# per-1,000 request fee (PUT and GET) for every class, Bulk retrieval, the Glacier restore-request
-# fees, and all S3 Intelligent-Tiering prices (the main rival policy).
-#
-# as_of is the date this sheet was compiled. The sources are secondary articles
-# dated 2026-03 to 2026-05, NOT AWS's own price page.
+# Changes made by this verification (decision D-025):
+#   * glacier_flexible.restore_hours 4 -> 5: the docs give "3-5 hours"; we use the upper end of every
+#     stated range, as already done for Deep Archive ("within 12 hours", bulk "within 48 hours").
+#   * Added restore-request fees, bulk and expedited options, transition fees for every class,
+#     Standard volume tiers and the Intelligent-Tiering prices and rules.
 
 _sources:
-  devto_2026: &devto_2026 https://dev.to/mr_manushukla/cloud-storage-pricing-in-2026-aws-s3-vs-azure-vs-gcp-compared-e54
-  usage_glacier: &usage_glacier https://www.usage.ai/blogs/aws/storage-cost/glacier-deep-archive-pricing/
-  upstash: &upstash https://upstash.com/blog/aws-s3-pricing-explained-2026
-  zop: &zop https://dev.to/zop_8abedcc7e12/s3-storage-class-automation-stop-paying-hot-prices-for-cold-data-45oi
-  oneuptime_it: &oneuptime_it https://oneuptime.com/blog/post/2026-02-12-s3-intelligent-tiering-optimize-storage-costs/view
-  aws_official: &aws_official https://aws.amazon.com/s3//pricing  # fetched 2026-10-29; text rules only, price tables did not render
-  memory: &memory "memory: not yet checked against a source; verify in Phase 1"
+  aws_pricing_page: &aws_pricing_page https://aws.amazon.com/s3/pricing/  # rendered 2026-10-30, Region US East (N. Virginia)
+  aws_price_data: &aws_price_data https://b0.p.awsstatic.com/pricing/2.0/meteredUnitMaps/s3/USD/current/s3.json  # data behind the page, published 2026-10-15
+  aws_storage_classes: &aws_storage_classes https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html  # read 2026-10-30
+  aws_retrieval_options: &aws_retrieval_options https://docs.aws.amazon.com/AmazonS3/latest/userguide/restoring-objects-retrieval-options.html  # read 2026-10-30
+  aws_intelligent_tiering: &aws_intelligent_tiering https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html  # read 2026-10-30
 
 cloud: aws
 region: us-east-1
 currency: USD
-as_of: 2026-10-29
+as_of: 2026-10-30
 
 # Hot to cold. Storage price must not increase along this list (checked by tests).
 tier_order: [standard, standard_ia, glacier_instant, glacier_flexible, deep_archive]
 
 tiers:
   standard:
-    # First 50 TB per month; $0.022 next 450 TB, $0.021 above 500 TB (tiered pricing is not modelled yet).
-    storage_usd_per_gb_month: {value: 0.023, status: sourced, source: *devto_2026}
-    retrieval_usd_per_gb: {value: 0.0, status: sourced, source: *zop}
-    min_storage_days: {value: 0, status: sourced, source: *zop}
-    min_billable_object_kb: {value: 0, status: sourced, source: *zop}
-    per_object_overhead_kb: {value: 0, status: sourced, source: *zop}
-    restore_hours: {value: 0, status: sourced, source: *zop}
-    put_per_1000: {value: 0.005, status: unverified, source: *memory}
-    get_per_1000: {value: 0.0004, status: sourced, source: *aws_official}
+    storage_usd_per_gb_month: {value: 0.023, status: sourced, source: *aws_pricing_page}   # first 50 TB / month
+    retrieval_usd_per_gb: {value: 0.0, status: sourced, source: *aws_pricing_page}       # "n/a"
+    min_storage_days: {value: 0, status: sourced, source: *aws_storage_classes}           # "None"
+    min_billable_object_kb: {value: 0, status: sourced, source: *aws_storage_classes}     # "None"
+    per_object_overhead_kb: {value: 0, status: sourced, source: *aws_pricing_page}
+    restore_hours: {value: 0, status: sourced, source: *aws_storage_classes}              # millisecond access
+    put_per_1000: {value: 0.005, status: sourced, source: *aws_pricing_page}
+    get_per_1000: {value: 0.0004, status: sourced, source: *aws_pricing_page}
   standard_ia:
-    storage_usd_per_gb_month: {value: 0.0125, status: sourced, source: *devto_2026}
-    retrieval_usd_per_gb: {value: 0.01, status: unverified, source: *memory}
-    min_storage_days: {value: 30, status: sourced, source: *aws_official}
-    min_billable_object_kb: {value: 128, status: sourced, source: *aws_official}
-    per_object_overhead_kb: {value: 0, status: unverified, source: *memory}
-    restore_hours: {value: 0, status: sourced, source: *zop}
-    put_per_1000: {value: 0.01, status: unverified, source: *memory}
-    get_per_1000: {value: 0.001, status: unverified, source: *memory}
+    storage_usd_per_gb_month: {value: 0.0125, status: sourced, source: *aws_pricing_page}
+    retrieval_usd_per_gb: {value: 0.01, status: sourced, source: *aws_pricing_page}
+    min_storage_days: {value: 30, status: sourced, source: *aws_pricing_page}
+    min_billable_object_kb: {value: 128, status: sourced, source: *aws_pricing_page}
+    per_object_overhead_kb: {value: 0, status: sourced, source: *aws_pricing_page}
+    restore_hours: {value: 0, status: sourced, source: *aws_storage_classes}              # millisecond access
+    put_per_1000: {value: 0.01, status: sourced, source: *aws_pricing_page}
+    get_per_1000: {value: 0.001, status: sourced, source: *aws_pricing_page}
+    transition_in_per_1000: {value: 0.01, status: sourced, source: *aws_pricing_page}
   glacier_instant:
-    storage_usd_per_gb_month: {value: 0.004, status: sourced, source: *devto_2026}
-    retrieval_usd_per_gb: {value: 0.03, status: sourced, source: *usage_glacier}
-    min_storage_days: {value: 90, status: sourced, source: *aws_official}
-    min_billable_object_kb: {value: 128, status: sourced, source: *aws_official}
-    per_object_overhead_kb: {value: 0, status: unverified, source: *memory}
-    restore_hours: {value: 0, status: sourced, source: *zop}
-    put_per_1000: {value: 0.02, status: unverified, source: *memory}
-    get_per_1000: {value: 0.01, status: unverified, source: *memory}
+    storage_usd_per_gb_month: {value: 0.004, status: sourced, source: *aws_pricing_page}
+    retrieval_usd_per_gb: {value: 0.03, status: sourced, source: *aws_pricing_page}
+    min_storage_days: {value: 90, status: sourced, source: *aws_pricing_page}
+    min_billable_object_kb: {value: 128, status: sourced, source: *aws_pricing_page}
+    per_object_overhead_kb: {value: 0, status: sourced, source: *aws_pricing_page}
+    restore_hours: {value: 0, status: sourced, source: *aws_retrieval_options}            # "immediately available using GET"
+    put_per_1000: {value: 0.02, status: sourced, source: *aws_pricing_page}
+    get_per_1000: {value: 0.01, status: sourced, source: *aws_pricing_page}
+    transition_in_per_1000: {value: 0.02, status: sourced, source: *aws_pricing_page}
   glacier_flexible:
-    storage_usd_per_gb_month: {value: 0.0036, status: sourced, source: *devto_2026}
-    retrieval_usd_per_gb: {value: 0.01, status: sourced, source: *zop}   # standard retrieval
-    min_storage_days: {value: 90, status: sourced, source: *aws_official}
-    min_billable_object_kb: {value: 0, status: unverified, source: *memory}
-    per_object_overhead_kb: {value: 40, status: sourced, source: *aws_official}
-    restore_hours: {value: 4, status: sourced, source: *zop}   # source says 3-5 hours
-    put_per_1000: {value: 0.03, status: unverified, source: *memory}
-    get_per_1000: {value: 0.0004, status: unverified, source: *memory}
+    storage_usd_per_gb_month: {value: 0.0036, status: sourced, source: *aws_pricing_page}
+    retrieval_usd_per_gb: {value: 0.01, status: sourced, source: *aws_pricing_page}       # Standard retrieval
+    restore_request_per_1000: {value: 0.05, status: sourced, source: *aws_pricing_page}   # Standard retrieval requests
+    retrieval_bulk_usd_per_gb: {value: 0.0, status: sourced, source: *aws_pricing_page}   # "Bulk data retrievals and requests are free"
+    restore_request_bulk_per_1000: {value: 0.0, status: sourced, source: *aws_pricing_page}
+    retrieval_expedited_usd_per_gb: {value: 0.03, status: sourced, source: *aws_pricing_page}
+    restore_request_expedited_per_1000: {value: 10.0, status: sourced, source: *aws_pricing_page}
+    min_storage_days: {value: 90, status: sourced, source: *aws_pricing_page}
+    min_billable_object_kb: {value: 0, status: sourced, source: *aws_storage_classes}     # "NA"; the 40 KB overhead applies instead
+    per_object_overhead_kb: {value: 40, status: sourced, source: *aws_pricing_page}       # 8 KB at Standard rate + 32 KB at this rate
+    restore_hours: {value: 5, status: sourced, source: *aws_retrieval_options}            # Standard: "3-5 hours" (upper end, D-025)
+    bulk_restore_hours: {value: 12, status: sourced, source: *aws_retrieval_options}      # Bulk: "5-12 hours"
+    expedited_restore_hours: {value: 0.0833, status: sourced, source: *aws_retrieval_options}  # "1-5 minutes" (objects under 250 MB)
+    put_per_1000: {value: 0.03, status: sourced, source: *aws_pricing_page}
+    get_per_1000: {value: 0.0004, status: sourced, source: *aws_pricing_page}
+    transition_in_per_1000: {value: 0.03, status: sourced, source: *aws_pricing_page}
   deep_archive:
-    storage_usd_per_gb_month: {value: 0.00099, status: sourced, source: *devto_2026}
-    retrieval_usd_per_gb: {value: 0.02, status: sourced, source: *upstash}   # standard retrieval, 12 hours
-    retrieval_bulk_usd_per_gb: {value: 0.0025, status: sourced, source: *upstash}
-    min_storage_days: {value: 180, status: sourced, source: *aws_official}
-    min_billable_object_kb: {value: 0, status: unverified, source: *memory}
-    per_object_overhead_kb: {value: 40, status: sourced, source: *aws_official}
-    restore_hours: {value: 12, status: sourced, source: *usage_glacier}
-    bulk_restore_hours: {value: 48, status: sourced, source: *usage_glacier}
-    put_per_1000: {value: 0.05, status: sourced, source: *upstash}
-    get_per_1000: {value: 0.0004, status: sourced, source: *upstash}
-    transition_in_per_1000: {value: 0.05, status: sourced, source: *upstash}
+    storage_usd_per_gb_month: {value: 0.00099, status: sourced, source: *aws_pricing_page}
+    retrieval_usd_per_gb: {value: 0.02, status: sourced, source: *aws_pricing_page}       # Standard retrieval
+    restore_request_per_1000: {value: 0.10, status: sourced, source: *aws_pricing_page}
+    retrieval_bulk_usd_per_gb: {value: 0.0025, status: sourced, source: *aws_pricing_page}
+    restore_request_bulk_per_1000: {value: 0.025, status: sourced, source: *aws_pricing_page}
+    min_storage_days: {value: 180, status: sourced, source: *aws_pricing_page}
+    min_billable_object_kb: {value: 0, status: sourced, source: *aws_storage_classes}     # "NA"; the 40 KB overhead applies instead
+    per_object_overhead_kb: {value: 40, status: sourced, source: *aws_pricing_page}       # 8 KB at Standard rate + 32 KB at this rate
+    restore_hours: {value: 12, status: sourced, source: *aws_retrieval_options}           # Standard: "within 12 hours"
+    bulk_restore_hours: {value: 48, status: sourced, source: *aws_retrieval_options}      # Bulk: "within 48 hours"
+    put_per_1000: {value: 0.05, status: sourced, source: *aws_pricing_page}
+    get_per_1000: {value: 0.0004, status: sourced, source: *aws_pricing_page}
+    transition_in_per_1000: {value: 0.05, status: sourced, source: *aws_pricing_page}
 
 extras:
-  # Data transfer out to the internet, first 10 TB per month.
-  egress_usd_per_gb_first_tier: {value: 0.09, status: sourced, source: *upstash}
-  # S3 Intelligent-Tiering. Move rules (30 / 90 / 180 days) live in the Phase 4 policy code.
-  intelligent_tiering_monitoring_per_1000_objects: {value: 0.0025, status: sourced, source: *oneuptime_it}
-  intelligent_tiering_min_object_kb: {value: 128, status: sourced, source: *oneuptime_it}
+  # S3 Standard volume tiers (the simulator's archives stay under 50 TB unless stated otherwise).
+  standard_storage_next_450tb_usd_per_gb_month: {value: 0.022, status: sourced, source: *aws_pricing_page}
+  standard_storage_over_500tb_usd_per_gb_month: {value: 0.021, status: sourced, source: *aws_pricing_page}
+  # Data transfer out to the internet, first 10 TB per month (first 100 GB per month free across AWS).
+  egress_usd_per_gb_first_tier: {value: 0.09, status: sourced, source: *aws_pricing_page}
+
+  # S3 Intelligent-Tiering, the main reactive rival. Same request prices as Standard; no retrieval
+  # fees; standard and bulk restores from its archive tiers are free; no minimum storage duration.
+  intelligent_tiering_monitoring_per_1000_objects: {value: 0.0025, status: sourced, source: *aws_pricing_page}  # per month, objects > 128 KB
+  intelligent_tiering_min_object_kb: {value: 128, status: sourced, source: *aws_intelligent_tiering}  # smaller objects stay in Frequent Access, no monitoring fee
+  intelligent_tiering_min_storage_days: {value: 0, status: sourced, source: *aws_storage_classes}
+  intelligent_tiering_frequent_usd_per_gb_month: {value: 0.023, status: sourced, source: *aws_pricing_page}  # first 50 TB
+  intelligent_tiering_infrequent_usd_per_gb_month: {value: 0.0125, status: sourced, source: *aws_pricing_page}
+  intelligent_tiering_archive_instant_usd_per_gb_month: {value: 0.004, status: sourced, source: *aws_pricing_page}
+  intelligent_tiering_archive_access_usd_per_gb_month: {value: 0.0036, status: sourced, source: *aws_pricing_page}  # optional tier
+  intelligent_tiering_deep_archive_access_usd_per_gb_month: {value: 0.00099, status: sourced, source: *aws_pricing_page}  # optional tier
+  intelligent_tiering_put_per_1000: {value: 0.005, status: sourced, source: *aws_pricing_page}
+  intelligent_tiering_get_per_1000: {value: 0.0004, status: sourced, source: *aws_pricing_page}
+  intelligent_tiering_transition_in_per_1000: {value: 0.01, status: sourced, source: *aws_pricing_page}
+  intelligent_tiering_days_to_infrequent: {value: 30, status: sourced, source: *aws_intelligent_tiering}  # consecutive days without access
+  intelligent_tiering_days_to_archive_instant: {value: 90, status: sourced, source: *aws_intelligent_tiering}
+  intelligent_tiering_archive_access_min_days: {value: 90, status: sourced, source: *aws_intelligent_tiering}  # optional, configurable up to 730
+  intelligent_tiering_deep_archive_access_min_days: {value: 180, status: sourced, source: *aws_intelligent_tiering}  # optional, configurable up to 730
+  intelligent_tiering_archive_overhead_kb: {value: 40, status: sourced, source: *aws_pricing_page}  # 8 KB Standard + 32 KB archive rate, per archived object

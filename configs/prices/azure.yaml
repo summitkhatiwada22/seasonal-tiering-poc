@@ -1,70 +1,83 @@
-# Azure Blob Storage price sheet (East US 2, LRS, flat namespace). All prices in USD.
+# Azure Blob Storage price sheet (East US 2, LRS, flat namespace, general-purpose v2). All prices in USD.
 #
-# status: sourced     -> the value appears in a page listed under _sources.
-# status: unverified  -> written from memory; check against Microsoft's own pricing page in Phase 1.
+# status: sourced     -> the value appears in an official Microsoft source listed under _sources.
+# status: unverified  -> not yet checked against an official source (none left in this file).
 #
-# Phase 1 check (2026-10-29): the owner's screenshot of Azure's own table (first 50 TB per month)
-# shows Hot 0.0184, Cool 0.01, Cold 0.0036, Archive 0.002 per GB per month. Two earlier values
-# were WRONG and are corrected: Cold was 0.0045 (now 0.0036) and Archive was 0.00099 (now 0.002;
-# 0.00099 is the AWS Deep Archive price). The screenshot does not show the region or redundancy;
-# the selectors in the owner's second set of screenshots read: Flat Namespace, LRS, East US 2, USD.
-# So this sheet is East US 2 (not East US). Tiered prices for larger volumes
-# (Hot 0.0177 / 0.0170) are not modelled yet. The same screenshots confirm retrieval prices, operation
-# prices, early-deletion days and the 15-hour archive rehydration time (see docs/evidence/).
-# restore_hours = 0 for Hot, Cool and Cold is an assumption (instant access), not shown in the images.
+# VERIFICATION (2026-10-30). Every price below was read from Microsoft's Azure Retail Prices API
+# (product "General Block Blob v2", region eastus2, pay-as-you-go), the official machine-readable
+# price list. The rows are copied in docs/evidence/official-prices-2026-10-30.md. They match the
+# owner's screenshots of 2026-10-29 exactly. The API quotes operations per 10,000; this sheet stores
+# per 1,000 (divide by 10). Rules (minimum days, rehydration time) come from Microsoft Learn and
+# the official pricing page.
+#
+# Correction made by this verification (decision D-025): min_billable_object_kb for Cool, Cold and
+# Archive was 128 (from a secondary article). Neither the official pricing page nor Microsoft's
+# access-tier documentation lists any minimum billable object size; the only 128 KiB rule on the
+# pricing page is for "smart tier" monitoring. Set to 0.
+#
+# Note for Phase 4: Azure "smart tier" (automatic hot/cool/cold tiering, a monitoring fee per 10,000
+# objects over 128 KiB) is Azure's reactive rival. The pricing page says it is available only for
+# ZRS, GZRS and RA-GZRS, so it has no price for this LRS sheet.
+#
+# Tiered Hot prices for large volumes (0.017664 from 50 TB, 0.016928 from 500 TB) are listed under
+# extras but not modelled yet.
 
 _sources:
-  devto_2026: &devto_2026 https://dev.to/mr_manushukla/cloud-storage-pricing-in-2026-aws-s3-vs-azure-vs-gcp-compared-e54
-  finout: &finout https://finout.io/blog/cloud-storage-pricing-comparison
-  owner_screenshots: &owner_screenshots https://github.com/summitkhatiwada22/seasonal-tiering-poc/tree/main/docs/evidence  # owner screenshots of Azure's page, East US 2 LRS, 2026-10-29
-  owner_screenshot: &owner_screenshot https://github.com/summitkhatiwada22/seasonal-tiering-poc/blob/main/docs/evidence/azure-blob-storage-prices-2026-10-29.png  # owner screenshot of Azure pay-as-you-go table, 2026-10-29; region and redundancy not shown
-  azure_official_text: &azure_official_text https://azure.microsoft.com/en-in/pricing/details/storage/blobs/archive-ga/  # fetched 2026-10-29; only early-deletion days rendered
-  memory: &memory "memory: not yet checked against a source; verify in Phase 1"
+  azure_retail_api: &azure_retail_api "https://prices.azure.com/api/retail/prices?$filter=serviceName eq 'Storage' and armRegionName eq 'eastus2' and productName eq 'General Block Blob v2' and priceType eq 'Consumption'"  # read 2026-10-30
+  azure_bandwidth_api: &azure_bandwidth_api "https://prices.azure.com/api/retail/prices?$filter=serviceName eq 'Bandwidth' and armRegionName eq 'eastus2' and priceType eq 'Consumption'"  # read 2026-10-30
+  azure_pricing_page: &azure_pricing_page https://azure.microsoft.com/en-us/pricing/details/storage/blobs/  # read 2026-10-30
+  azure_access_tiers: &azure_access_tiers https://learn.microsoft.com/en-us/azure/storage/blobs/access-tiers-overview  # read 2026-10-30
+  owner_screenshots: &owner_screenshots https://github.com/summitkhatiwada22/seasonal-tiering-poc/tree/main/docs/evidence  # 2026-10-29, agree with the API
 
 cloud: azure
 region: East US 2, LRS, flat namespace
 currency: USD
-as_of: 2026-10-29
+as_of: 2026-10-30
 
 tier_order: [hot, cool, cold, archive]
 
 tiers:
   hot:
-    storage_usd_per_gb_month: {value: 0.0184, status: sourced, source: *owner_screenshot}
-    retrieval_usd_per_gb: {value: 0.0, status: sourced, source: *owner_screenshots}
-    min_storage_days: {value: 0, status: sourced, source: *owner_screenshots}
-    min_billable_object_kb: {value: 0, status: unverified, source: *memory}
-    per_object_overhead_kb: {value: 0, status: unverified, source: *memory}
-    restore_hours: {value: 0, status: unverified, source: *memory}
-    put_per_1000: {value: 0.005, status: sourced, source: *owner_screenshots}
-    get_per_1000: {value: 0.0004, status: sourced, source: *owner_screenshots}
+    storage_usd_per_gb_month: {value: 0.0184, status: sourced, source: *azure_retail_api}   # first 50 TB
+    retrieval_usd_per_gb: {value: 0.0, status: sourced, source: *azure_retail_api}         # no retrieval meter for Hot
+    min_storage_days: {value: 0, status: sourced, source: *azure_access_tiers}             # "N/A"
+    min_billable_object_kb: {value: 0, status: sourced, source: *azure_pricing_page}       # none listed
+    per_object_overhead_kb: {value: 0, status: sourced, source: *azure_pricing_page}       # none listed
+    restore_hours: {value: 0, status: sourced, source: *azure_access_tiers}                # latency "Milliseconds"
+    put_per_1000: {value: 0.005, status: sourced, source: *azure_retail_api}               # $0.05 per 10,000 writes
+    get_per_1000: {value: 0.0004, status: sourced, source: *azure_retail_api}              # $0.004 per 10,000 reads
   cool:
-    storage_usd_per_gb_month: {value: 0.010, status: sourced, source: *owner_screenshot}
-    retrieval_usd_per_gb: {value: 0.01, status: sourced, source: *owner_screenshots}
-    min_storage_days: {value: 30, status: sourced, source: *owner_screenshots}
-    min_billable_object_kb: {value: 128, status: sourced, source: *finout}
-    per_object_overhead_kb: {value: 0, status: unverified, source: *memory}
-    restore_hours: {value: 0, status: unverified, source: *memory}
-    put_per_1000: {value: 0.01, status: sourced, source: *owner_screenshots}
-    get_per_1000: {value: 0.001, status: sourced, source: *owner_screenshots}
+    storage_usd_per_gb_month: {value: 0.010, status: sourced, source: *azure_retail_api}
+    retrieval_usd_per_gb: {value: 0.01, status: sourced, source: *azure_retail_api}
+    min_storage_days: {value: 30, status: sourced, source: *azure_access_tiers}
+    min_billable_object_kb: {value: 0, status: sourced, source: *azure_pricing_page}       # corrected from 128 (D-025)
+    per_object_overhead_kb: {value: 0, status: sourced, source: *azure_pricing_page}
+    restore_hours: {value: 0, status: sourced, source: *azure_access_tiers}                # "Milliseconds"
+    put_per_1000: {value: 0.01, status: sourced, source: *azure_retail_api}                # $0.10 per 10,000
+    get_per_1000: {value: 0.001, status: sourced, source: *azure_retail_api}               # $0.01 per 10,000
   cold:
-    storage_usd_per_gb_month: {value: 0.0036, status: sourced, source: *owner_screenshot}
-    retrieval_usd_per_gb: {value: 0.03, status: sourced, source: *owner_screenshots}
-    min_storage_days: {value: 90, status: sourced, source: *owner_screenshots}
-    min_billable_object_kb: {value: 128, status: sourced, source: *finout}
-    per_object_overhead_kb: {value: 0, status: unverified, source: *memory}
-    restore_hours: {value: 0, status: unverified, source: *memory}
-    put_per_1000: {value: 0.018, status: sourced, source: *owner_screenshots}
-    get_per_1000: {value: 0.01, status: sourced, source: *owner_screenshots}
+    storage_usd_per_gb_month: {value: 0.0036, status: sourced, source: *azure_retail_api}
+    retrieval_usd_per_gb: {value: 0.03, status: sourced, source: *azure_retail_api}
+    min_storage_days: {value: 90, status: sourced, source: *azure_access_tiers}
+    min_billable_object_kb: {value: 0, status: sourced, source: *azure_pricing_page}       # corrected from 128 (D-025)
+    per_object_overhead_kb: {value: 0, status: sourced, source: *azure_pricing_page}
+    restore_hours: {value: 0, status: sourced, source: *azure_access_tiers}                # "Milliseconds"
+    put_per_1000: {value: 0.018, status: sourced, source: *azure_retail_api}               # $0.18 per 10,000
+    get_per_1000: {value: 0.01, status: sourced, source: *azure_retail_api}                # $0.10 per 10,000
   archive:
-    storage_usd_per_gb_month: {value: 0.002, status: sourced, source: *owner_screenshot}
-    retrieval_usd_per_gb: {value: 0.02, status: sourced, source: *owner_screenshots}
-    min_storage_days: {value: 180, status: sourced, source: *owner_screenshots}
-    min_billable_object_kb: {value: 128, status: sourced, source: *finout}
-    per_object_overhead_kb: {value: 0, status: unverified, source: *memory}
-    restore_hours: {value: 15, status: sourced, source: *owner_screenshots}   # standard priority, 'up to 15 hours'
-    put_per_1000: {value: 0.01, status: sourced, source: *owner_screenshots}
-    get_per_1000: {value: 0.5, status: sourced, source: *owner_screenshots}
+    storage_usd_per_gb_month: {value: 0.002, status: sourced, source: *azure_retail_api}
+    retrieval_usd_per_gb: {value: 0.02, status: sourced, source: *azure_retail_api}        # standard priority rehydration
+    min_storage_days: {value: 180, status: sourced, source: *azure_access_tiers}
+    min_billable_object_kb: {value: 0, status: sourced, source: *azure_pricing_page}       # corrected from 128 (D-025)
+    per_object_overhead_kb: {value: 0, status: sourced, source: *azure_pricing_page}
+    restore_hours: {value: 15, status: sourced, source: *azure_access_tiers}               # "can take up to 15 hours"
+    put_per_1000: {value: 0.01, status: sourced, source: *azure_retail_api}                # $0.10 per 10,000
+    get_per_1000: {value: 0.5, status: sourced, source: *azure_retail_api}                 # $5 per 10,000
+    retrieval_priority_usd_per_gb: {value: 0.10, status: sourced, source: *azure_retail_api}  # high-priority rehydration
+    get_priority_per_1000: {value: 5.0, status: sourced, source: *azure_retail_api}           # $50 per 10,000
 
 extras:
-  egress_usd_per_gb_first_tier: {value: 0.087, status: unverified, source: *memory}
+  # Internet egress, Microsoft global network routing (the default), first 10 TB after 100 GB free.
+  egress_usd_per_gb_first_tier: {value: 0.087, status: sourced, source: *azure_bandwidth_api}
+  hot_storage_from_50tb_usd_per_gb_month: {value: 0.017664, status: sourced, source: *azure_retail_api}
+  hot_storage_from_500tb_usd_per_gb_month: {value: 0.016928, status: sourced, source: *azure_retail_api}
