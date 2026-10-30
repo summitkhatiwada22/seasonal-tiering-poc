@@ -1,6 +1,6 @@
 # Phase 5 plan (round two): prove the lever, then build the forecast
 
-Approved by the owner on **2026-10-30**. **Status (2026-10-30): stage 5a done, gate R1 failed narrowly, stage 5b not built (D-050). Results: [PHASE5_REPORT.md](PHASE5_REPORT.md).** It replaces the old Phase 5 ("build a real forecast"). The reasons and the exploratory evidence are in the research document "Improving the numbers: research and new plan" (Claude Docs). Decisions are D-036 to D-044 in [DECISIONS.md](DECISIONS.md).
+Approved by the owner on **2026-10-30**. **Status (2026-10-30): stage 5a done, gate R1 failed narrowly, stage 5b not built (D-050). Results: [PHASE5_REPORT.md](PHASE5_REPORT.md). The owner then ran the sealed test once as a documented deviation (D-051); Gate G3 failed and the paper is being written (D-052, [RESULTS.md](RESULTS.md)).** It replaces the old Phase 5 ("build a real forecast"). The reasons and the exploratory evidence are in the research document "Improving the numbers: research and new plan" (Claude Docs). Decisions are D-036 to D-044 in [DECISIONS.md](DECISIONS.md).
 
 The probe scripts and outputs behind the evidence are in [scripts/probes/2026-10-30/](../scripts/probes/2026-10-30/README.md). They use data up to 2022 only. They are exploratory and are not a result.
 

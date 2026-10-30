@@ -96,6 +96,8 @@ The chooser's inputs for year Y are the simulated per-file costs and waits of ye
 
 ## What happens next
 
+> **Update (2026-10-30):** the owner chose option 2 (D-051). The sealed test ran once at `freeze-g3` and failed (D-052): the same waiting overshoot recurred in 2024 on Wikipedia and npm. See [RESULTS.md](RESULTS.md).
+
 By D-038 the build has stopped and the paper begins. Two choices are the owner's:
 
 1. **Write the paper now (the rule's default).** The story is a fee-accurate benchmark with three findings. First, managed tiering beats seasonal forecasting. Second, per-file choice of policy saves 28% to 48% on two of three datasets if some reads may wait 48 hours. Third, a pandemic-like shift breaks it.

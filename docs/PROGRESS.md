@@ -13,11 +13,11 @@ Stopping early is a valid outcome. If a stop point below fails, we stop and writ
 | 3 | Cost and latency simulator | **Done 2026-10-30, Gate G2 passed.** 24/24 hand calculations, 4/4 AWS calculator readings, 22/22 planted bugs caught. See [PHASE3_REPORT.md](PHASE3_REPORT.md) | **Gate G2:** simulator matches hand calculations and the AWS pricing calculator |
 | 4 | Baseline policies, plus seasonal-naive | **Done 2026-10-30. E1: continue by the pre-set rule, narrowly.** Passes only on Azure LRS (no managed tiering there); loses to S3 Intelligent-Tiering and Autoclass everywhere. See [PHASE4_REPORT.md](PHASE4_REPORT.md) | **Early check E1** (below) |
 | 5 | Prove the lever, then build the forecast (replaces "Forecast policy", D-036) | **Stage 5a done 2026-10-30. Gate R1 failed narrowly; by D-038 stage 5b was not built.** The per-file chooser is 28-48% cheaper than Intelligent-Tiering on Wikipedia and 40-43% on npm at up to 1% waiting, but passes both rolling years only on npm. See [PHASE5_REPORT.md](PHASE5_REPORT.md) | **Gate R1 (Fri 6 Nov):** if it fails, the build stops and the paper begins (D-038). **Gate R2 (Fri 20 Nov)** |
-| 6 | Freeze and sealed test | **Pre-registered 2026-10-30** ([PREREGISTRATION.md](PREREGISTRATION.md)), run after R1 failed as a documented deviation (D-051). Waiting for the owner's tag `freeze-g3` and the flash drive | **Gate G3:** go, pivot or stop |
-| 7 | Robustness | Runs inside the stage 5c pre-registered run (D-043) | H5, H6 and H9 recorded |
-| 8 | Compression track | Not started (runs only after G3). Research done 2026-10-30, see [PHASE5_PLAN.md](PHASE5_PLAN.md) | H8 recorded |
-| 9 | Live mini-system | Not started (runs only after G3) | 3-minute demo runs from one command |
-| 10 | Investor package | Not started | Every number traces to a tagged commit |
+| 6 | Freeze and sealed test | **Run 2026-10-30 at `freeze-g3`. Gate G3 failed: stop (D-052).** H1 (cost) and H2 (waiting) fail on every dataset. The chooser was 52-54% cheaper on Wikipedia and 39-41% on npm at up to 1% waiting, but in 2024 slightly more of its reads waited than the rival's. See [RESULTS.md](RESULTS.md) | **Gate G3:** go, pivot or stop |
+| 7 | Robustness | **Done inside G3.** H5 fails (H1 held in 2 of 10 scenarios, H2 in 1); H6 measured at 0.01-0.13% of the saving but not scored; H9 passed (a fresh clone at the tag reproduced every base line) | H5, H6 and H9 recorded |
+| 8 | Compression track | Not started as a phase; a first sizing test on 1,135 npm tarballs ran in Phase 5 (D-047). Independent of the tiering result; the owner's choice (D-052). Research done 2026-10-30, see [PHASE5_PLAN.md](PHASE5_PLAN.md) | H8 recorded |
+| 9 | Live mini-system | **Not run:** G3 failed (D-052) | 3-minute demo runs from one command |
+| 10 | Investor package, replaced by the paper | **The paper, due 2026-12-10** (D-052). Draft in Claude Docs: "Forecasting versus reactive cloud auto-tiering: a pre-registered test" | Every number traces to a tagged commit |
 | C | Customer conversations (parallel track) | Not started. Starts in week 2 of round two (D-039) | 5-10 conversations with people who run large cold archives |
 <!-- STATUS-END -->
 
@@ -40,7 +40,7 @@ After E1 the owner approved a new Phase 5 ([PHASE5_PLAN.md](PHASE5_PLAN.md), dec
 | --- | --- | --- |
 | R1 | Fri 6 Nov (run 30 Oct) | **Failed.** Condition 1 holds on D3 only (D1 missed one rolling year by 0.006 points of waited reads); condition 2 holds on D1 and D3 |
 | R2 | Fri 20 Nov | Measured on the R1 runs, not decided: moot after R1 (and degenerate at no waiting, see the report) |
-| G3 | after the freeze tag | Pre-registered; not run |
+| G3 | Run 30 Oct at `freeze-g3` | **Failed.** H1 and H2 fail on all three datasets; the kill rule applies: stop the product thesis, write the paper (D-052). See [RESULTS.md](RESULTS.md) |
 
 ## Changes from the original plan
 
@@ -55,3 +55,5 @@ These follow the advice given before we started; each is also logged in [DECISIO
 7. 2023 treated as used; round two develops on rolling years (D-037).
 8. Waiting is reported two ways; the Phase 4 rule stays the primary pass rule (D-044).
 9. Phases 6 and 7 merge into one pre-registered run (stage 5c) (D-043).
+10. After R1 failed, the owner overrode the stop rule and the sealed test ran once (D-051).
+11. G3 failed; Phases 9 and 10 are replaced by the paper (D-052).
