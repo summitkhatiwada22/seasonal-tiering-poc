@@ -184,3 +184,15 @@ def test_aws_deep_archive_matches_owner_calculator_2026_10_30() -> None:
         + 1_000 * aws.get("deep_archive", "retrieval_usd_per_gb")
     )
     assert round(total, 2) == 120.32
+
+
+def test_aws_standard_matches_owner_calculator_2026_10_30() -> None:
+    """10,000 GB of Standard plus 1,000 GB returned by S3 Select came to $230.70 a month."""
+    aws = load_all(PRICES_DIR)["aws"]
+    s3_select_returned_usd_per_gb = 0.0007  # calculator line item, not used by the simulator
+    total = (
+        10_000 * aws.get("standard", "storage_usd_per_gb_month")
+        + 1_000 * s3_select_returned_usd_per_gb
+    )
+    assert round(total, 2) == 230.70
+    assert aws.get("standard", "retrieval_usd_per_gb") == 0.0

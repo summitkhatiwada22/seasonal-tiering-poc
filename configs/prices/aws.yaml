@@ -36,6 +36,11 @@
 # retrieval (0.02 per GB) + about 1.32 for 40 KB per object overhead. Reproduced in
 # tests/test_prices.py. Bulk retrieval (0.0025) and request fees were not entered.
 #
+# Owner's calculator reading 2026-10-30, Standard (10,000 GB, no requests): total $230.70 =
+# 230.00 storage (0.023 per GB) + 0.70 for 1,000 GB returned by S3 Select (0.0007 per GB; not used
+# by this project). Standard has no retrieval fee, so the sheet's 0.0 retrieval is consistent.
+# Request fees were not entered.
+#
 # as_of is the date this sheet was compiled. The sources are secondary articles
 # dated 2026-03 to 2026-05, NOT AWS's own price page.
 
