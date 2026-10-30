@@ -1,0 +1,161 @@
+{
+ "D3": {
+  "naive364": {
+   "wape_vs_actual": 0.4094986639521568,
+   "wape_vs_truth": 0.37566417021354964,
+   "auc_any_read": 0.9083363600168992
+  },
+  "recent30": {
+   "wape_vs_actual": 0.2820969589006235,
+   "wape_vs_truth": 0.2036523584107809,
+   "auc_any_read": 0.9128595711942219
+  },
+  "year_rate": {
+   "wape_vs_actual": 0.26955658550444744,
+   "wape_vs_truth": 0.19277626697480182,
+   "auc_any_read": 0.9556525670616304
+  },
+  "pooled_seasonal": {
+   "wape_vs_actual": 0.23156156729599991,
+   "wape_vs_truth": 0.12415918546105323,
+   "auc_any_read": 0.9556525670616304
+  },
+  "shrunk_pooled": {
+   "wape_vs_actual": 0.23198679528457108,
+   "wape_vs_truth": 0.12350013049315714,
+   "auc_any_read": 0.9556525670616304
+  },
+  "naive364_denoised": {
+   "wape_vs_actual": 0.3752217790970454,
+   "wape_vs_truth": 0.3364549974034082,
+   "auc_any_read": 0.9526733960541159
+  },
+  "year_rate_denoised": {
+   "wape_vs_actual": 0.2624037649654477,
+   "wape_vs_truth": 0.18410315817444703,
+   "auc_any_read": 0.9608434613644
+  },
+  "noise_floor": {
+   "wape_vs_actual": 0.19320935618073182,
+   "wape_vs_truth": 0.0,
+   "auc_any_read": 0.9634793420866109
+  },
+  "object_profile_corr_2021_vs_2022_pctiles_10_25_50_75_90": [
+   0.1760202953428726,
+   0.5621249457748866,
+   0.7934625032216007,
+   0.8998617046330127,
+   0.9340470721683254
+  ],
+  "share_objects_profile_corr_above_0.5": 0.7983539094650206,
+  "pooled_truth_seasonal_strength": 0.853594544621912,
+  "pooled_truth_peak_to_trough": 1.6682645710696355,
+  "n_objects_live_at_dec": 256
+ },
+ "D1": {
+  "naive364": {
+   "wape_vs_actual": 0.5480623922151963,
+   "wape_vs_truth": 0.519487699809762,
+   "auc_any_read": 0.7656008962630074
+  },
+  "recent30": {
+   "wape_vs_actual": 0.40924741760944416,
+   "wape_vs_truth": 0.37473891976763307,
+   "auc_any_read": 0.7867940410955225
+  },
+  "year_rate": {
+   "wape_vs_actual": 0.418993928127796,
+   "wape_vs_truth": 0.3616308949875988,
+   "auc_any_read": 0.8501250885209425
+  },
+  "pooled_seasonal": {
+   "wape_vs_actual": 0.4160713037511372,
+   "wape_vs_truth": 0.3585674562508263,
+   "auc_any_read": 0.8501889191378914
+  },
+  "shrunk_pooled": {
+   "wape_vs_actual": 0.4161752805696275,
+   "wape_vs_truth": 0.35827451345262207,
+   "auc_any_read": 0.8502026658897476
+  },
+  "naive364_denoised": {
+   "wape_vs_actual": 0.518160894121354,
+   "wape_vs_truth": 0.46334958738277926,
+   "auc_any_read": 0.8416745275524459
+  },
+  "year_rate_denoised": {
+   "wape_vs_actual": 0.4164125381110125,
+   "wape_vs_truth": 0.354349432049336,
+   "auc_any_read": 0.8589099906447392
+  },
+  "noise_floor": {
+   "wape_vs_actual": 0.1378951555369587,
+   "wape_vs_truth": 0.0,
+   "auc_any_read": 0.8957192527404102
+  },
+  "object_profile_corr_2021_vs_2022_pctiles_10_25_50_75_90": [
+   -0.32058788858285586,
+   -0.1532892561027589,
+   0.10329586675885209,
+   0.4342653493443914,
+   0.7193674500428837
+  ],
+  "share_objects_profile_corr_above_0.5": 0.2093757043047104,
+  "pooled_truth_seasonal_strength": 0.39809614903803053,
+  "pooled_truth_peak_to_trough": 1.164270353975331,
+  "n_objects_live_at_dec": 9158
+ },
+ "D4": {
+  "naive364": {
+   "wape_vs_actual": 1.0260820675065276,
+   "wape_vs_truth": 1.0128104101274187,
+   "auc_any_read": 0.7913316314160225
+  },
+  "recent30": {
+   "wape_vs_actual": 0.693966913796718,
+   "wape_vs_truth": 0.678459953607477,
+   "auc_any_read": 0.8060965307350961
+  },
+  "year_rate": {
+   "wape_vs_actual": 0.7074538729587752,
+   "wape_vs_truth": 0.6894540204062066,
+   "auc_any_read": 0.9370711881124736
+  },
+  "pooled_seasonal": {
+   "wape_vs_actual": 0.7719725811599409,
+   "wape_vs_truth": 0.7545922155606491,
+   "auc_any_read": 0.9370711881124736
+  },
+  "shrunk_pooled": {
+   "wape_vs_actual": 0.7722804747972573,
+   "wape_vs_truth": 0.7549029183668611,
+   "auc_any_read": 0.9370711881124736
+  },
+  "naive364_denoised": {
+   "wape_vs_actual": 1.0125532030192415,
+   "wape_vs_truth": 0.9897169220373482,
+   "auc_any_read": 0.8048379953637866
+  },
+  "year_rate_denoised": {
+   "wape_vs_actual": 0.7053643873734201,
+   "wape_vs_truth": 0.6875028195132997,
+   "auc_any_read": 0.9371180853437059
+  },
+  "noise_floor": {
+   "wape_vs_actual": 0.13300675544822474,
+   "wape_vs_truth": 0.0,
+   "auc_any_read": 0.9998371645836382
+  },
+  "object_profile_corr_2021_vs_2022_pctiles_10_25_50_75_90": [
+   -0.3163546378659181,
+   -0.191642525281922,
+   -0.09090909090909091,
+   0.2211995774430024,
+   0.4724555912615341
+  ],
+  "share_objects_profile_corr_above_0.5": 0.08907415533128565,
+  "pooled_truth_seasonal_strength": 0.1456927422329866,
+  "pooled_truth_peak_to_trough": 1.243442579520156,
+  "n_objects_live_at_dec": 9464
+ }
+}
