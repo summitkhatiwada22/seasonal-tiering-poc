@@ -2,10 +2,12 @@
 """Gate G2 check of the checks: plant one deliberate bug at a time in the simulator and confirm the
 simulator tests fail. Every planted bug must be caught. Run: ``uv run python scripts/mutation_check.py``.
 
-The source file is always restored, even if a test run crashes.
+The source file is always restored, even if a test run crashes, and no compiled cache is kept.
 """
 
+import os
 import pathlib
+import shutil
 import subprocess
 import sys
 
@@ -129,6 +131,17 @@ M = [
         "moves charged before creation",
     ),
 ]
+# Never write or reuse compiled caches. A planted bug of the same byte size, restored within the same
+# second, would otherwise survive in __pycache__ and leak into later test runs (seen 2026-10-30).
+ENV = {**os.environ, "PYTHONDONTWRITEBYTECODE": "1"}
+
+
+def clear_caches() -> None:
+    for cache in (root / "src").rglob("__pycache__"):
+        shutil.rmtree(cache, ignore_errors=True)
+
+
+clear_caches()
 killed = 0
 for fname, old, new, label in M:
     p = root / "src/sat/sim" / fname
@@ -145,6 +158,8 @@ for fname, old, new, label in M:
                 "pytest",
                 "-q",
                 "-x",
+                "-p",
+                "no:cacheprovider",
                 "tests/test_sim_hand.py",
                 "tests/test_sim_calculator.py",
                 "tests/test_sim_properties.py",
@@ -152,9 +167,11 @@ for fname, old, new, label in M:
             cwd=root,
             capture_output=True,
             text=True,
+            env=ENV,
         )
     finally:
         p.write_text(src)
+        clear_caches()
     caught = res.returncode != 0
     killed += caught
     print(("CAUGHT  " if caught else "MISSED  ") + label)
