@@ -11,7 +11,7 @@ Stopping early is a valid outcome. If a stop point below fails, we stop and writ
 | 1 | Data feasibility spike | **Done 2026-10-29, Gate G1 passed with conditions.** See [PHASE1_REPORT.md](PHASE1_REPORT.md) | **Gate G1:** every dataset has a data card, a measured fetch cost and a go or no-go |
 | 2 | Ingestion pipelines | **Done 2026-10-29.** All five datasets pass the quality report. See [PHASE2_REPORT.md](PHASE2_REPORT.md) | Quality report passes on every dataset |
 | 3 | Cost and latency simulator | **Done 2026-10-30, Gate G2 passed.** 24/24 hand calculations, 4/4 AWS calculator readings, 22/22 planted bugs caught. See [PHASE3_REPORT.md](PHASE3_REPORT.md) | **Gate G2:** simulator matches hand calculations and the AWS pricing calculator |
-| 4 | Baseline policies, plus seasonal-naive | **In progress.** Policies, loaders and the E1 rules ([E1_PROTOCOL.md](E1_PROTOCOL.md)) committed before any real-data run | **Early check E1** (below) |
+| 4 | Baseline policies, plus seasonal-naive | **Done 2026-10-30. E1: continue by the pre-set rule, narrowly.** Passes only on Azure LRS (no managed tiering there); loses to S3 Intelligent-Tiering and Autoclass everywhere. See [PHASE4_REPORT.md](PHASE4_REPORT.md) | **Early check E1** (below) |
 | 5 | Forecast policy | Not started | Validation results documented, win or lose |
 | 6 | Freeze and sealed test | Not started | **Gate G3:** go, pivot or stop |
 | 7 | Robustness | Not started | H5, H6 and H9 recorded |
@@ -29,6 +29,8 @@ Run the simple "warm what was hot this week last year" policy against the best r
 - **Continue** if at least one dataset shows 5% or more.
 
 The sealed test years (2024-2025) are not touched at this point.
+
+**Result (2026-10-30):** continue. D1, D3 and D4 each have a passing line, all on Azure (+9.1%, +23.1%, +26.1%); no pass on AWS or Google in any setting. Without flagged series, D1 and D3 fall to +4.2% and +4.5%; on D4 the reactive reference does better than the seasonal policy. The owner decides how to scope Phase 5 ([PHASE4_REPORT.md](PHASE4_REPORT.md)).
 
 ## Changes from the original plan
 
