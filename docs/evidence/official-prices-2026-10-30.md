@@ -117,3 +117,12 @@ Operations, "for buckets located in a single region", flat namespace (per 1,000)
 Retrieval: Standard $0, Nearline $0.01, Coldline $0.02, Archive $0.05 per GiB. Minimum storage duration: Standard none, Nearline 30 days, Coldline 90 days, Archive 365 days. Internet egress to worldwide destinations (excluding Asia and Australia): $0.12 per GiB for 0-10 TiB. Autoclass management fee: "$0.0025 for every 1000 objects stored for 30 days".
 
 Docs: storage classes (https://docs.cloud.google.com/storage/docs/storage-classes): "No minimum object size"; data "available within milliseconds, not hours or days". Autoclass (https://docs.cloud.google.com/storage/docs/autoclass): to Nearline after 30 days without access, Coldline after 90, Archive after 365 (Archive terminal class only); objects under 128 KiB do not move; no retrieval or early-deletion fees except at enablement.
+
+## Phase 3 additions (read 2026-10-30)
+
+The billing *rules* (proration, early deletion, restores, moves, the rivals) are quoted with their sources in `docs/SIM_RULES.md`. New price-sheet values from that reading:
+
+- Azure, archived blob metadata (https://learn.microsoft.com/en-us/azure/storage/common/storage-plan-manage-costs): "The metadata that is associated with blobs in the archive tier is stored separately in the cold tier ... Because the size of metadata doesn't exceed 8 KB in size, its cost is relatively insignificant." The access-tiers page says: "Storage costs for metadata of archived blobs will be charged on cool tier rates." Sheet: 8 KB at the cool rate (D-026).
+- Azure, high-priority rehydration (https://learn.microsoft.com/en-us/azure/storage/blobs/archive-rehydrate-overview): "might complete in less than one hour for objects under 10 GB in size". Sheet: 1 hour.
+- Azure units (pricing page): "Azure Blob Storage usage is calculated in binary Gigabytes (GB), where 1 GB = 2^30 bytes."
+- AWS lower ends of restore ranges (retrieval-options page): Flexible standard 3 h, bulk 5 h, expedited 1 minute. Intelligent-Tiering Archive Access "can range from 3-5 hours"; Deep Archive Access "within 12 hours".

@@ -10,7 +10,7 @@ Stopping early is a valid outcome. If a stop point below fails, we stop and writ
 | 0 | Repo and foundations | **Done 2026-10-29.** CI green on GitHub; `make check` passes (28 tests) in a fresh Codespace | CI green and `make check` passes on a clean machine |
 | 1 | Data feasibility spike | **Done 2026-10-29, Gate G1 passed with conditions.** See [PHASE1_REPORT.md](PHASE1_REPORT.md) | **Gate G1:** every dataset has a data card, a measured fetch cost and a go or no-go |
 | 2 | Ingestion pipelines | **Done 2026-10-29.** All five datasets pass the quality report. See [PHASE2_REPORT.md](PHASE2_REPORT.md) | Quality report passes on every dataset |
-| 3 | Cost and latency simulator | Not started | **Gate G2:** simulator matches hand calculations and the AWS pricing calculator |
+| 3 | Cost and latency simulator | **Done 2026-10-30, Gate G2 passed.** 24/24 hand calculations, 4/4 AWS calculator readings, 22/22 planted bugs caught. See [PHASE3_REPORT.md](PHASE3_REPORT.md) | **Gate G2:** simulator matches hand calculations and the AWS pricing calculator |
 | 4 | Baseline policies, plus seasonal-naive | Not started | **Early check E1** (below) |
 | 5 | Forecast policy | Not started | Validation results documented, win or lose |
 | 6 | Freeze and sealed test | Not started | **Gate G3:** go, pivot or stop |

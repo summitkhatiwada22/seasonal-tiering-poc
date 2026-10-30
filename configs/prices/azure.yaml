@@ -15,6 +15,10 @@
 # access-tier documentation lists any minimum billable object size; the only 128 KiB rule on the
 # pricing page is for "smart tier" monitoring. Set to 0.
 #
+# Phase 3 addition (D-026): archived blobs carry up to 8 KB of metadata stored outside the archive tier.
+# Microsoft Learn says it is billed at the cool tier rate (access-tiers page) and, elsewhere, that it is
+# stored in the cold tier (cost-planning page). The simulator uses the cool rate, the higher of the two.
+#
 # Note for Phase 4: Azure "smart tier" (automatic hot/cool/cold tiering, a monitoring fee per 10,000
 # objects over 128 KiB) is Azure's reactive rival. The pricing page says it is available only for
 # ZRS, GZRS and RA-GZRS, so it has no price for this LRS sheet.
@@ -27,6 +31,8 @@ _sources:
   azure_bandwidth_api: &azure_bandwidth_api "https://prices.azure.com/api/retail/prices?$filter=serviceName eq 'Bandwidth' and armRegionName eq 'eastus2' and priceType eq 'Consumption'"  # read 2026-10-30
   azure_pricing_page: &azure_pricing_page https://azure.microsoft.com/en-us/pricing/details/storage/blobs/  # read 2026-10-30
   azure_access_tiers: &azure_access_tiers https://learn.microsoft.com/en-us/azure/storage/blobs/access-tiers-overview  # read 2026-10-30
+  azure_rehydrate: &azure_rehydrate https://learn.microsoft.com/en-us/azure/storage/blobs/archive-rehydrate-overview  # read 2026-10-30 (Phase 3)
+  azure_plan_costs: &azure_plan_costs https://learn.microsoft.com/en-us/azure/storage/common/storage-plan-manage-costs  # read 2026-10-30 (Phase 3)
   owner_screenshots: &owner_screenshots https://github.com/summitkhatiwada22/seasonal-tiering-poc/tree/main/docs/evidence  # 2026-10-29, agree with the API
 
 cloud: azure
@@ -69,8 +75,9 @@ tiers:
     retrieval_usd_per_gb: {value: 0.02, status: sourced, source: *azure_retail_api}        # standard priority rehydration
     min_storage_days: {value: 180, status: sourced, source: *azure_access_tiers}
     min_billable_object_kb: {value: 0, status: sourced, source: *azure_pricing_page}       # corrected from 128 (D-025)
-    per_object_overhead_kb: {value: 0, status: sourced, source: *azure_pricing_page}
+    per_object_overhead_kb: {value: 8, status: sourced, source: *azure_plan_costs}         # archived-blob metadata "doesn't exceed 8 KB", billed at a cooler online tier's rate (Phase 3, D-026)
     restore_hours: {value: 15, status: sourced, source: *azure_access_tiers}               # "can take up to 15 hours"
+    priority_restore_hours: {value: 1, status: sourced, source: *azure_rehydrate}         # high priority "might complete in less than one hour" (objects under 10 GB)
     put_per_1000: {value: 0.01, status: sourced, source: *azure_retail_api}                # $0.10 per 10,000
     get_per_1000: {value: 0.5, status: sourced, source: *azure_retail_api}                 # $5 per 10,000
     retrieval_priority_usd_per_gb: {value: 0.10, status: sourced, source: *azure_retail_api}  # high-priority rehydration

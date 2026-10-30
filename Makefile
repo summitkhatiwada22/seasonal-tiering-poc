@@ -34,8 +34,8 @@ data: ## (Phase 2) How to download and convert the real datasets
 	@echo "Real datasets are large and live outside the repo."
 	@echo "Follow docs/RUNBOOK_PHASE2.md (commands for D1 to D5 and the quality report)."
 
-simulate: ## (Phases 3-6) Run cost simulator and policies
-	@echo "Not built yet: arrives in Phases 3-6."; exit 1
+simulate: ## (Phase 3) Smoke-test the cost and waiting-time simulator on synthetic data
+	uv run python -m sat.sim
 
 reproduce: ## (Phase 7) Rebuild every headline number from scratch
 	@echo "Not built yet: arrives in Phase 7."; exit 1

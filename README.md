@@ -12,8 +12,8 @@ Run `make status` any time, or read [docs/PROGRESS.md](docs/PROGRESS.md). That f
 | --- | --- |
 | Current phase | See `docs/PROGRESS.md` |
 | Time cap | 6 weeks from 2026-10-29 (until 2026-12-10) |
-| Done so far | Phases 0, 1 and 2: foundations, data and licence checks, and five real datasets downloaded and quality-checked ([Phase 2 report](docs/PHASE2_REPORT.md)) |
-| Next | Phase 3: the cost and waiting-time simulator (Gate G2) |
+| Done so far | Phases 0 to 3: foundations, data and licence checks, five real datasets downloaded and quality-checked ([Phase 2 report](docs/PHASE2_REPORT.md)), and the cost and waiting-time simulator, checked against hand calculations and the AWS calculator ([Phase 3 report](docs/PHASE3_REPORT.md)) |
+| Next | Phase 4: baseline policies (all-Standard, lifecycle rules, Intelligent-Tiering, Autoclass) and the seasonal-naive policy, then early check E1 |
 | Result so far | None yet. No forecasting result exists; the sealed test years are untouched |
 
 ## How this PoC stays honest
@@ -35,6 +35,7 @@ make check     # lint + type check + tests (what CI runs)
 make synth     # generate a small synthetic dataset
 make status    # which phase are we on?
 make data      # points to the real-data commands (Phase 2 runbook)
+make simulate  # smoke-test the cost and waiting-time simulator on synthetic data
 ```
 
 The real datasets are downloaded to a folder outside the repository by following [docs/RUNBOOK_PHASE2.md](docs/RUNBOOK_PHASE2.md).
@@ -46,7 +47,8 @@ The real datasets are downloaded to a folder outside the repository by following
 | `docs/PROGRESS.md` | Phase tracker and stop points |
 | `docs/DECISIONS.md` | Every choice that could change results, with the reason |
 | `docs/data_cards/` | One card per dataset: source, licence, caveats |
-| `docs/PHASE1_REPORT.md`, `docs/PHASE2_REPORT.md` | What each finished phase found |
+| `docs/PHASE1_REPORT.md` to `docs/PHASE3_REPORT.md` | What each finished phase found |
+| `docs/SIM_RULES.md`, `docs/HAND_CALCS.md` | How prices become a bill (with official quotes) and the hand calculations the simulator must match |
 | `docs/RUNBOOK_PHASE2.md` | Commands to download and check the real data |
 | `docs/evidence/` | Official price rows (text) and the owner's calculator screenshots |
 | `configs/prices/` | AWS, Google and Azure price sheets with sources |
@@ -54,7 +56,8 @@ The real datasets are downloaded to a folder outside the repository by following
 | `src/sat/synth/` | Synthetic data generator with ground truth |
 | `src/sat/prices.py` | Price sheet loader and validator |
 | `src/sat/ingest/` | Downloaders and checks for D1 to D5, checksums, quality report |
-| `scripts/` and `reports/` | Phase 1 and 2 source probes and their raw outputs |
+| `src/sat/sim/` | Cost and waiting-time simulator, including the billing of S3 Intelligent-Tiering and Autoclass |
+| `scripts/` and `reports/` | Phase 1 and 2 source probes and their raw outputs; Phase 3 planted-bug check (`mutation_check.py`) and speed check (`bench_sim.py`) |
 | `tests/` | Automated tests |
 | `data_records/` | Small records of the real data: checksums, article and package lists, flags, size summaries, quality report |
 | `data/` | Local data, git-ignored |

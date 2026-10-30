@@ -79,8 +79,11 @@ tiers:
     min_billable_object_kb: {value: 0, status: sourced, source: *aws_storage_classes}     # "NA"; the 40 KB overhead applies instead
     per_object_overhead_kb: {value: 40, status: sourced, source: *aws_pricing_page}       # 8 KB at Standard rate + 32 KB at this rate
     restore_hours: {value: 5, status: sourced, source: *aws_retrieval_options}            # Standard: "3-5 hours" (upper end, D-025)
+    restore_hours_low: {value: 3, status: sourced, source: *aws_retrieval_options}        # lower end of "3-5 hours"
     bulk_restore_hours: {value: 12, status: sourced, source: *aws_retrieval_options}      # Bulk: "5-12 hours"
+    bulk_restore_hours_low: {value: 5, status: sourced, source: *aws_retrieval_options}
     expedited_restore_hours: {value: 0.0833, status: sourced, source: *aws_retrieval_options}  # "1-5 minutes" (objects under 250 MB)
+    expedited_restore_hours_low: {value: 0.0167, status: sourced, source: *aws_retrieval_options}  # 1 minute
     put_per_1000: {value: 0.03, status: sourced, source: *aws_pricing_page}
     get_per_1000: {value: 0.0004, status: sourced, source: *aws_pricing_page}
     transition_in_per_1000: {value: 0.03, status: sourced, source: *aws_pricing_page}
@@ -124,3 +127,7 @@ extras:
   intelligent_tiering_archive_access_min_days: {value: 90, status: sourced, source: *aws_intelligent_tiering}  # optional, configurable up to 730
   intelligent_tiering_deep_archive_access_min_days: {value: 180, status: sourced, source: *aws_intelligent_tiering}  # optional, configurable up to 730
   intelligent_tiering_archive_overhead_kb: {value: 40, status: sourced, source: *aws_pricing_page}  # 8 KB Standard + 32 KB archive rate, per archived object
+  # Restore times from the two optional archive tiers (standard retrieval; free of charge).
+  intelligent_tiering_archive_access_restore_hours: {value: 5, status: sourced, source: *aws_intelligent_tiering}  # "can range from 3-5 hours"
+  intelligent_tiering_archive_access_restore_hours_low: {value: 3, status: sourced, source: *aws_intelligent_tiering}
+  intelligent_tiering_deep_archive_access_restore_hours: {value: 12, status: sourced, source: *aws_intelligent_tiering}  # "within 12 hours"
