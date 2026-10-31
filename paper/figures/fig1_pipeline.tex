@@ -1,0 +1,27 @@
+% Figure 1: how a result is produced (TikZ, included by main.tex and by standalone.tex)
+\begin{tikzpicture}[
+  font=\sffamily\footnotesize,
+  box/.style={draw=axisc, line width=0.6pt, rounded corners=3pt, fill=white, align=left,
+              text width=4.3cm, minimum height=1.75cm, inner sep=5pt, anchor=north west},
+  hd/.style={font=\sffamily\footnotesize\bfseries, text=inkc},
+  arr/.style={-{Stealth[length=5pt]}, line width=0.8pt, color=mutedc},
+  num/.style={circle, fill=oursc, text=white, font=\sffamily\scriptsize\bfseries, inner sep=1.2pt, minimum size=11pt}
+]
+\node[box] (a) at (0,0) {{\color{inkc}\textbf{Public demand}}\\[1pt]\color{ink2c}Wikipedia page views, npm downloads, Seattle library checkouts, 2016--2025};
+\node[box] (b) at (5.45,0) {{\color{inkc}\textbf{Archive reads and sizes}}\\[1pt]\color{ink2c}reads $\sim$ Poisson(scale $\times$ demand) per file per day; sizes drawn from an IBM object-store trace};
+\node[box] (c) at (10.9,0) {{\color{inkc}\textbf{Fee-accurate simulator}}\\[1pt]\color{ink2c}bills every file every day under the provider's published rules; counts each read that waits};
+\node[box] (d) at (10.9,-2.4) {{\color{inkc}\textbf{161 AWS policies, per file}}\\[1pt]\color{ink2c}rivals (Intelligent-Tiering, lifecycle rules), ours (forecasting), references};
+\node[box] (e) at (5.45,-2.4) {{\color{inkc}\textbf{Per-file chooser}}\\[1pt]\color{ink2c}once a year, each file follows the policy that cost it least last year, plus $\mu \times$ waits and a switch charge};
+\node[box] (f) at (0,-2.4) {{\color{inkc}\textbf{Pick, then score}}\\[1pt]\color{ink2c}pick rival and ours on year $Y{-}1$ at a waiting level; score both on year $Y$; matched waiting rule};
+\draw[arr] (a.east) -- (b.west);
+\draw[arr] (b.east) -- (c.west);
+\draw[arr] (c.south) -- (d.north);
+\draw[arr] (d.west) -- (e.east);
+\draw[arr] (e.west) -- (f.east);
+\node[num] at ($(a.north west)+(0.05,0.05)$) {1};
+\node[num] at ($(b.north west)+(0.05,0.05)$) {2};
+\node[num] at ($(c.north west)+(0.05,0.05)$) {3};
+\node[num] at ($(d.north west)+(0.05,0.05)$) {4};
+\node[num] at ($(e.north west)+(0.05,0.05)$) {5};
+\node[num] at ($(f.north west)+(0.05,0.05)$) {6};
+\end{tikzpicture}

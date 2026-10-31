@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite the paper below."
+title: "seasonal-tiering-poc: code, protocols and results"
+type: software
+authors:
+  - family-names: Khatiwada
+    given-names: Summit
+    affiliation: "Independent Researcher, Kathmandu, Nepal"
+repository-code: "https://github.com/summitkhatiwada22/seasonal-tiering-poc"
+license: MIT
+version: "1.0.0"
+date-released: "2026-10-31"
+keywords:
+  - cloud storage
+  - storage tiering
+  - S3 Intelligent-Tiering
+  - archival storage
+  - forecasting
+  - pre-registration
+  - negative result
+preferred-citation:
+  type: report
+  title: "Forecasting versus Reactive Cloud Auto-Tiering: A Pre-Registered, Fee-Accurate Test"
+  authors:
+    - family-names: Khatiwada
+      given-names: Summit
+      affiliation: "Independent Researcher, Kathmandu, Nepal"
+  year: 2026
+  month: 10
+  version: "1.0"
+  url: "https://github.com/summitkhatiwada22/seasonal-tiering-poc"
+  license: CC-BY-4.0

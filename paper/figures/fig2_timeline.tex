@@ -1,0 +1,36 @@
+% Figure 2: which years each test used (TikZ, included by main.tex and by standalone.tex)
+\begin{tikzpicture}[
+  font=\sffamily\footnotesize, x=1.18cm, y=0.62cm,
+  pick/.style={draw=oursc, line width=0.8pt, fill=white, rounded corners=2pt, minimum width=0.98cm, minimum height=0.42cm, inner sep=0pt, text=oursc, font=\sffamily\scriptsize\bfseries},
+  score/.style={fill=oursc, rounded corners=2pt, minimum width=0.98cm, minimum height=0.42cm, inner sep=0pt, text=white, font=\sffamily\scriptsize\bfseries},
+  arr/.style={-{Stealth[length=4pt]}, line width=0.7pt, color=mutedc},
+  lab/.style={anchor=east, text=inkc, align=right, font=\sffamily\footnotesize}
+]
+% sealed band
+\fill[washc] (8.5,-5.6) rectangle (10.5,0.75);
+\node[text=ink2c, font=\sffamily\scriptsize, align=center] at (9.5,-6.0) {sealed: opened once, at tag \texttt{freeze-g3}};
+% year axis
+\foreach \y [count=\i] in {2016,...,2025} {
+  \node[text=ink2c, font=\sffamily\scriptsize] at (\i,0.35) {\y};
+  \draw[gridc, line width=0.4pt] (\i-0.5,0.05) -- (\i-0.5,-5.6);
+}
+\draw[gridc, line width=0.4pt] (10.5,0.05) -- (10.5,-5.6);
+% rows
+\node[lab] at (0.4,-0.7) {Demand history};
+\fill[gridc] (0.55,-0.88) rectangle (8.45,-0.52);
+\node[text=ink2c, font=\sffamily\scriptsize] at (4.5,-0.7) {development data, 2016--2023};
+\node[lab] at (0.4,-1.75) {E1 early check};
+\node[pick] (e1p) at (7,-1.75) {pick}; \node[score] (e1s) at (8,-1.75) {score};
+\draw[arr] (e1p) -- (e1s);
+\node[lab] at (0.4,-3.15) {R1 rolling years};
+\node[pick] (r1a) at (5,-2.8) {pick}; \node[score] (r1b) at (6,-2.8) {score};
+\draw[arr] (r1a) -- (r1b);
+\node[pick] (r1c) at (6,-3.55) {pick}; \node[score] (r1d) at (7,-3.55) {score};
+\draw[arr] (r1c) -- (r1d);
+\node[lab] at (0.4,-4.75) {G3 sealed test};
+\node[pick] (g1a) at (8,-4.4) {pick}; \node[score] (g1b) at (9,-4.4) {score};
+\draw[arr] (g1a) -- (g1b);
+\node[pick] (g2a) at (9,-5.15) {pick}; \node[score] (g2b) at (10,-5.15) {score};
+\draw[arr] (g2a) -- (g2b);
+% outcomes
+\end{tikzpicture}

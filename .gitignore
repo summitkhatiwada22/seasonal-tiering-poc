@@ -28,3 +28,13 @@ data/e1/
 data/r1/
 data/g3/
 data/g3-rehearsal/
+
+# LaTeX build files (the paper's PDF and figures are committed)
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.log
+paper/*.out
+paper/figures/*.aux
+paper/figures/*.log
+paper/main.pdf

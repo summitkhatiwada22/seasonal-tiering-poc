@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help setup test lint format typecheck check synth status data simulate e1 mutation reproduce report
+.PHONY: help setup test lint format typecheck check synth status data simulate e1 mutation reproduce report paper
 
 help: ## Show this list
 	@grep -E '^[a-z_]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  make %-10s %s\n", $$1, $$2}'
@@ -51,3 +51,7 @@ reproduce: ## (Phase 7) Rebuild every headline number from scratch
 
 report: ## (Phase 10) Build the results page
 	@echo "Not built yet: arrives in Phase 10."; exit 1
+
+paper: ## Draw the paper's figures from the results and build paper/forecasting-vs-reactive-auto-tiering.pdf (needs local data and LaTeX)
+	uv run --with matplotlib python scripts/paper/figures.py
+	$(MAKE) -C paper all clean

@@ -1,29 +1,53 @@
-# Seasonal Archive Tiering: Proof of Concept
+# Forecasting versus Reactive Cloud Auto-Tiering
 
-**One question:** can forecasting seasonal demand keep archived data in the cheapest storage tier and bring it back *before* people ask for it, beating today's reactive auto-tiering on cost and on waiting time?
+**A pre-registered, fee-accurate test of one idea: can forecasting when archived files will be read beat today's reactive auto-tiering (S3 Intelligent-Tiering, Google Autoclass, Azure smart tier) on cost and on waiting time?**
 
-Today's cloud services look backward ("not touched for 90 days, move it down"). This project tests looking forward ("tax files will be wanted in three weeks, warm them now").
+**Answer: no.** By rules fixed before the data was seen, the idea fails.
 
-## Where we are
+📄 **Paper (PDF):** [Forecasting versus Reactive Cloud Auto-Tiering: A Pre-Registered, Fee-Accurate Test](paper/forecasting-vs-reactive-auto-tiering.pdf) · [release `paper-v1.0`](https://github.com/summitkhatiwada22/seasonal-tiering-poc/releases/tag/paper-v1.0)
+📊 **Every number:** [docs/RESULTS.md](docs/RESULTS.md) · **Rules, written first:** [docs/PREREGISTRATION.md](docs/PREREGISTRATION.md) · **Every decision:** [docs/DECISIONS.md](docs/DECISIONS.md)
 
-Run `make status` any time, or read [docs/PROGRESS.md](docs/PROGRESS.md). That file lists every phase, what is done, and the decision points where we may stop early.
+![Cost and waiting for every rolling and sealed test year](paper/figures/fig4_results.png)
 
-| Question | Answer |
-| --- | --- |
-| Current phase | See `docs/PROGRESS.md` |
-| Time cap | 6 weeks from 2026-10-29 (until 2026-12-10) |
-| Done so far | Phases 0 to 7: foundations, data and licence checks, five real datasets downloaded and quality-checked ([Phase 2](docs/PHASE2_REPORT.md)), the cost and waiting-time simulator ([Phase 3](docs/PHASE3_REPORT.md)), the baseline policies with early check E1 ([Phase 4](docs/PHASE4_REPORT.md)), round two with gate R1 ([Phase 5](docs/PHASE5_REPORT.md)), and the pre-registered sealed test, Gate G3 ([results](docs/RESULTS.md)) |
-| Next | The paper, by 2026-12-10 (D-052). The live demo and investor package are not run. Compression (Phase 8) is independent of this result and is the owner's choice |
-| Result | **The proof of concept fails (Gate G3, 2026-10-30).** On the sealed years 2024 and 2025, neither the cost hypothesis (H1) nor the waiting hypothesis (H2) holds on any dataset. Seasonal forecasting on its own never beats S3 Intelligent-Tiering. A per-file choice of policy is 52-54% cheaper on Wikipedia and 39-41% on npm when up to 1% of reads may wait (some for up to 48 hours). It fails the pre-set rule because in 2024 slightly more of its reads waited than the rival's, as in gate R1. It loses on the library data in every year. On Azure it ties smart tier. Details: [docs/RESULTS.md](docs/RESULTS.md) |
+*Every test year at "up to 1% of reads may wait", against S3 Intelligent-Tiering. Left: how much cheaper the per-file method was. Right: the share of reads that had to wait for a restore. A year passes only if it is at least 5% cheaper and waits no more. Wikipedia and npm failed in 2024 on waiting alone; the library data lost money every year.*
 
-## How this PoC stays honest
+## Findings
+
+- **Seasonal forecasting on its own never beat S3 Intelligent-Tiering.** Picked by the same rule, the seasonal-naive policy cost 0.6% to 29% more than the rival on every sealed line.
+- **A per-file choice of policy was 39% to 54% cheaper** on Wikipedia and npm in the sealed years (2024 and 2025) when up to 1% of reads may wait. It saved by leaving a few large, rarely read files in Deep Archive behind restores of up to 48 hours. On Wikipedia, 2.4% of the files held 57% of the bytes and received 0.25% of the reads.
+- **It still failed the pre-registered test.** In 2024, slightly more of its reads waited than the rival's: 0.277% against 0.245% on Wikipedia, 0.118% against 0.089% on npm. The same overshoot happened in the earlier rolling-year gate.
+- **A reference that knew each file's true read rate passed every Wikipedia and npm line.** The per-file economics are real; predicting next year's reads from last year's is what fails.
+- **Library demand kept shifting** (the 2020 closures, a 2024 ransomware attack on the library), and every method lost there. **On Azure, the method only tied smart tier.** **With no waiting allowed, nothing beat managed tiering.**
+- **Reproduced:** a fresh clone of the frozen tag re-ran the sealed test and matched every number.
+
+## How the test was run
+
+| Step | What | Commit |
+| --- | --- | --- |
+| Simulator (gate G2) | Bills every file every day under AWS, Google and Azure rules; matched 24 of 24 hand calculations and the AWS Pricing Calculator; caught 48 of 48 planted bugs | Phase 3 |
+| E1, early check | Seasonal-naive policies, picked on 2022, scored on 2023 | `d1cf04d` |
+| R1, rolling years | Per-file chooser, 2020→2021 and 2021→2022. Failed narrowly; the owner overrode the stop rule as a documented deviation (D-051) | `0bde4de` |
+| G3, sealed test | Pre-registered; 2023→2024 and 2024→2025; the code opened 2024-2025 only at the tag `freeze-g3`. **Failed** (D-052) | `cc4b852` |
+| Paper | Figures from the committed results; typeset PDF | `paper-v1.0` |
+
+## Use of AI
+
+The research question is the author's, as are the decision to pre-register, every gate decision (including the override of R1) and the interpretation. The code, analyses, figures and drafts of the documents and paper were produced with the help of Claude (Anthropic), an AI model, working under the author's direction. Every decision is logged with its reason in [docs/DECISIONS.md](docs/DECISIONS.md), and the full history is in the git log.
+
+## Cite
+
+> Summit Khatiwada. *Forecasting versus Reactive Cloud Auto-Tiering: A Pre-Registered, Fee-Accurate Test.* Version 1.0, October 2026. https://github.com/summitkhatiwada22/seasonal-tiering-poc
+
+See [CITATION.cff](CITATION.cff) (GitHub shows a "Cite this repository" button).
+
+## How this project stays honest
 
 - **Thresholds are fixed before the test.** Pass/fail rules were written down and tagged in git (`freeze-g3`) before the sealed test years were read ([docs/PREREGISTRATION.md](docs/PREREGISTRATION.md)). The code refuses to open 2024 and 2025 unless it runs at that tag. The test failed, and is reported as failed.
 - **We compare against the strongest rival**, S3 Intelligent-Tiering and Google Autoclass, not a weak baseline.
 - **Every price has a receipt.** Each number in `configs/prices/` carries a link to an official AWS, Azure or Google source and the rows read are copied in [docs/evidence/](docs/evidence/official-prices-2026-10-30.md). A test fails if any price is ever marked `unverified`.
 - **We test the tester.** A synthetic generator plants known seasonal patterns and a no-season control, so we can tell a real win from a false one.
 - **Every result is reproducible** from raw data with one command, at a tagged commit. Data is never committed; every downloaded file is recorded with a checksum in [data_records/manifests/](data_records/manifests/).
-- **Stopping is allowed.** If early checks fail, we stop and write up why.
+- **Stopping is allowed.** The final test failed, and the project stopped and wrote up why.
 
 ## Quick start
 
@@ -37,6 +61,7 @@ make status    # which phase are we on?
 make data      # points to the real-data commands (Phase 2 runbook)
 make simulate  # smoke-test the cost and waiting-time simulator on synthetic data
 make e1        # early check E1: tune on 2022, pick, score on 2023 (about an hour on 2 cores)
+make paper     # rebuild the paper's figures and PDF (needs the local data and a LaTeX install)
 ```
 
 The real datasets are downloaded to a folder outside the repository by following [docs/RUNBOOK_PHASE2.md](docs/RUNBOOK_PHASE2.md).
@@ -56,6 +81,8 @@ uv run python -m sat.experiments.g3 reproduce --workers 2  # H9: fresh clone, ba
 
 | Path | What it holds |
 | --- | --- |
+| `paper/` | The paper: LaTeX source, bibliography, figures (PDF and PNG) and the built PDF; `make paper` rebuilds it |
+| `scripts/paper/figures.py` | Draws every figure from the committed results |
 | `docs/PROGRESS.md` | Phase tracker and stop points |
 | `docs/DECISIONS.md` | Every choice that could change results, with the reason |
 | `docs/data_cards/` | One card per dataset: source, licence, caveats |
@@ -81,4 +108,4 @@ uv run python -m sat.experiments.g3 reproduce --workers 2  # H9: fresh clone, ba
 
 ## Licence
 
-The repository is public for now (decision D-012), with **no open-source licence: all rights reserved**. Reading is welcome; reuse is not permitted until a licence is chosen after the PoC result is known.
+Code: [MIT](LICENSE). Paper, figures and documentation (`paper/`, `docs/`, `reports/`): [CC BY 4.0](LICENSE-docs.md). The datasets are not redistributed; each source's terms are in its [data card](docs/data_cards/). Licences chosen after the result was known, as planned (D-012, D-053).

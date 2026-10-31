@@ -125,6 +125,27 @@ This repeats the pattern of gate R1 on the rolling years, so it is not an accide
 | Library (D4) | 2024 | chooser:all:mu0:m0.1 | +0.09% |
 
 
+## Where the chooser put the files (reported, section 7 of the pre-registration)
+
+The share of files, bytes and reads under each kind of policy in the chooser's L1 sealed picks. Computed after scoring, from the frozen per-file outputs with the frozen code (`scripts/paper/figures.py`); the recomputed cost of every pick matches `base/lines.csv` exactly. Output: `reports/g3/base/allocation.csv`.
+
+| Dataset, year | Policy kind | Files | Bytes | Reads | Median size |
+| --- | --- | --- | --- | --- | --- |
+| Wikipedia 2024 | Intelligent-Tiering | 88.8% | 24.4% | 65.6% | 0.03 MB |
+| | Archive + forecast restores (seasonal) | 8.2% | 18.7% | 34.0% | 16.8 MB |
+| | Archive rule (Glacier Flexible, Deep Archive) | 2.4% | 56.6% | 0.25% | 318 MB |
+| Wikipedia 2025 | Intelligent-Tiering | 89.2% | 25.1% | 65.5% | 0.03 MB |
+| | Archive + forecast restores (seasonal) | 8.1% | 19.8% | 34.0% | 16.8 MB |
+| | Archive rule | 2.1% | 54.8% | 0.19% | 439 MB |
+| npm 2024 | Intelligent-Tiering | 80.3% | 43.4% | 68.0% | 0.03 MB |
+| | Archive + forecast restores (seasonal) | 18.0% | 39.4% | 31.9% | 16.8 MB |
+| | Archive rule | 1.7% | 17.1% | 0.11% | 61 MB |
+| npm 2025 | Intelligent-Tiering | 82.9% | 45.7% | 69.9% | 0.03 MB |
+| | Archive + forecast restores (seasonal) | 16.4% | 39.4% | 30.1% | 16.8 MB |
+| | Archive rule | 0.7% | 14.9% | 0.03% | 331 MB |
+
+Other policies take under 1% of files and bytes. The saving comes from a few large, rarely read files sent to archive rules, and from mid-sized files kept archived with restores ordered ahead of forecast reads.
+
 ## What it means
 
 * **Seasonal forecasting on its own is not the lever.** The seasonal-naive family, picked by the same rule, cost 0.6% to 29% more than the rival on all twelve base lines.
