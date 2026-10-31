@@ -28,7 +28,7 @@
 | E1, early check | Seasonal-naive policies, picked on 2022, scored on 2023 | `d1cf04d` |
 | R1, rolling years | Per-file chooser, 2020→2021 and 2021→2022. Failed narrowly; the owner overrode the stop rule as a documented deviation (D-051) | `0bde4de` |
 | G3, sealed test | Pre-registered; 2023→2024 and 2024→2025; the code opened 2024-2025 only at the tag `freeze-g3`. **Failed** (D-052) | `cc4b852` |
-| Paper | Figures from the committed results; typeset PDF | `paper-v1.0` |
+| Paper | Figures from the committed results; typeset PDF | `120c921` |
 
 ## Use of AI
 
