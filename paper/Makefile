@@ -18,4 +18,10 @@ $(PDF): main.tex refs.bib preamble-figures.tex figures/*.tex figures/*.pdf
 clean:
 	rm -f *.aux *.bbl *.blg *.log *.out figures/*.aux figures/*.log
 
-.PHONY: all clean
+.PHONY: all clean arxiv
+
+arxiv: $(PDF) ## Source package for arXiv (needs the .bbl from a full build)
+	pdflatex -interaction=nonstopmode main.tex >/dev/null
+	bibtex main >/dev/null
+	tar czf arxiv-source.tar.gz main.tex main.bbl preamble-figures.tex figures/*.tex figures/*.pdf
+	$(MAKE) clean

@@ -17,7 +17,7 @@ Stopping early is a valid outcome. If a stop point below fails, we stop and writ
 | 7 | Robustness | **Done inside G3.** H5 fails (H1 held in 2 of 10 scenarios, H2 in 1); H6 measured at 0.01-0.13% of the saving but not scored; H9 passed (a fresh clone at the tag reproduced every base line) | H5, H6 and H9 recorded |
 | 8 | Compression track | Not started as a phase; a first sizing test on 1,135 npm tarballs ran in Phase 5 (D-047). Independent of the tiering result; the owner's choice (D-052). Research done 2026-10-30, see [PHASE5_PLAN.md](PHASE5_PLAN.md) | H8 recorded |
 | 9 | Live mini-system | **Not run:** G3 failed (D-052) | 3-minute demo runs from one command |
-| 10 | Investor package, replaced by the paper | **Done 2026-10-31: paper v1.0** ([PDF](../paper/forecasting-vs-reactive-auto-tiering.pdf), tag `paper-v1.0`, D-053). Every figure is drawn from committed results | Every number traces to a tagged commit |
+| 10 | Investor package, replaced by the paper | **Done 2026-10-31: paper v1.0** ([PDF](../paper/forecasting-vs-reactive-auto-tiering.pdf), release `paper-v1.0` to be created by the owner on GitHub, D-053). Every figure is drawn from committed results | Every number traces to a tagged commit |
 | C | Customer conversations (parallel track) | Not started. Starts in week 2 of round two (D-039) | 5-10 conversations with people who run large cold archives |
 <!-- STATUS-END -->
 

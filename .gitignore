@@ -38,3 +38,4 @@ paper/*.out
 paper/figures/*.aux
 paper/figures/*.log
 paper/main.pdf
+paper/arxiv-source.tar.gz

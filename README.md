@@ -4,7 +4,7 @@
 
 **Answer: no.** By rules fixed before the data was seen, the idea fails.
 
-📄 **Paper (PDF):** [Forecasting versus Reactive Cloud Auto-Tiering: A Pre-Registered, Fee-Accurate Test](paper/forecasting-vs-reactive-auto-tiering.pdf) · [release `paper-v1.0`](https://github.com/summitkhatiwada22/seasonal-tiering-poc/releases/tag/paper-v1.0)
+📄 **Paper (PDF):** [Forecasting versus Reactive Cloud Auto-Tiering: A Pre-Registered, Fee-Accurate Test](paper/forecasting-vs-reactive-auto-tiering.pdf) (LaTeX source and figures in [paper/](paper/); submission notes in [paper/SUBMISSION.md](paper/SUBMISSION.md))
 📊 **Every number:** [docs/RESULTS.md](docs/RESULTS.md) · **Rules, written first:** [docs/PREREGISTRATION.md](docs/PREREGISTRATION.md) · **Every decision:** [docs/DECISIONS.md](docs/DECISIONS.md)
 
 ![Cost and waiting for every rolling and sealed test year](paper/figures/fig4_results.png)
